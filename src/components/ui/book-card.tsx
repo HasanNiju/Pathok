@@ -54,7 +54,7 @@ export function BookCard({
             "cursor-pointer transition-shadow duration-200 hover:shadow-soft-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         )}
       >
-        <div className="relative aspect-[2/3] w-full bg-secondary">
+        <div className="relative aspect-[3/4] w-full bg-secondary">
           {coverUrl ? (
             <Image
               src={coverUrl}
@@ -70,12 +70,12 @@ export function BookCard({
           )}
         </div>
 
-        <div className="p-3">
-          <p className="truncate text-sm font-bold text-foreground">{title}</p>
-          <p className="truncate text-xs text-muted-foreground">{author}</p>
+        <div className="p-4">
+          <p className="truncate text-sm font-semibold text-foreground">{title}</p>
+          <p className="mt-1 truncate text-xs text-muted-foreground">{author}</p>
 
           {typeof progress === "number" && (
-            <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-secondary">
+            <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-secondary">
               <div
                 className="h-full rounded-full bg-primary transition-all duration-200"
                 style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}

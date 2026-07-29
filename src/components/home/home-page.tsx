@@ -7,8 +7,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { SearchBar } from "@/components/ui/search-bar";
 import { BookCard } from "@/components/ui/book-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   categories,
   continueReading,
@@ -29,7 +28,7 @@ interface SectionHeaderProps {
 
 function SectionHeader({ title, description, actionLabel, actionHref }: SectionHeaderProps) {
   return (
-    <div className="mb-4 flex items-end justify-between gap-4">
+    <div className="mb-6 flex items-end justify-between gap-4">
       <div>
         <h2 className="text-xl font-bold tracking-tight">{title}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{description}</p>
@@ -59,16 +58,16 @@ export function HomePage() {
   }, [query]);
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6 lg:gap-8">
+    <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:gap-10">
       <motion.section
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-primary/10 via-card to-secondary/80 p-6 shadow-soft sm:p-8 lg:p-10"
+        className="overflow-hidden rounded-[1.75rem] border border-border bg-gradient-to-br from-primary/10 via-card to-secondary/80 p-7 shadow-soft sm:p-8 lg:p-12"
       >
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-3 py-1 text-sm font-medium text-primary">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-3 py-1 text-sm font-medium text-primary">
               <Sparkles className="h-4 w-4" aria-hidden="true" />
               {t("home.hero.badge")}
             </div>
@@ -78,7 +77,7 @@ export function HomePage() {
             <p className="mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
               {t("home.hero.description")}
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Button variant="primary" size="lg">
                 {t("home.hero.primaryAction")}
               </Button>
@@ -89,7 +88,7 @@ export function HomePage() {
           </div>
 
           <Card className="border-primary/10 bg-background/70 p-0 backdrop-blur">
-            <CardContent className="p-5 sm:p-6">
+            <CardContent className="p-6 sm:p-7">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-primary">{t("home.hero.featuredLabel")}</p>
@@ -119,8 +118,8 @@ export function HomePage() {
         </div>
       </motion.section>
 
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="border-border/70 bg-card/90 p-4 sm:p-6">
+      <section className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+        <Card className="border-border/70 bg-card/90 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-foreground">{t("home.search.title")}</p>
@@ -147,7 +146,7 @@ export function HomePage() {
           ) : null}
         </Card>
 
-        <Card className="border-border/70 bg-card/90 p-4 sm:p-6">
+        <Card className="border-border/70 bg-card/90 p-5 sm:p-6">
           <div className="flex items-center gap-2 text-primary">
             <TrendingUp className="h-4 w-4" aria-hidden="true" />
             <p className="text-sm font-semibold">{t("home.highlights.title")}</p>
@@ -174,7 +173,7 @@ export function HomePage() {
           actionLabel={t("home.sections.viewAll")}
           actionHref="#"
         />
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-2">
           {continueReading.map((book) => (
             <Card key={book.id} className="overflow-hidden border-border/70 bg-card/90 p-0">
               <div className="flex gap-4 p-4 sm:p-5">
@@ -206,7 +205,7 @@ export function HomePage() {
           actionLabel={t("home.sections.viewAll")}
           actionHref="#"
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {latestBooks.map((book) => (
             <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
           ))}
@@ -220,7 +219,7 @@ export function HomePage() {
           actionLabel={t("home.sections.viewAll")}
           actionHref="#"
         />
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2">
           {trendingBooks.map((book) => (
             <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
           ))}
@@ -234,7 +233,7 @@ export function HomePage() {
           actionLabel={t("home.sections.viewAll")}
           actionHref="#"
         />
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-3">
           {popularBooks.map((book) => (
             <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
           ))}
@@ -248,7 +247,7 @@ export function HomePage() {
           actionLabel={t("home.sections.viewAll")}
           actionHref="#"
         />
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-3">
           {recommendedBooks.map((book) => (
             <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
           ))}
@@ -260,9 +259,9 @@ export function HomePage() {
           title={t("home.sections.categories")}
           description={t("home.sections.categoriesDescription")}
         />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => (
-            <Card key={category.id} className="border-border/70 bg-card/90 p-4">
+            <Card key={category.id} className="border-border/70 bg-card/90 p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-foreground">{category.label}</p>
@@ -284,14 +283,14 @@ export function HomePage() {
           actionLabel={t("home.sections.viewAll")}
           actionHref="#"
         />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {recentlyAdded.map((book) => (
             <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
           ))}
         </div>
       </section>
 
-      <footer className="rounded-[1.5rem] border border-border bg-card/90 px-6 py-8 text-center shadow-soft">
+      <footer className="rounded-[1.75rem] border border-border bg-card/90 px-8 py-10 text-center shadow-soft sm:px-10">
         <p className="text-lg font-semibold text-foreground">{t("home.footer.title")}</p>
         <p className="mt-2 text-sm text-muted-foreground">{t("home.footer.description")}</p>
       </footer>
