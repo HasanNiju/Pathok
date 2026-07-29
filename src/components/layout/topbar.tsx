@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Monitor, Languages } from "lucide-react";
+import { Moon, Sun, Monitor, Languages, LogOut, User as UserIcon } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "@/constants";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { Dropdown } from "@/components/ui/dropdown";
 
 interface TopbarProps {
   className?: string;
@@ -22,6 +29,9 @@ const THEME_CYCLE = ["light", "dark", "system"] as const;
 export function Topbar({ className }: TopbarProps) {
   const { t, language, setLanguage } = useTranslation();
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const { addToast } = useToast();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   // Avoid rendering theme-dependent UI until mounted, to prevent
@@ -41,6 +51,12 @@ export function Topbar({ className }: TopbarProps) {
   };
 
   const ThemeIcon = theme === "dark" ? Moon : theme === "light" ? Sun : Monitor;
+
+  const handleLogout = () => {
+    logout();
+    addToast({ title: t("auth.toasts.loggedOut"), variant: "default" });
+    router.push("/login");
+  };
 
   return (
     <motion.header
@@ -85,6 +101,41 @@ export function Topbar({ className }: TopbarProps) {
             <ThemeIcon className="h-4 w-4" aria-hidden="true" />
           </button>
         )}
+
+        {mounted &&
+          (user ? (
+            <Dropdown
+              align="end"
+              trigger={
+                <button
+                  type="button"
+                  aria-label={t("auth.nav.account")}
+                  className="inline-flex items-center rounded-full transition-opacity duration-200 hover:opacity-80"
+                >
+                  <Avatar name={user.name} src={user.avatarUrl} size="sm" />
+                </button>
+              }
+              items={[
+                {
+                  label: t("auth.nav.account"),
+                  icon: <UserIcon className="h-4 w-4" aria-hidden="true" />,
+                  onSelect: () => router.push("/account"),
+                },
+                {
+                  label: t("auth.nav.logout"),
+                  icon: <LogOut className="h-4 w-4" aria-hidden="true" />,
+                  onSelect: handleLogout,
+                  destructive: true,
+                },
+              ]}
+            />
+          ) : (
+            <Link href="/login">
+              <Button variant="outline" size="sm">
+                {t("auth.nav.login")}
+              </Button>
+            </Link>
+          ))}
       </div>
     </motion.header>
   );

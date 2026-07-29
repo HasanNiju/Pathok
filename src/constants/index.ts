@@ -15,6 +15,7 @@ export const DEFAULT_LANGUAGE: Language = "en";
 export const STORAGE_KEYS = {
   language: "pathok:language",
   theme: "pathok:theme",
+  authSession: "pathok:auth-session",
 } as const;
 
 /** Shared breakpoints for hooks/components that need to branch on viewport. */
