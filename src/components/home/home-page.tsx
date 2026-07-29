@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, Compass, Sparkles, TrendingUp, Clock3, Library } from "lucide-react";
@@ -177,8 +179,14 @@ export function HomePage() {
           {continueReading.map((book) => (
             <Card key={book.id} className="overflow-hidden border-border/70 bg-card/90 p-0">
               <div className="flex gap-4 p-4 sm:p-5">
-                <div className="h-28 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary">
-                  <img src={book.coverUrl} alt={book.title} className="h-full w-full object-cover" />
+                <div className="relative h-28 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary">
+                  <Image
+                    src={book.coverUrl}
+                    alt={book.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 45vw, 200px"
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 text-sm text-primary">
