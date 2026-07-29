@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Moon, Sun, Monitor, Languages } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
-import { SUPPORTED_LANGUAGES } from "@/constants";
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "@/constants";
 import { cn } from "@/lib/utils";
 
 interface TopbarProps {
@@ -37,7 +37,7 @@ export function Topbar({ className }: TopbarProps) {
   const cycleLanguage = () => {
     const currentIndex = SUPPORTED_LANGUAGES.findIndex((l) => l.code === language);
     const next = SUPPORTED_LANGUAGES[(currentIndex + 1) % SUPPORTED_LANGUAGES.length];
-    setLanguage(next.code);
+    setLanguage(next?.code ?? DEFAULT_LANGUAGE);
   };
 
   const ThemeIcon = theme === "dark" ? Moon : theme === "light" ? Sun : Monitor;
