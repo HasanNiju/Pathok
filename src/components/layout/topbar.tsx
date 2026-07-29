@@ -31,7 +31,7 @@ export function Topbar({ className }: TopbarProps) {
   const cycleTheme = () => {
     const current = (theme as (typeof THEME_CYCLE)[number]) ?? "system";
     const nextIndex = (THEME_CYCLE.indexOf(current) + 1) % THEME_CYCLE.length;
-    setTheme(THEME_CYCLE[nextIndex]);
+    setTheme(THEME_CYCLE[nextIndex] ?? "system");
   };
 
   const cycleLanguage = () => {
