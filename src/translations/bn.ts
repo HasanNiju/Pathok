@@ -30,6 +30,65 @@ const bn: typeof en = {
     clear: "মুছুন",
     loading: "লোড হচ্ছে",
   },
+  home: {
+    topbar: {
+      subtitle: "শান্ত, ফোকাসড পড়ার জন্য সাজানো গল্প",
+    },
+    sidebar: {
+      subtitle: "পড়ার হোম",
+      cardTitle: "নতুন করে সাজানো",
+      cardDescription: "নতুন বই আবিষ্কার করুন, পছন্দের বই আবার দেখুন এবং পড়ার অভ্যাস বজায় রাখুন।",
+    },
+    hero: {
+      badge: "এই সপ্তাহে নতুন",
+      title: "যেখানেই থাকুন, সুন্দরভাবে পড়ুন।",
+      description:
+        "বই আবিষ্কার, যেখানে থেমে গেছেন সেখানেই ফিরে আসা, এবং আপনার পরের প্রিয় বই খুঁজে পাওয়ার জন্য একটি শান্ত ও প্রিমিয়াম হোম।",
+      primaryAction: "পড়া শুরু করুন",
+      secondaryAction: "সংগ্রহ দেখুন",
+      featuredLabel: "ফিচার্ড পিক",
+    },
+    search: {
+      title: "লাইব্রেরি খুঁজুন",
+      description: "শিরোনাম, লেখক বা মুড দিয়ে বই খুঁজুন।",
+      placeholder: "বই খুঁজুন",
+      empty: "এই অনুসন্ধানে কোনো বই মিলেনি।",
+    },
+    highlights: {
+      title: "পড়ার হাইলাইটস",
+      reads: "এই মাসে পাঠক",
+      aural: "শ্রবণ সম্পূর্ণতা",
+      favorite: "গড় রেটিং",
+    },
+    sections: {
+      continueReading: "পড়া চালিয়ে যান",
+      continueReadingDescription: "আপনার সাম্প্রতিক গল্পগুলো আবার শুরু করুন без কোনো বিরতি।",
+      latestBooks: "সর্বশেষ বই",
+      latestBooksDescription: "আপনার পরবর্তী সেশনের জন্য নতুন বই।",
+      trending: "এখন ট্রেন্ডিং",
+      trendingDescription: "পাঠকরা এখন যা আবিষ্কার করছে।",
+      popular: "জনপ্রিয় পিক",
+      popularDescription: "সাধারণত পছন্দ করা বই, যা সহজেই অদম্য।",
+      recommended: "আপনার জন্য সাজেস্টেড",
+      recommendedDescription: "আপনার স্বাদের ভিত্তিতে মনোযোগ দিয়ে বেছে নেওয়া বই।",
+      categories: "বিভাগে ব্রাউজ করুন",
+      categoriesDescription: "ফিকশন, ম memoir, ডিজাইন ও আরও অনেক কিছুতে ডুব দিন।",
+      recentlyAdded: "সম্প্রতি যোগ হয়েছে",
+      recentlyAddedDescription: "নতুন কণ্ঠস্বর ও গল্পের ধারাবাহিক প্রবাহ।",
+      viewAll: "সব দেখুন",
+    },
+    footer: {
+      title: "ধীর, সুন্দর পড়ার জন্য তৈরি।",
+      description: "পাঠক সুন্দর ডিজাইন, চিন্তাশীল আবিষ্কার এবং শান্ত পড়ার রীতিকে একত্রিত করেছে।",
+    },
+    nav: {
+      home: "হোম",
+      discover: "আবিষ্কার",
+      library: "লাইব্রেরি",
+      authors: "লেখক",
+      settings: "সেটিংস",
+    },
+  },
   auth: {
     nav: {
       login: "লগ ইন",

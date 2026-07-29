@@ -69,9 +69,10 @@ export function Topbar({ className }: TopbarProps) {
         className
       )}
     >
-      <span className="text-lg font-bold tracking-tight">
-        {t("shell.topbarPlaceholder")}
-      </span>
+      <div>
+        <p className="text-lg font-bold tracking-tight text-foreground">{t("app.name")}</p>
+        <p className="text-sm text-muted-foreground">{t("home.topbar.subtitle")}</p>
+      </div>
 
       <div className="flex items-center gap-2">
         <button

@@ -28,6 +28,65 @@ const en = {
     clear: "Clear",
     loading: "Loading",
   },
+  home: {
+    topbar: {
+      subtitle: "Curated stories for calm, focused reading",
+    },
+    sidebar: {
+      subtitle: "Reading home",
+      cardTitle: "Freshly curated",
+      cardDescription: "Discover new books, revisit favorites, and keep your reading streak going.",
+    },
+    hero: {
+      badge: "New this week",
+      title: "Read beautifully, anywhere you are.",
+      description:
+        "A calm, premium home for discovering books, picking up where you left off, and finding your next favorite read.",
+      primaryAction: "Start reading",
+      secondaryAction: "Explore collections",
+      featuredLabel: "Featured pick",
+    },
+    search: {
+      title: "Search the library",
+      description: "Find books by title, author, or mood.",
+      placeholder: "Search books",
+      empty: "No books matched that search yet.",
+    },
+    highlights: {
+      title: "Reading highlights",
+      reads: "Readers this month",
+      aural: "Listening completion",
+      favorite: "Average rating",
+    },
+    sections: {
+      continueReading: "Continue reading",
+      continueReadingDescription: "Resume your recent stories without losing momentum.",
+      latestBooks: "Latest books",
+      latestBooksDescription: "Freshly added titles for your next session.",
+      trending: "Trending now",
+      trendingDescription: "The books readers are discovering right now.",
+      popular: "Popular picks",
+      popularDescription: "Broadly loved books with effortless staying power.",
+      recommended: "Recommended for you",
+      recommendedDescription: "Thoughtfully matched reads based on your taste.",
+      categories: "Browse categories",
+      categoriesDescription: "Dive into fiction, memoir, design, and more.",
+      recentlyAdded: "Recently added",
+      recentlyAddedDescription: "A steady stream of new voices and stories.",
+      viewAll: "View all",
+    },
+    footer: {
+      title: "Built for slow, beautiful reading.",
+      description: "Pathok brings together elegant design, thoughtful discovery, and a calm reading ritual.",
+    },
+    nav: {
+      home: "Home",
+      discover: "Discover",
+      library: "Library",
+      authors: "Authors",
+      settings: "Settings",
+    },
+  },
   auth: {
     nav: {
       login: "Log in",
