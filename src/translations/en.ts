@@ -19,6 +19,6 @@ const en = {
   language: {
     label: "Language",
   },
-} as const;
+};
 
 export default en;
