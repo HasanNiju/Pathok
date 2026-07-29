@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Bookmark,
@@ -19,6 +20,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BookCard } from "@/components/ui/book-card";
+import { cn } from "@/lib/utils";
 import { getBookById, getRelatedBooks } from "@/data/books";
 
 interface BookDetailsPageProps {
@@ -28,6 +30,8 @@ interface BookDetailsPageProps {
 export function BookDetailsPage({ bookId }: BookDetailsPageProps) {
   const { t } = useTranslation();
   const book = getBookById(bookId);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [favorited, setFavorited] = useState(false);
 
   if (!book) {
     return (
@@ -71,13 +75,41 @@ export function BookDetailsPage({ bookId }: BookDetailsPageProps) {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button variant="primary" size="lg">
-                {t("book.details.continueReading")}
-              </Button>
+              <Link href={`/read/${book.id}`}>
+                <Button variant="primary" size="lg">
+                  {t("book.details.continueReading")}
+                </Button>
+              </Link>
               <Button variant="outline" size="lg">
                 {t("book.details.share")}
               </Button>
             </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full bg-background/80 px-3 py-2 text-sm text-muted-foreground">
+                <CalendarDays className="h-4 w-4" aria-hidden="true" />
+                {book.published}
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-background/80 px-3 py-2 text-sm text-muted-foreground">
+                <Languages className="h-4 w-4" aria-hidden="true" />
+                {book.language}
+              </div>
+            </div>
+
+            <Card className="mt-6 border-border/70 bg-background/70 p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{t("book.details.continueReading")}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Chapter 12 · 64% complete</p>
+                </div>
+                <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                  64%
+                </div>
+              </div>
+              <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-secondary">
+                <div className="h-full rounded-full bg-primary" style={{ width: "64%" }} />
+              </div>
+            </Card>
           </div>
 
           <div className="mx-auto w-full max-w-sm">
@@ -93,11 +125,25 @@ export function BookDetailsPage({ bookId }: BookDetailsPageProps) {
       <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <Card className="border-border/70 bg-card/90 p-6 sm:p-7">
           <div className="flex flex-wrap gap-3">
-            <button type="button" className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-2 text-sm text-foreground transition-colors hover:bg-secondary">
+            <button
+              type="button"
+              onClick={() => setBookmarked((value) => !value)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-2 text-sm transition-colors hover:bg-secondary",
+                bookmarked ? "border-primary bg-primary/10 text-primary" : "text-foreground"
+              )}
+            >
               <Bookmark className="h-4 w-4" aria-hidden="true" />
               {t("book.details.bookmark")}
             </button>
-            <button type="button" className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-2 text-sm text-foreground transition-colors hover:bg-secondary">
+            <button
+              type="button"
+              onClick={() => setFavorited((value) => !value)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-2 text-sm transition-colors hover:bg-secondary",
+                favorited ? "border-primary bg-primary/10 text-primary" : "text-foreground"
+              )}
+            >
               <Heart className="h-4 w-4" aria-hidden="true" />
               {t("book.details.favorite")}
             </button>
@@ -145,6 +191,22 @@ export function BookDetailsPage({ bookId }: BookDetailsPageProps) {
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
             <h2 className="text-lg font-semibold text-foreground">{t("book.details.reviews")}</h2>
           </div>
+
+          <div className="mt-4 rounded-2xl border border-border bg-secondary/70 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Reader rating</p>
+                <p className="text-sm text-muted-foreground">{book.reviews} {t("book.details.reviews")}</p>
+              </div>
+              <div className="text-2xl font-semibold text-foreground">{book.rating.toFixed(1)}</div>
+            </div>
+            <div className="mt-3 flex items-center gap-1 text-amber-500">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star key={index} className={cn("h-4 w-4", index < Math.round(book.rating) ? "fill-current" : "text-muted-foreground")} aria-hidden="true" />
+              ))}
+            </div>
+          </div>
+
           <div className="mt-4 space-y-3">
             {book.comments.map((comment) => (
               <div key={comment.id} className="rounded-2xl border border-border bg-background/70 p-4">

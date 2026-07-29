@@ -83,9 +83,11 @@ export function HomePage() {
               <Button variant="primary" size="lg">
                 {t("home.hero.primaryAction")}
               </Button>
-              <Button variant="outline" size="lg">
-                {t("home.hero.secondaryAction")}
-              </Button>
+              <Link href="/create-book">
+                <Button variant="outline" size="lg">
+                  {t("home.hero.secondaryAction")}
+                </Button>
+              </Link>
             </div>
           </div>
 
