@@ -21,6 +21,15 @@ const bn: typeof en = {
   language: {
     label: "ভাষা",
   },
+  common: {
+    close: "বন্ধ করুন",
+    dismiss: "খারিজ করুন",
+    previous: "পূর্ববর্তী",
+    next: "পরবর্তী",
+    searchPlaceholder: "খুঁজুন",
+    clear: "মুছুন",
+    loading: "লোড হচ্ছে",
+  },
 };
 
 export default bn;

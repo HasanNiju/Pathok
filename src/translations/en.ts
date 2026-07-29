@@ -19,6 +19,15 @@ const en = {
   language: {
     label: "Language",
   },
+  common: {
+    close: "Close",
+    dismiss: "Dismiss",
+    previous: "Previous",
+    next: "Next",
+    searchPlaceholder: "Search",
+    clear: "Clear",
+    loading: "Loading",
+  },
 };
 
 export default en;
