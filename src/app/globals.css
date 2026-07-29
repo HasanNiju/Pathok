@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design tokens for Pathok.
+  Light theme = "Warm Off White" background per PRD.
+  Dark theme  = "Near Black" background per PRD.
+  Primary     = Blue in both themes.
+  Radius      = Large, single source of truth for every rounded corner.
+  All values are HSL triplets (no hex) so Tailwind's hsl(var(--x)) works.
+*/
+@layer base {
+  :root {
+    --background: 40 33% 98%;        /* warm off white */
+    --foreground: 222 30% 12%;       /* near-black text on light bg */
+
+    --card: 40 33% 100%;
+    --card-foreground: 222 30% 12%;
+
+    --primary: 217 91% 60%;          /* blue */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 222 30% 15%;
+
+    --muted: 210 16% 93%;
+    --muted-foreground: 220 10% 40%;
+
+    --accent: 217 91% 95%;
+    --accent-foreground: 217 91% 30%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 88%;
+    --input: 220 14% 88%;
+    --ring: 217 91% 60%;
+
+    /* Large radius per design system */
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 222 25% 6%;        /* near black */
+    --foreground: 210 20% 96%;
+
+    --card: 222 22% 9%;
+    --card-foreground: 210 20% 96%;
+
+    --primary: 217 91% 65%;
+    --primary-foreground: 222 30% 8%;
+
+    --secondary: 222 16% 14%;
+    --secondary-foreground: 210 20% 92%;
+
+    --muted: 222 16% 14%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 217 40% 18%;
+    --accent-foreground: 217 91% 80%;
+
+    --destructive: 0 63% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 222 16% 18%;
+    --input: 222 16% 18%;
+    --ring: 217 91% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    /* Large line-height + comfortable body reading per design system */
+    line-height: 1.7;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold tracking-tight text-foreground;
+    line-height: 1.2;
+  }
+
+  /* Respect users who prefer reduced motion — animations stay soft/short
+     everywhere else, but are disabled entirely here. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Visible keyboard focus ring everywhere, accessible by default */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
