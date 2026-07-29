@@ -207,7 +207,9 @@ export function HomePage() {
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {latestBooks.map((book) => (
-            <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            <Link key={book.id} href={`/book/${book.id}`}>
+              <BookCard title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            </Link>
           ))}
         </div>
       </section>
@@ -221,7 +223,9 @@ export function HomePage() {
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {trendingBooks.map((book) => (
-            <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            <Link key={book.id} href={`/book/${book.id}`}>
+              <BookCard title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            </Link>
           ))}
         </div>
       </section>
@@ -235,7 +239,9 @@ export function HomePage() {
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {popularBooks.map((book) => (
-            <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            <Link key={book.id} href={`/book/${book.id}`}>
+              <BookCard title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            </Link>
           ))}
         </div>
       </section>
@@ -249,7 +255,9 @@ export function HomePage() {
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {recommendedBooks.map((book) => (
-            <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            <Link key={book.id} href={`/book/${book.id}`}>
+              <BookCard title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            </Link>
           ))}
         </div>
       </section>
@@ -285,7 +293,9 @@ export function HomePage() {
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {recentlyAdded.map((book) => (
-            <BookCard key={book.id} title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            <Link key={book.id} href={`/book/${book.id}`}>
+              <BookCard title={book.title} author={book.author} coverUrl={book.coverUrl} />
+            </Link>
           ))}
         </div>
       </section>

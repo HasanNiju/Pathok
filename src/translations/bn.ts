@@ -89,6 +89,25 @@ const bn: typeof en = {
       settings: "সেটিংস",
     },
   },
+  book: {
+    details: {
+      featuredLabel: "এখন পড়ছেন",
+      reviews: "রিভিউ",
+      description: "বর্ণনা",
+      author: "লেখক",
+      genre: "ধরন",
+      published: "প্রকাশিত",
+      language: "ভাষা",
+      bookmark: "বুকমার্ক",
+      favorite: "পছন্দের",
+      share: "শেয়ার",
+      continueReading: "পড়া চালিয়ে যান",
+      relatedBooks: "সম্পর্কিত বই",
+      relatedBooksDescription: "এই বইয়ের সাথে মানানসই আরও বই।",
+      notFound: "বইটি পাওয়া যায়নি",
+      notFoundDescription: "অনুরোধকৃত বই লোড করা যায়নি।",
+    },
+  },
   auth: {
     nav: {
       login: "লগ ইন",

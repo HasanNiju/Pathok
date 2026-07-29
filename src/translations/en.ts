@@ -87,6 +87,25 @@ const en = {
       settings: "Settings",
     },
   },
+  book: {
+    details: {
+      featuredLabel: "Now reading",
+      reviews: "reviews",
+      description: "Description",
+      author: "Author",
+      genre: "Genre",
+      published: "Published",
+      language: "Language",
+      bookmark: "Bookmark",
+      favorite: "Favorite",
+      share: "Share",
+      continueReading: "Continue reading",
+      relatedBooks: "Related books",
+      relatedBooksDescription: "More books that pair well with this one.",
+      notFound: "Book not found",
+      notFoundDescription: "The requested book could not be loaded.",
+    },
+  },
   auth: {
     nav: {
       login: "Log in",
