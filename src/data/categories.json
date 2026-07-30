@@ -1,0 +1,86 @@
+[
+  {
+    "slug": "fiction",
+    "name": "Fiction",
+    "nameBn": "কল্পকাহিনী",
+    "description": "Stories that stay with you long after the last page.",
+    "icon": "BookOpen"
+  },
+  {
+    "slug": "non-fiction",
+    "name": "Non-fiction",
+    "nameBn": "নন-ফিকশন",
+    "description": "Real people, real ideas, real events.",
+    "icon": "Compass"
+  },
+  {
+    "slug": "sci-fi",
+    "name": "Science Fiction",
+    "nameBn": "সায়েন্স ফিকশন",
+    "description": "Tomorrow's technology, today's imagination.",
+    "icon": "Rocket"
+  },
+  {
+    "slug": "fantasy",
+    "name": "Fantasy",
+    "nameBn": "ফ্যান্টাসি",
+    "description": "Worlds built from wonder and magic.",
+    "icon": "Wand2"
+  },
+  {
+    "slug": "biography",
+    "name": "Biography",
+    "nameBn": "জীবনী",
+    "description": "Lives worth knowing, told in full.",
+    "icon": "UserRound"
+  },
+  {
+    "slug": "business",
+    "name": "Business",
+    "nameBn": "ব্যবসা",
+    "description": "Ideas for building and leading well.",
+    "icon": "Briefcase"
+  },
+  {
+    "slug": "self-help",
+    "name": "Self-Help",
+    "nameBn": "সেলফ-হেল্প",
+    "description": "Small habits, better days.",
+    "icon": "Sparkles"
+  },
+  {
+    "slug": "history",
+    "name": "History",
+    "nameBn": "ইতিহাস",
+    "description": "The past, explained clearly.",
+    "icon": "Landmark"
+  },
+  {
+    "slug": "poetry",
+    "name": "Poetry",
+    "nameBn": "কবিতা",
+    "description": "Language distilled to its essence.",
+    "icon": "Feather"
+  },
+  {
+    "slug": "mystery",
+    "name": "Mystery & Thriller",
+    "nameBn": "রহস্য ও থ্রিলার",
+    "description": "Puzzles you won't want to put down.",
+    "icon": "Siren"
+  },
+  {
+    "slug": "romance",
+    "name": "Romance",
+    "nameBn": "রোমান্স",
+    "description": "Hearts, held gently and not so gently.",
+    "icon": "Heart"
+  },
+  {
+    "slug": "bangla-classics",
+    "name": "Bangla Classics",
+    "nameBn": "বাংলা ক্লাসিক",
+    "description": "Timeless works of Bangla literature.",
+    "icon": "Library"
+  }
+]

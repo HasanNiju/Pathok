@@ -1,0 +1,237 @@
+/**
+ * Bangla dictionary. Key shape must always mirror en.ts exactly —
+ * the translation type is derived from English (see translation-context.tsx).
+ */
+import type en from "./en";
+
+const bn: typeof en = {
+  app: {
+    name: "পাঠক",
+  },
+  shell: {
+    comingSoon: "এই অংশটি এখনো তৈরি হয়নি",
+  },
+  nav: {
+    home: "হোম",
+    search: "খুঁজুন",
+    categories: "ক্যাটাগরি",
+    continueReading: "পড়া চালিয়ে যান",
+    create: "তৈরি করুন",
+    menu: "মেনু",
+  },
+  theme: {
+    light: "হালকা",
+    dark: "গাঢ়",
+    system: "সিস্টেম",
+  },
+  language: {
+    label: "ভাষা",
+  },
+  common: {
+    close: "বন্ধ করুন",
+    dismiss: "খারিজ করুন",
+    previous: "পূর্ববর্তী",
+    next: "পরবর্তী",
+    searchPlaceholder: "খুঁজুন",
+    clear: "মুছুন",
+    loading: "লোড হচ্ছে",
+  },
+  auth: {
+    nav: {
+      login: "লগ ইন",
+      logout: "লগ আউট",
+      account: "অ্যাকাউন্ট",
+    },
+    login: {
+      title: "আবার স্বাগতম",
+      description: "পড়া চালিয়ে যেতে লগ ইন করুন।",
+      emailLabel: "ইমেইল",
+      emailPlaceholder: "you@example.com",
+      passwordLabel: "পাসওয়ার্ড",
+      passwordPlaceholder: "আপনার পাসওয়ার্ড লিখুন",
+      rememberMe: "মনে রাখুন",
+      forgotPassword: "পাসওয়ার্ড ভুলে গেছেন?",
+      submit: "লগ ইন",
+      noAccount: "অ্যাকাউন্ট নেই?",
+      signupLink: "সাইন আপ করুন",
+      demoAccounts: "ডেমো অ্যাকাউন্ট: admin@pathok.app / Admin@123 · user@pathok.app / User@123",
+    },
+    signup: {
+      title: "অ্যাকাউন্ট তৈরি করুন",
+      description: "কয়েক সেকেন্ডে পড়া শুরু করুন।",
+      nameLabel: "পুরো নাম",
+      namePlaceholder: "আপনার নাম",
+      emailLabel: "ইমেইল",
+      emailPlaceholder: "you@example.com",
+      passwordLabel: "পাসওয়ার্ড",
+      passwordPlaceholder: "একটি পাসওয়ার্ড তৈরি করুন",
+      confirmPasswordLabel: "পাসওয়ার্ড নিশ্চিত করুন",
+      confirmPasswordPlaceholder: "পাসওয়ার্ড আবার লিখুন",
+      submit: "সাইন আপ",
+      haveAccount: "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+      loginLink: "লগ ইন করুন",
+    },
+    forgotPassword: {
+      title: "পাসওয়ার্ড রিসেট করুন",
+      description: "আপনার ইমেইল দিন, আমরা একটি ভেরিফিকেশন কোড পাঠাব।",
+      emailLabel: "ইমেইল",
+      emailPlaceholder: "you@example.com",
+      submit: "কোড পাঠান",
+      backToLogin: "লগ ইনে ফিরে যান",
+    },
+    resetPassword: {
+      title: "নতুন পাসওয়ার্ড সেট করুন",
+      description: "আপনার অ্যাকাউন্টের জন্য একটি নতুন পাসওয়ার্ড বেছে নিন।",
+      newPasswordLabel: "নতুন পাসওয়ার্ড",
+      confirmPasswordLabel: "নতুন পাসওয়ার্ড নিশ্চিত করুন",
+      submit: "পাসওয়ার্ড রিসেট করুন",
+    },
+    otp: {
+      title: "ভেরিফিকেশন কোড লিখুন",
+      description: "আমরা {email}-এ একটি ৬-সংখ্যার কোড পাঠিয়েছি।",
+      verify: "ভেরিফাই করুন",
+      resend: "কোড আবার পাঠান",
+      resendIn: "{seconds} সেকেন্ডে আবার পাঠান",
+      changeEmail: "ভুল ইমেইল?",
+      demoHint: "ডেমো মোড — কোনো প্রকৃত ইমেইল পাঠানো হয় না। আপনার কোড নোটিফিকেশনে দেখানো হয়েছে।",
+    },
+    verifyEmail: {
+      title: "ইমেইল ভেরিফাই হয়েছে",
+      description: "আপনার ইমেইল সফলভাবে ভেরিফাই হয়েছে। এখন আপনি লগ ইন করতে পারেন।",
+      continueButton: "লগ ইনে যান",
+    },
+    account: {
+      title: "অ্যাকাউন্ট",
+      roleLabel: "ভূমিকা",
+      statusLabel: "ইমেইল অবস্থা",
+      verified: "ভেরিফাইড",
+      notVerified: "ভেরিফাই হয়নি",
+      logout: "লগ আউট",
+      adminPanelTitle: "অ্যাডমিন টুলস",
+      adminPanelDescription: "এই অংশটি শুধুমাত্র অ্যাডমিন ভূমিকার জন্য দৃশ্যমান।",
+    },
+    roles: {
+      guest: "গেস্ট",
+      user: "পাঠক",
+      admin: "অ্যাডমিন",
+    },
+    password: {
+      show: "পাসওয়ার্ড দেখান",
+      hide: "পাসওয়ার্ড লুকান",
+      strength: "শক্তি",
+      strengthLabels: {
+        weak: "দুর্বল",
+        fair: "মোটামুটি",
+        good: "ভালো",
+        strong: "শক্তিশালী",
+      },
+    },
+    validation: {
+      required: "এই ঘরটি আবশ্যক",
+      nameRequired: "আপনার নাম লিখুন",
+      emailInvalid: "একটি সঠিক ইমেইল ঠিকানা দিন",
+      passwordWeak: "৮+ অক্ষর, বড়-ছোট হাতের অক্ষর ও একটি সংখ্যা ব্যবহার করুন",
+      passwordMismatch: "পাসওয়ার্ড মিলছে না",
+      otpInvalid: "৬-সংখ্যার কোড লিখুন",
+    },
+    errors: {
+      invalidCredentials: "ভুল ইমেইল অথবা পাসওয়ার্ড",
+      emailExists: "এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট আছে",
+      emailNotVerified: "লগ ইন করার আগে আপনার ইমেইল ভেরিফাই করুন",
+      userNotFound: "এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি",
+      invalidOtp: "আপনি যে কোডটি দিয়েছেন তা সঠিক নয়",
+      otpExpired: "এই কোডের মেয়াদ শেষ হয়ে গেছে। আবার একটি নিন",
+      otpNotVerified: "প্রথমে কোডটি ভেরিফাই করুন",
+      generic: "কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন",
+    },
+    toasts: {
+      signupSuccess: "অ্যাকাউন্ট তৈরি হয়েছে — চালিয়ে যেতে ইমেইল ভেরিফাই করুন",
+      otpSent: "ভেরিফিকেশন কোড পাঠানো হয়েছে",
+      otpResent: "একটি নতুন কোড পাঠানো হয়েছে",
+      emailVerified: "ইমেইল সফলভাবে ভেরিফাই হয়েছে",
+      passwordResetSuccess: "পাসওয়ার্ড রিসেট হয়েছে — এখন লগ ইন করতে পারেন",
+      loggedOut: "লগ আউট হয়েছে",
+      welcomeBack: "আবার স্বাগতম",
+    },
+  },
+  home: {
+    hero: {
+      greetingGuest: "পাঠকে স্বাগতম",
+      greetingUser: "আবার স্বাগতম, {name}",
+      subtitle: "পড়ার জন্য একটি শান্ত জায়গা — সুন্দরভাবে সাজানো বই, যেখানে রেখেছিলেন সেখান থেকেই আবার শুরু করুন।",
+    },
+    search: {
+      placeholder: "শিরোনাম, লেখক বা ক্যাটাগরি দিয়ে খুঁজুন",
+      resultsTitle: "ফলাফল",
+      resultsCount: "{count}টি বই পাওয়া গেছে",
+      noResultsTitle: "কোনো বই পাওয়া যায়নি",
+      noResultsDescription: "অন্য একটি শিরোনাম, লেখক বা ক্যাটাগরি দিয়ে চেষ্টা করুন।",
+      clearFilter: "মুছে ফেলুন",
+    },
+    continueReading: {
+      title: "পড়া চালিয়ে যান",
+      subtitle: "যেখানে রেখেছিলেন সেখান থেকেই আবার শুরু করুন।",
+      emptyGuestTitle: "পড়া চালিয়ে যেতে লগ ইন করুন",
+      emptyGuestDescription: "আপনার পড়ার অগ্রগতি প্রতিটি ডিভাইসে আপনার অ্যাকাউন্টে সংরক্ষিত থাকে।",
+      emptyGuestCta: "লগ ইন",
+      emptyUserTitle: "এখনো কিছু পড়া শুরু হয়নি",
+      emptyUserDescription: "আপনি যে বইগুলো পড়া শুরু করবেন সেগুলো এখানে দেখা যাবে।",
+      progressLabel: "{progress}% সম্পন্ন",
+    },
+    latest: {
+      title: "সাম্প্রতিক বই",
+      subtitle: "সদ্য প্রকাশিত।",
+    },
+    trending: {
+      title: "এখন ট্রেন্ডিং",
+      subtitle: "এই সপ্তাহে সবাই যা পড়ছেন।",
+    },
+    popular: {
+      title: "জনপ্রিয়",
+      subtitle: "সর্বকালের পাঠকপ্রিয় বই।",
+    },
+    recommended: {
+      title: "আপনার জন্য প্রস্তাবিত",
+      subtitle: "আপনার পছন্দ অনুযায়ী বাছাই করা।",
+    },
+    recentlyAdded: {
+      title: "সম্প্রতি যুক্ত হয়েছে",
+      subtitle: "পাঠকের লাইব্রেরিতে সদ্য যুক্ত।",
+    },
+    categories: {
+      title: "ক্যাটাগরি অনুযায়ী দেখুন",
+      subtitle: "আপনার পরবর্তী পছন্দের ধরন খুঁজে নিন।",
+      bookCount: "{count}টি বই",
+    },
+    minutesRead: "{minutes} মিনিটের পড়া",
+  },
+  footer: {
+    tagline: "পড়ার জন্য একটি সুন্দর, সহজ জায়গা।",
+    columns: {
+      explore: "এক্সপ্লোর",
+      company: "কোম্পানি",
+      legal: "আইনি",
+    },
+    links: {
+      home: "হোম",
+      categories: "ক্যাটাগরি",
+      trending: "ট্রেন্ডিং",
+      about: "আমাদের সম্পর্কে",
+      careers: "ক্যারিয়ার",
+      contact: "যোগাযোগ",
+      privacy: "গোপনীয়তা নীতি",
+      terms: "ব্যবহারের শর্তাবলী",
+    },
+    copyright: "© {year} পাঠক। সর্বস্বত্ব সংরক্ষিত।",
+  },
+  create: {
+    title: "একটি বই আপলোড করুন",
+    description: "পাঠক লাইব্রেরিতে একটি নতুন বই যুক্ত করুন।",
+    comingSoonTitle: "বই আপলোড শীঘ্রই আসছে",
+    comingSoonDescription:
+      "আপলোড এবং টেক্সট এক্সট্রাকশন প্রক্রিয়াটি অ্যাডমিন মডিউলে তৈরি করা হবে — এই পৃষ্ঠাটি তার জন্য সংরক্ষিত।",
+    backHome: "হোমে ফিরে যান",
+  },
+};
+
+export default bn;
