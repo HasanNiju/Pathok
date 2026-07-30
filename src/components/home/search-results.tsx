@@ -19,7 +19,7 @@ interface SearchResultsProps {
 
 export function SearchResults({ query, categorySlug, onClearFilter }: SearchResultsProps) {
   const { t, language } = useTranslation();
-  const handleOpenBook = useOpenBook();
+  const openBook = useOpenBook();
 
   const category = categorySlug ? getCategoryBySlug(categorySlug) : undefined;
   const normalizedQuery = query.trim().toLowerCase();
@@ -70,7 +70,7 @@ export function SearchResults({ query, categorySlug, onClearFilter }: SearchResu
               title={book.title}
               author={book.author}
               coverUrl={book.coverUrl}
-              onClick={handleOpenBook}
+              onClick={() => openBook(book.id)}
             />
           ))}
         </motion.div>

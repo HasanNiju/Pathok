@@ -27,7 +27,7 @@ interface BookRailProps {
 export function BookRail({ id, title, subtitle, books, progressByBookId }: BookRailProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
-  const handleOpenBook = useOpenBook();
+  const openBook = useOpenBook();
 
   if (books.length === 0) return null;
 
@@ -82,7 +82,7 @@ export function BookRail({ id, title, subtitle, books, progressByBookId }: BookR
               author={book.author}
               coverUrl={book.coverUrl}
               progress={progressByBookId?.[book.id]}
-              onClick={handleOpenBook}
+              onClick={() => openBook(book.id)}
             />
           </motion.div>
         ))}

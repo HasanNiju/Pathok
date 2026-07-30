@@ -1,0 +1,450 @@
+[
+  {
+    "id": "rv-b01-01",
+    "bookId": "b01",
+    "userName": "Fatima Zahra",
+    "rating": 4,
+    "comment": "Beautifully written, though the pacing dipped in the middle. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-25"
+  },
+  {
+    "id": "rv-b01-02",
+    "bookId": "b01",
+    "userName": "Liam O'Connell",
+    "rating": 5,
+    "comment": "Couldn't put it down \u2014 finished it in two sittings. The dialogue felt very real.",
+    "createdAt": "2026-07-23"
+  },
+  {
+    "id": "rv-b02-01",
+    "bookId": "b02",
+    "userName": "Ayesha Rahman",
+    "rating": 4,
+    "comment": "A solid, engrossing read. The dialogue felt very real.",
+    "createdAt": "2026-07-28"
+  },
+  {
+    "id": "rv-b02-02",
+    "bookId": "b02",
+    "userName": "Marcus Webb",
+    "rating": 4,
+    "comment": "Exactly the kind of story I needed right now. Perfect for a slow weekend.",
+    "createdAt": "2026-07-23"
+  },
+  {
+    "id": "rv-b02-03",
+    "bookId": "b02",
+    "userName": "Noah Fischer",
+    "rating": 3,
+    "comment": "Not quite what I expected, but I still enjoyed it. A quiet, thoughtful book.",
+    "createdAt": "2026-07-18"
+  },
+  {
+    "id": "rv-b03-01",
+    "bookId": "b03",
+    "userName": "Marcus Webb",
+    "rating": 5,
+    "comment": "This book stayed with me long after I finished it. The middle third could have been tighter.",
+    "createdAt": "2026-07-26"
+  },
+  {
+    "id": "rv-b03-02",
+    "bookId": "b03",
+    "userName": "Liam O'Connell",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-20"
+  },
+  {
+    "id": "rv-b03-03",
+    "bookId": "b03",
+    "userName": "Amara Okafor",
+    "rating": 5,
+    "comment": "This book stayed with me long after I finished it. The middle third could have been tighter.",
+    "createdAt": "2026-07-18"
+  },
+  {
+    "id": "rv-b03-04",
+    "bookId": "b03",
+    "userName": "Priya Nair",
+    "rating": 4,
+    "comment": "Exactly the kind of story I needed right now. Wish there was a sequel already.",
+    "createdAt": "2026-07-13"
+  },
+  {
+    "id": "rv-b04-01",
+    "bookId": "b04",
+    "userName": "Grace Lin",
+    "rating": 4,
+    "comment": "A solid, engrossing read. The dialogue felt very real.",
+    "createdAt": "2026-07-26"
+  },
+  {
+    "id": "rv-b04-02",
+    "bookId": "b04",
+    "userName": "Sofia Alvarez",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. Wish there was a sequel already.",
+    "createdAt": "2026-07-23"
+  },
+  {
+    "id": "rv-b04-03",
+    "bookId": "b04",
+    "userName": "Tomasz Nowak",
+    "rating": 3,
+    "comment": "Not quite what I expected, but I still enjoyed it. A quiet, thoughtful book.",
+    "createdAt": "2026-07-18"
+  },
+  {
+    "id": "rv-b04-04",
+    "bookId": "b04",
+    "userName": "Jonas Berg",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-11"
+  },
+  {
+    "id": "rv-b04-05",
+    "bookId": "b04",
+    "userName": "Marcus Webb",
+    "rating": 4,
+    "comment": "Beautifully written, though the pacing dipped in the middle. A quiet, thoughtful book.",
+    "createdAt": "2026-07-06"
+  },
+  {
+    "id": "rv-b05-01",
+    "bookId": "b05",
+    "userName": "Elena Petrova",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Highly recommend to anyone who liked the author's earlier work.",
+    "createdAt": "2026-07-26"
+  },
+  {
+    "id": "rv-b05-02",
+    "bookId": "b05",
+    "userName": "Noah Fischer",
+    "rating": 3,
+    "comment": "Good characters, predictable plot. I'll be thinking about that ending for a while.",
+    "createdAt": "2026-07-21"
+  },
+  {
+    "id": "rv-b06-01",
+    "bookId": "b06",
+    "userName": "Fatima Zahra",
+    "rating": 5,
+    "comment": "Couldn't put it down \u2014 finished it in two sittings. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-25"
+  },
+  {
+    "id": "rv-b06-02",
+    "bookId": "b06",
+    "userName": "Noah Fischer",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-21"
+  },
+  {
+    "id": "rv-b06-03",
+    "bookId": "b06",
+    "userName": "Daniel Cho",
+    "rating": 4,
+    "comment": "Exactly the kind of story I needed right now. I'll be thinking about that ending for a while.",
+    "createdAt": "2026-07-17"
+  },
+  {
+    "id": "rv-b07-01",
+    "bookId": "b07",
+    "userName": "Noah Fischer",
+    "rating": 3,
+    "comment": "Good characters, predictable plot. A quiet, thoughtful book.",
+    "createdAt": "2026-07-26"
+  },
+  {
+    "id": "rv-b07-02",
+    "bookId": "b07",
+    "userName": "Elena Petrova",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. I'll be thinking about that ending for a while.",
+    "createdAt": "2026-07-23"
+  },
+  {
+    "id": "rv-b07-03",
+    "bookId": "b07",
+    "userName": "Ibrahim Hussain",
+    "rating": 5,
+    "comment": "Couldn't put it down \u2014 finished it in two sittings. A quiet, thoughtful book.",
+    "createdAt": "2026-07-16"
+  },
+  {
+    "id": "rv-b07-04",
+    "bookId": "b07",
+    "userName": "Amara Okafor",
+    "rating": 5,
+    "comment": "One of the best things I've read this year. I'll be thinking about that ending for a while.",
+    "createdAt": "2026-07-13"
+  },
+  {
+    "id": "rv-b08-01",
+    "bookId": "b08",
+    "userName": "Sofia Alvarez",
+    "rating": 5,
+    "comment": "The prose alone is worth the read. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-27"
+  },
+  {
+    "id": "rv-b08-02",
+    "bookId": "b08",
+    "userName": "Liam O'Connell",
+    "rating": 4,
+    "comment": "Exactly the kind of story I needed right now. Wish there was a sequel already.",
+    "createdAt": "2026-07-20"
+  },
+  {
+    "id": "rv-b08-03",
+    "bookId": "b08",
+    "userName": "Ruma Chowdhury",
+    "rating": 5,
+    "comment": "Couldn't put it down \u2014 finished it in two sittings. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-18"
+  },
+  {
+    "id": "rv-b08-04",
+    "bookId": "b08",
+    "userName": "Noah Fischer",
+    "rating": 5,
+    "comment": "One of the best things I've read this year. Wish there was a sequel already.",
+    "createdAt": "2026-07-13"
+  },
+  {
+    "id": "rv-b08-05",
+    "bookId": "b08",
+    "userName": "Priya Nair",
+    "rating": 5,
+    "comment": "One of the best things I've read this year. The dialogue felt very real.",
+    "createdAt": "2026-07-06"
+  },
+  {
+    "id": "rv-b09-01",
+    "bookId": "b09",
+    "userName": "Grace Lin",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. Perfect for a slow weekend.",
+    "createdAt": "2026-07-25"
+  },
+  {
+    "id": "rv-b09-02",
+    "bookId": "b09",
+    "userName": "Marcus Webb",
+    "rating": 3,
+    "comment": "Good characters, predictable plot. The middle third could have been tighter.",
+    "createdAt": "2026-07-22"
+  },
+  {
+    "id": "rv-b10-01",
+    "bookId": "b10",
+    "userName": "Daniel Cho",
+    "rating": 5,
+    "comment": "This book stayed with me long after I finished it. Wish there was a sequel already.",
+    "createdAt": "2026-07-28"
+  },
+  {
+    "id": "rv-b10-02",
+    "bookId": "b10",
+    "userName": "Sofia Alvarez",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. I'll be thinking about that ending for a while.",
+    "createdAt": "2026-07-22"
+  },
+  {
+    "id": "rv-b10-03",
+    "bookId": "b10",
+    "userName": "Liam O'Connell",
+    "rating": 5,
+    "comment": "The prose alone is worth the read. Wish there was a sequel already.",
+    "createdAt": "2026-07-17"
+  },
+  {
+    "id": "rv-b11-01",
+    "bookId": "b11",
+    "userName": "Elena Petrova",
+    "rating": 5,
+    "comment": "The prose alone is worth the read. Perfect for a slow weekend.",
+    "createdAt": "2026-07-25"
+  },
+  {
+    "id": "rv-b11-02",
+    "bookId": "b11",
+    "userName": "Grace Lin",
+    "rating": 5,
+    "comment": "One of the best things I've read this year. A quiet, thoughtful book.",
+    "createdAt": "2026-07-20"
+  },
+  {
+    "id": "rv-b11-03",
+    "bookId": "b11",
+    "userName": "Daniel Cho",
+    "rating": 4,
+    "comment": "Exactly the kind of story I needed right now. A quiet, thoughtful book.",
+    "createdAt": "2026-07-15"
+  },
+  {
+    "id": "rv-b11-04",
+    "bookId": "b11",
+    "userName": "Ruma Chowdhury",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-11"
+  },
+  {
+    "id": "rv-b12-01",
+    "bookId": "b12",
+    "userName": "Priya Nair",
+    "rating": 4,
+    "comment": "Beautifully written, though the pacing dipped in the middle. I'll be thinking about that ending for a while.",
+    "createdAt": "2026-07-26"
+  },
+  {
+    "id": "rv-b12-02",
+    "bookId": "b12",
+    "userName": "Ibrahim Hussain",
+    "rating": 3,
+    "comment": "Good characters, predictable plot. The dialogue felt very real.",
+    "createdAt": "2026-07-23"
+  },
+  {
+    "id": "rv-b12-03",
+    "bookId": "b12",
+    "userName": "Jonas Berg",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. The dialogue felt very real.",
+    "createdAt": "2026-07-16"
+  },
+  {
+    "id": "rv-b12-04",
+    "bookId": "b12",
+    "userName": "Liam O'Connell",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. I'll be thinking about that ending for a while.",
+    "createdAt": "2026-07-10"
+  },
+  {
+    "id": "rv-b12-05",
+    "bookId": "b12",
+    "userName": "Ruma Chowdhury",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-07"
+  },
+  {
+    "id": "rv-b13-01",
+    "bookId": "b13",
+    "userName": "Marcus Webb",
+    "rating": 4,
+    "comment": "Beautifully written, though the pacing dipped in the middle. The middle third could have been tighter.",
+    "createdAt": "2026-07-28"
+  },
+  {
+    "id": "rv-b13-02",
+    "bookId": "b13",
+    "userName": "Amara Okafor",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Perfect for a slow weekend.",
+    "createdAt": "2026-07-23"
+  },
+  {
+    "id": "rv-b14-01",
+    "bookId": "b14",
+    "userName": "Priya Nair",
+    "rating": 5,
+    "comment": "Couldn't put it down \u2014 finished it in two sittings. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-27"
+  },
+  {
+    "id": "rv-b14-02",
+    "bookId": "b14",
+    "userName": "Sofia Alvarez",
+    "rating": 3,
+    "comment": "Not quite what I expected, but I still enjoyed it. The dialogue felt very real.",
+    "createdAt": "2026-07-22"
+  },
+  {
+    "id": "rv-b14-03",
+    "bookId": "b14",
+    "userName": "Liam O'Connell",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Highly recommend to anyone who liked the author's earlier work.",
+    "createdAt": "2026-07-18"
+  },
+  {
+    "id": "rv-b15-01",
+    "bookId": "b15",
+    "userName": "Ibrahim Hussain",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. The middle third could have been tighter.",
+    "createdAt": "2026-07-25"
+  },
+  {
+    "id": "rv-b15-02",
+    "bookId": "b15",
+    "userName": "Daniel Cho",
+    "rating": 5,
+    "comment": "One of the best things I've read this year. The middle third could have been tighter.",
+    "createdAt": "2026-07-20"
+  },
+  {
+    "id": "rv-b15-03",
+    "bookId": "b15",
+    "userName": "Jonas Berg",
+    "rating": 3,
+    "comment": "Started strong but the ending felt rushed. Wish there was a sequel already.",
+    "createdAt": "2026-07-16"
+  },
+  {
+    "id": "rv-b15-04",
+    "bookId": "b15",
+    "userName": "Tomasz Nowak",
+    "rating": 5,
+    "comment": "Couldn't put it down \u2014 finished it in two sittings. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-10"
+  },
+  {
+    "id": "rv-b16-01",
+    "bookId": "b16",
+    "userName": "Liam O'Connell",
+    "rating": 4,
+    "comment": "Beautifully written, though the pacing dipped in the middle. A quiet, thoughtful book.",
+    "createdAt": "2026-07-26"
+  },
+  {
+    "id": "rv-b16-02",
+    "bookId": "b16",
+    "userName": "Marcus Webb",
+    "rating": 4,
+    "comment": "A solid, engrossing read. Wish there was a sequel already.",
+    "createdAt": "2026-07-22"
+  },
+  {
+    "id": "rv-b16-03",
+    "bookId": "b16",
+    "userName": "Grace Lin",
+    "rating": 3,
+    "comment": "Good characters, predictable plot. A quiet, thoughtful book.",
+    "createdAt": "2026-07-16"
+  },
+  {
+    "id": "rv-b16-04",
+    "bookId": "b16",
+    "userName": "Jonas Berg",
+    "rating": 4,
+    "comment": "Beautifully written, though the pacing dipped in the middle. Read it in one weekend and don't regret it.",
+    "createdAt": "2026-07-11"
+  },
+  {
+    "id": "rv-b16-05",
+    "bookId": "b16",
+    "userName": "Fatima Zahra",
+    "rating": 5,
+    "comment": "The prose alone is worth the read. Highly recommend to anyone who liked the author's earlier work.",
+    "createdAt": "2026-07-05"
+  }
+]

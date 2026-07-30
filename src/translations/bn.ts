@@ -26,6 +26,8 @@ const bn: typeof en = {
   },
   language: {
     label: "ভাষা",
+    en: "ইংরেজি",
+    bn: "বাংলা",
   },
   common: {
     close: "বন্ধ করুন",
@@ -231,6 +233,67 @@ const bn: typeof en = {
     comingSoonDescription:
       "আপলোড এবং টেক্সট এক্সট্রাকশন প্রক্রিয়াটি অ্যাডমিন মডিউলে তৈরি করা হবে — এই পৃষ্ঠাটি তার জন্য সংরক্ষিত।",
     backHome: "হোমে ফিরে যান",
+  },
+  bookDetails: {
+    actions: {
+      startReading: "পড়া শুরু করুন",
+      continueReading: "পড়া চালিয়ে যান — {progress}%",
+      addFavorite: "প্রিয় তালিকায় যোগ করুন",
+      removeFavorite: "প্রিয় তালিকা থেকে সরান",
+      addedToFavorites: "প্রিয় তালিকায় যোগ হয়েছে",
+      removedFromFavorites: "প্রিয় তালিকা থেকে সরানো হয়েছে",
+      addBookmark: "এই বইটি বুকমার্ক করুন",
+      removeBookmark: "বুকমার্ক সরান",
+      addedBookmark: "বুকমার্ক করা হয়েছে",
+      removedBookmark: "বুকমার্ক সরানো হয়েছে",
+      share: "শেয়ার করুন",
+      linkCopied: "লিংক কপি হয়েছে",
+      shareFailed: "লিংকটি শেয়ার করা যায়নি",
+      loginRequired: "এটি করতে লগ ইন করুন",
+    },
+    metadata: {
+      title: "বিস্তারিত",
+      author: "লেখক",
+      genre: "ধরন",
+      publisher: "প্রকাশক",
+      isbn: "আইএসবিএন",
+      pagesLabel: "পৃষ্ঠা",
+      pages: "{count} পৃষ্ঠা",
+    },
+    about: {
+      title: "বইটি সম্পর্কে",
+    },
+    reviews: {
+      title: "রিভিউ",
+      subtitle: "পাঠকরা যা বলছেন।",
+      count: "{count}টি রিভিউ",
+      writeTitle: "একটি রিভিউ লিখুন",
+      placeholder: "বইটি সম্পর্কে আপনার মতামত জানান",
+      submit: "রিভিউ পোস্ট করুন",
+      submitSuccess: "আপনার রিভিউ পোস্ট হয়েছে",
+      loginPrompt: "রিভিউ লিখতে লগ ইন করুন।",
+      emptyTitle: "এখনো কোনো রিভিউ নেই",
+      emptyDescription: "এই বইটি সম্পর্কে প্রথম মতামত দিন।",
+    },
+    comments: {
+      title: "মন্তব্য",
+      subtitle: "আলোচনায় যোগ দিন।",
+      placeholder: "একটি মন্তব্য যোগ করুন",
+      submit: "মন্তব্য পোস্ট করুন",
+      submitSuccess: "আপনার মন্তব্য পোস্ট হয়েছে",
+      loginPrompt: "আলোচনায় যোগ দিতে লগ ইন করুন।",
+      emptyTitle: "এখনো কোনো মন্তব্য নেই",
+      emptyDescription: "এই বইটি নিয়ে আলোচনা শুরু করুন।",
+    },
+    related: {
+      title: "সম্পর্কিত বই",
+      subtitle: "একই ধরনের আরও বই।",
+    },
+    notFound: {
+      title: "বইটি পাওয়া যায়নি",
+      description: "এই বইটি নেই অথবা লাইব্রেরি থেকে সরানো হয়েছে।",
+      backHome: "হোমে ফিরে যান",
+    },
   },
 };
 

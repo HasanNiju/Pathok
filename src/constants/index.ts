@@ -16,6 +16,11 @@ export const STORAGE_KEYS = {
   language: "pathok:language",
   theme: "pathok:theme",
   authSession: "pathok:auth-session",
+  /** Prefixes below are joined with a userId/bookId by the hook that owns them. */
+  favoriteBooks: "pathok:favorites",
+  bookmarkedBooks: "pathok:bookmarks",
+  userReviews: "pathok:reviews",
+  userComments: "pathok:comments",
 } as const;
 
 /** Shared breakpoints for hooks/components that need to branch on viewport. */

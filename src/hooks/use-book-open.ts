@@ -1,17 +1,15 @@
 "use client";
 
-import { useTranslation } from "@/hooks/use-translation";
-import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 /**
- * Returns a stable click handler for book covers/cards across the Home
- * module. The Reader module (actual book detail + reading view) hasn't
- * been built yet, so this surfaces the same "not built yet" toast the rest
- * of the app already uses, instead of linking to a route that doesn't exist.
+ * Returns a stable click handler for book covers/cards across the app —
+ * navigates to that book's Book Details page (/books/[id]), introduced by
+ * the Book Details module. Callers pass the specific book's id per click,
+ * e.g. onClick={() => openBook(book.id)}.
  */
 export function useOpenBook() {
-  const { t } = useTranslation();
-  const { addToast } = useToast();
+  const router = useRouter();
 
-  return () => addToast({ title: t("shell.comingSoon") });
+  return (bookId: string) => router.push(`/books/${bookId}`);
 }

@@ -1,0 +1,212 @@
+[
+  {
+    "bookId": "b01",
+    "publisher": "Meridian House",
+    "language": "en",
+    "isbn": "978-4-565-3535-5",
+    "pages": 272
+  },
+  {
+    "bookId": "b02",
+    "publisher": "Stonegate Publishing",
+    "language": "en",
+    "isbn": "978-5-572-3548-6",
+    "pages": 348
+  },
+  {
+    "bookId": "b03",
+    "publisher": "Willow Park Editions",
+    "language": "en",
+    "isbn": "978-6-579-3561-7",
+    "pages": 312
+  },
+  {
+    "bookId": "b04",
+    "publisher": "Ashgrove Press",
+    "language": "en",
+    "isbn": "978-7-586-3574-8",
+    "pages": 408
+  },
+  {
+    "bookId": "b05",
+    "publisher": "Lantern & Quill",
+    "language": "en",
+    "isbn": "978-8-593-3587-9",
+    "pages": 248
+  },
+  {
+    "bookId": "b06",
+    "publisher": "Brightwater Books",
+    "language": "en",
+    "isbn": "978-1-600-3600-0",
+    "pages": 220
+  },
+  {
+    "bookId": "b07",
+    "publisher": "Foxglove House",
+    "language": "en",
+    "isbn": "978-2-607-3613-1",
+    "pages": 180
+  },
+  {
+    "bookId": "b08",
+    "publisher": "Amberline Press",
+    "language": "en",
+    "isbn": "978-3-614-3626-2",
+    "pages": 424
+  },
+  {
+    "bookId": "b09",
+    "publisher": "Thistledown Editions",
+    "language": "en",
+    "isbn": "978-4-621-3639-3",
+    "pages": 96
+  },
+  {
+    "bookId": "b10",
+    "publisher": "Meridian House",
+    "language": "en",
+    "isbn": "978-4-565-3535-5",
+    "pages": 288
+  },
+  {
+    "bookId": "b11",
+    "publisher": "Stonegate Publishing",
+    "language": "en",
+    "isbn": "978-5-572-3548-6",
+    "pages": 256
+  },
+  {
+    "bookId": "b12",
+    "publisher": "Willow Park Editions",
+    "language": "en",
+    "isbn": "978-6-579-3561-7",
+    "pages": 336
+  },
+  {
+    "bookId": "b13",
+    "publisher": "Ashgrove Press",
+    "language": "en",
+    "isbn": "978-7-586-3574-8",
+    "pages": 232
+  },
+  {
+    "bookId": "b14",
+    "publisher": "Lantern & Quill",
+    "language": "en",
+    "isbn": "978-8-593-3587-9",
+    "pages": 196
+  },
+  {
+    "bookId": "b15",
+    "publisher": "Brightwater Books",
+    "language": "en",
+    "isbn": "978-1-600-3600-0",
+    "pages": 296
+  },
+  {
+    "bookId": "b16",
+    "publisher": "Foxglove House",
+    "language": "en",
+    "isbn": "978-2-607-3613-1",
+    "pages": 232
+  },
+  {
+    "bookId": "b17",
+    "publisher": "Amberline Press",
+    "language": "en",
+    "isbn": "978-3-614-3626-2",
+    "pages": 392
+  },
+  {
+    "bookId": "b18",
+    "publisher": "Thistledown Editions",
+    "language": "en",
+    "isbn": "978-4-621-3639-3",
+    "pages": 168
+  },
+  {
+    "bookId": "b19",
+    "publisher": "Northfield & Rowe",
+    "language": "en",
+    "isbn": "978-5-628-3652-4",
+    "pages": 264
+  },
+  {
+    "bookId": "b20",
+    "publisher": "Stonegate Publishing",
+    "language": "en",
+    "isbn": "978-5-572-3548-6",
+    "pages": 224
+  },
+  {
+    "bookId": "b21",
+    "publisher": "Willow Park Editions",
+    "language": "en",
+    "isbn": "978-6-579-3561-7",
+    "pages": 356
+  },
+  {
+    "bookId": "b22",
+    "publisher": "Ashgrove Press",
+    "language": "en",
+    "isbn": "978-7-586-3574-8",
+    "pages": 324
+  },
+  {
+    "bookId": "b23",
+    "publisher": "Lantern & Quill",
+    "language": "en",
+    "isbn": "978-8-593-3587-9",
+    "pages": 96
+  },
+  {
+    "bookId": "b24",
+    "publisher": "Brightwater Books",
+    "language": "en",
+    "isbn": "978-1-600-3600-0",
+    "pages": 280
+  },
+  {
+    "bookId": "b25",
+    "publisher": "Foxglove House",
+    "language": "bn",
+    "isbn": "978-2-607-3613-1",
+    "pages": 364
+  },
+  {
+    "bookId": "b26",
+    "publisher": "Amberline Press",
+    "language": "bn",
+    "isbn": "978-3-614-3626-2",
+    "pages": 332
+  },
+  {
+    "bookId": "b27",
+    "publisher": "Thistledown Editions",
+    "language": "bn",
+    "isbn": "978-4-621-3639-3",
+    "pages": 204
+  },
+  {
+    "bookId": "b28",
+    "publisher": "Northfield & Rowe",
+    "language": "en",
+    "isbn": "978-5-628-3652-4",
+    "pages": 216
+  },
+  {
+    "bookId": "b29",
+    "publisher": "Harborlight Press",
+    "language": "en",
+    "isbn": "978-6-635-3665-5",
+    "pages": 300
+  },
+  {
+    "bookId": "b30",
+    "publisher": "Willow Park Editions",
+    "language": "en",
+    "isbn": "978-6-579-3561-7",
+    "pages": 164
+  }
+]

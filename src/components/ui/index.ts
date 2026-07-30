@@ -3,6 +3,7 @@
 
 export * from "./button";
 export * from "./input";
+export * from "./textarea";
 export * from "./checkbox";
 export * from "./card";
 export * from "./book-card";
@@ -19,3 +20,4 @@ export * from "./avatar";
 export * from "./theme-switch";
 export * from "./language-switch";
 export * from "./pagination";
+export * from "./star-rating";

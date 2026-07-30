@@ -24,6 +24,8 @@ const en = {
   },
   language: {
     label: "Language",
+    en: "English",
+    bn: "Bangla",
   },
   common: {
     close: "Close",
@@ -229,6 +231,67 @@ const en = {
     comingSoonDescription:
       "The upload and text-extraction workflow will be built in the Admin module — this page is reserved for it.",
     backHome: "Back to home",
+  },
+  bookDetails: {
+    actions: {
+      startReading: "Start Reading",
+      continueReading: "Continue Reading — {progress}%",
+      addFavorite: "Add to favorites",
+      removeFavorite: "Remove from favorites",
+      addedToFavorites: "Added to favorites",
+      removedFromFavorites: "Removed from favorites",
+      addBookmark: "Bookmark this book",
+      removeBookmark: "Remove bookmark",
+      addedBookmark: "Bookmarked",
+      removedBookmark: "Bookmark removed",
+      share: "Share",
+      linkCopied: "Link copied to clipboard",
+      shareFailed: "Couldn't share this link",
+      loginRequired: "Log in to do that",
+    },
+    metadata: {
+      title: "Details",
+      author: "Author",
+      genre: "Genre",
+      publisher: "Publisher",
+      isbn: "ISBN",
+      pagesLabel: "Pages",
+      pages: "{count} pages",
+    },
+    about: {
+      title: "About this book",
+    },
+    reviews: {
+      title: "Reviews",
+      subtitle: "What readers are saying.",
+      count: "{count} reviews",
+      writeTitle: "Write a review",
+      placeholder: "Share what you thought of this book",
+      submit: "Post review",
+      submitSuccess: "Your review was posted",
+      loginPrompt: "Log in to write a review.",
+      emptyTitle: "No reviews yet",
+      emptyDescription: "Be the first to share what you thought of this book.",
+    },
+    comments: {
+      title: "Comments",
+      subtitle: "Join the discussion.",
+      placeholder: "Add a comment",
+      submit: "Post comment",
+      submitSuccess: "Your comment was posted",
+      loginPrompt: "Log in to join the discussion.",
+      emptyTitle: "No comments yet",
+      emptyDescription: "Start the conversation about this book.",
+    },
+    related: {
+      title: "Related Books",
+      subtitle: "More from the same genre.",
+    },
+    notFound: {
+      title: "Book not found",
+      description: "This book doesn't exist or may have been removed from the library.",
+      backHome: "Back to home",
+    },
   },
 };
 
