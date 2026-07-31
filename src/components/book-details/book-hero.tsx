@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Heart, Bookmark, Share2, BookOpen, Clock, Calendar, Globe2, Layers } from "lucide-react";
@@ -47,6 +48,7 @@ export function BookHero({ book, metadata }: BookHeroProps) {
   const { t, language } = useTranslation();
   const { user } = useAuth();
   const { addToast } = useToast();
+  const router = useRouter();
   const { isFavorite, isBookmarked, toggleFavorite, toggleBookmark } = useBookInteractions(book.id);
   const { reviews } = useBookReviews(book.id);
 
@@ -64,7 +66,7 @@ export function BookHero({ book, metadata }: BookHeroProps) {
   };
 
   const handleReadingCta = () => {
-    addToast({ title: t("shell.comingSoon") });
+    router.push(`/read/${book.id}`);
   };
 
   return (

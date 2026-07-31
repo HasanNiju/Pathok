@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Inter, Lora, Merriweather } from "next/font/google";
 import { AppProviders } from "@/providers/app-providers";
 import { AppShell } from "@/components/layout/app-shell";
 import { APP_NAME } from "@/constants";
@@ -21,6 +21,15 @@ const fontSerif = Lora({
   display: "swap",
 });
 
+// Third Reader typeface option ("Literary") — a classic book-typesetting
+// serif, distinct from the UI's Lora so the two serif choices feel different.
+const fontLiterary = Merriweather({
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+  variable: "--font-literary",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "A beautiful, minimal place to read books online.",
@@ -33,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontSerif.variable}`}>
+      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontLiterary.variable}`}>
         <AppProviders>
           <AppShell>{children}</AppShell>
         </AppProviders>
