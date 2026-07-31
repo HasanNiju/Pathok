@@ -2,6 +2,7 @@
 // e.g. import { Button, Card, Modal } from "@/components/ui";
 
 export * from "./button";
+export * from "./back-button";
 export * from "./input";
 export * from "./textarea";
 export * from "./checkbox";

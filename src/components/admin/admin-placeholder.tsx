@@ -3,6 +3,7 @@
 import { Circle } from "lucide-react";
 import { SectionHeader } from "@/components/home/section-header";
 import { EmptyState } from "@/components/home/empty-state";
+import { BackButton } from "@/components/ui/back-button";
 import { useTranslation } from "@/hooks/use-translation";
 import { ADMIN_NAV_ITEMS } from "@/constants/admin";
 
@@ -24,6 +25,7 @@ export function AdminPlaceholder({ navKey, subtitleKey }: AdminPlaceholderProps)
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <BackButton href="/admin" label={t("admin.nav.dashboard")} />
       <SectionHeader title={t(`admin.nav.${navKey}`)} subtitle={t(subtitleKey)} />
       <EmptyState
         icon={<Icon className="h-5 w-5" aria-hidden="true" />}

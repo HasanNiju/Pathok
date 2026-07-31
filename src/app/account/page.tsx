@@ -58,12 +58,17 @@ function AccountContent() {
 
       {user.role === "admin" && (
         <Card className="border-amber-500/30 bg-amber-500/[0.04]">
-          <CardContent className="flex items-start gap-3 p-6">
-            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" aria-hidden="true" />
-            <div>
-              <p className="font-bold">{t("auth.account.adminPanelTitle")}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{t("auth.account.adminPanelDescription")}</p>
+          <CardContent className="flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" aria-hidden="true" />
+              <div>
+                <p className="font-bold">{t("auth.account.adminPanelTitle")}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t("auth.account.adminPanelDescription")}</p>
+              </div>
             </div>
+            <Button variant="outline" size="sm" onClick={() => router.push("/admin")} className="shrink-0">
+              {t("nav.adminPanel")}
+            </Button>
           </CardContent>
         </Card>
       )}

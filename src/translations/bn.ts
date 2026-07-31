@@ -33,6 +33,7 @@ const bn: typeof en = {
   },
   common: {
     close: "বন্ধ করুন",
+    back: "পেছনে",
     dismiss: "খারিজ করুন",
     previous: "পূর্ববর্তী",
     next: "পরবর্তী",

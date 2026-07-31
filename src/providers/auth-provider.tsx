@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const authUser = await mockAuth.login(input);
     mockAuth.persistSession(authUser, input.rememberMe);
     setUser(authUser);
+    return authUser;
   }, []);
 
   const signup = useCallback(async (input: SignupInput) => {

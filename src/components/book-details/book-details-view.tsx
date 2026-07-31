@@ -1,4 +1,5 @@
 import { ResponsiveContainer } from "@/components/layout/responsive-container";
+import { BackButton } from "@/components/ui/back-button";
 import { BookHero } from "@/components/book-details/book-hero";
 import { BookAboutSection } from "@/components/book-details/book-about-section";
 import { ReviewsSection } from "@/components/book-details/reviews-section";
@@ -17,6 +18,7 @@ export function BookDetailsView({ book }: { book: Book }) {
 
   return (
     <ResponsiveContainer className="flex flex-col gap-14 pb-10">
+      <BackButton className="mt-6" />
       <BookHero book={book} metadata={metadata} />
       <BookAboutSection book={book} metadata={metadata} />
       <ReviewsSection book={book} />

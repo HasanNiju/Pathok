@@ -31,6 +31,7 @@ const en = {
   },
   common: {
     close: "Close",
+    back: "Back",
     dismiss: "Dismiss",
     previous: "Previous",
     next: "Next",

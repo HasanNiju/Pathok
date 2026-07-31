@@ -50,9 +50,9 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
     try {
-      await login(form);
+      const authUser = await login(form);
       addToast({ title: t("auth.toasts.welcomeBack"), variant: "success" });
-      router.push("/account");
+      router.push(authUser.role === "admin" ? "/admin" : "/account");
     } catch (error) {
       if (error instanceof AuthError && error.code === "email_not_verified") {
         const otp = await requestOtp(form.email, "signup");

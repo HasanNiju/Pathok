@@ -9,7 +9,7 @@ export interface AuthContextValue {
   /** True until the initial session restore (from storage) has finished. */
   isLoading: boolean;
 
-  login: (input: LoginInput) => Promise<void>;
+  login: (input: LoginInput) => Promise<AuthUser>;
   signup: (input: SignupInput) => Promise<void>;
   logout: () => void;
 
