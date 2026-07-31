@@ -15,6 +15,7 @@ import {
   Search,
   User as UserIcon,
   BookOpen,
+  LayoutDashboard,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
@@ -161,6 +162,11 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
                 </button>
               }
               items={[
+                {
+                  label: t("auth.nav.dashboard"),
+                  icon: <LayoutDashboard className="h-4 w-4" aria-hidden="true" />,
+                  onSelect: () => router.push("/dashboard"),
+                },
                 {
                   label: t("auth.nav.account"),
                   icon: <UserIcon className="h-4 w-4" aria-hidden="true" />,

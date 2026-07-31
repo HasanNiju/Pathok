@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, Search, LayoutGrid, Bookmark, PlusCircle, type LucideIcon } from "lucide-react";
+import { Home, Search, LayoutGrid, Bookmark, PlusCircle, LayoutDashboard, type LucideIcon } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: "search", href: "/#search", icon: Search },
   { key: "categories", href: "/#categories", icon: LayoutGrid },
   { key: "continueReading", href: "/#continue-reading", icon: Bookmark, requiresAuth: true },
+  { key: "dashboard", href: "/dashboard", icon: LayoutDashboard, requiresAuth: true },
   { key: "create", href: "/create", icon: PlusCircle, adminOnly: true },
 ];
 
@@ -46,7 +47,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     <nav className="flex flex-1 flex-col gap-1">
       {items.map((item) => {
         const Icon = item.icon;
-        const active = item.href === "/" ? pathname === "/" : false;
+        const active = item.href === "/" ? pathname === "/" : !item.href.startsWith("/#") && pathname.startsWith(item.href);
 
         return (
           <Link
