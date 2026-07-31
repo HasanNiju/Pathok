@@ -55,10 +55,10 @@ export default function LoginPage() {
       router.push(authUser.role === "admin" ? "/admin" : "/account");
     } catch (error) {
       if (error instanceof AuthError && error.code === "email_not_verified") {
-        const otp = await requestOtp(form.email, "signup");
+        await requestOtp(form.email, "signup");
         addToast({
           title: t("auth.errors.emailNotVerified"),
-          description: `Demo code: ${otp}`,
+          description: "We emailed you a verification code.",
           variant: "warning",
         });
         router.push(`/otp?purpose=signup&email=${encodeURIComponent(form.email)}`);
@@ -120,8 +120,6 @@ export default function LoginPage() {
         <Button type="submit" size="lg" isLoading={isSubmitting} className="mt-2 w-full">
           {t("auth.login.submit")}
         </Button>
-
-        <p className="text-center text-xs text-muted-foreground">{t("auth.login.demoAccounts")}</p>
       </form>
     </AuthShell>
   );

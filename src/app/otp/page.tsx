@@ -105,10 +105,6 @@ function OtpPageContent() {
         >
           {cooldown > 0 ? t("auth.otp.resendIn").replace("{seconds}", String(cooldown)) : t("auth.otp.resend")}
         </button>
-
-        <p className="rounded-lg bg-secondary px-3 py-2 text-center text-xs text-muted-foreground">
-          {t("auth.otp.demoHint")}
-        </p>
       </div>
     </AuthShell>
   );
