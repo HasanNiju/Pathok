@@ -22,3 +22,4 @@ export * from "./theme-switch";
 export * from "./language-switch";
 export * from "./pagination";
 export * from "./star-rating";
+export * from "./category-select";

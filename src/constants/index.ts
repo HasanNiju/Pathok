@@ -21,6 +21,8 @@ export const STORAGE_KEYS = {
   bookmarkedBooks: "pathok:bookmarks",
   userReviews: "pathok:reviews",
   userComments: "pathok:comments",
+  /** Category Management module — admin edits persisted client-side (no backend). */
+  categories: "pathok:categories",
 } as const;
 
 /** Shared breakpoints for hooks/components that need to branch on viewport. */

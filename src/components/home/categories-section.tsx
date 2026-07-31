@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { categories } from "@/data/categories";
 import { getBooksByCategory } from "@/data/books";
 import { CategoryCard } from "@/components/home/category-card";
 import { SectionHeader } from "@/components/home/section-header";
 import { useTranslation } from "@/hooks/use-translation";
+import { useCategories } from "@/hooks/use-categories";
 
 interface CategoriesSectionProps {
   activeCategory: string | null;
@@ -14,6 +14,7 @@ interface CategoriesSectionProps {
 
 export function CategoriesSection({ activeCategory, onSelectCategory }: CategoriesSectionProps) {
   const { t } = useTranslation();
+  const { activeCategories } = useCategories();
 
   return (
     <section id="categories" className="scroll-mt-24">
@@ -26,7 +27,7 @@ export function CategoriesSection({ activeCategory, onSelectCategory }: Categori
         transition={{ duration: 0.25, ease: "easeOut" }}
         className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
       >
-        {categories.map((category) => (
+        {activeCategories.map((category) => (
           <CategoryCard
             key={category.slug}
             category={category}

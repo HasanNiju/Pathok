@@ -39,6 +39,7 @@ const en = {
     clear: "Clear",
     loading: "Loading",
     cancel: "Cancel",
+    moreActions: "More actions",
   },
   auth: {
     nav: {
@@ -556,7 +557,63 @@ const en = {
       description: "This admin section isn't built yet — check back in a future update.",
     },
     books: { subtitle: "Add, edit, and remove catalog titles." },
-    categories: { subtitle: "Create and organize book categories." },
+    categories: {
+      subtitle: "Create and organize book categories.",
+      new: "New Category",
+      searchPlaceholder: "Search categories",
+      summary: "{total} categories · {active} active",
+      bookCount: "{count} books",
+      status: {
+        active: "Active",
+        inactive: "Inactive",
+      },
+      actions: {
+        edit: "Edit",
+        activate: "Activate",
+        deactivate: "Deactivate",
+        delete: "Delete",
+      },
+      empty: {
+        title: "No categories found",
+        description: "Try a different search, or create a new category.",
+      },
+      form: {
+        createTitle: "New Category",
+        editTitle: "Edit Category",
+        name: "Name (English)",
+        namePlaceholder: "e.g. Young Adult",
+        nameBn: "Name (বাংলা)",
+        nameBnPlaceholder: "e.g. তরুণ পাঠক",
+        description: "Description",
+        descriptionPlaceholder: "A short description shown to readers.",
+        icon: "Icon",
+        create: "Create",
+        save: "Save changes",
+        errors: {
+          name: "Enter at least 2 characters.",
+          nameBn: "Bangla name is required.",
+          description: "Description is required.",
+        },
+      },
+      deleteDialog: {
+        title: "Delete category",
+        confirm: 'Delete "{name}"? This can\'t be undone.',
+        blocked:
+          '"{name}" is used by {count} book(s) and can\'t be deleted. Deactivate it instead to hide it from readers.',
+        deactivateInstead: "Deactivate instead",
+        delete: "Delete",
+      },
+      toast: {
+        created: "Category created",
+        updated: "Category updated",
+        deleted: "Category deleted",
+        activated: "Category activated",
+        deactivated: "Category deactivated",
+      },
+      select: {
+        placeholder: "Select a category",
+      },
+    },
     users: { subtitle: "View and manage reader accounts." },
     branding: { subtitle: "Customize Pathok's look and feel." },
     settings: { subtitle: "Configure admin preferences." },

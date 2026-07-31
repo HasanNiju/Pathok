@@ -8,6 +8,8 @@
 
 /** A single browsable category (genre/shelf) books can belong to. */
 export interface Category {
+  /** Stable identifier, independent of slug — slugs can be edited by an admin. */
+  id: string;
   slug: string;
   name: string;
   /** Bangla label — categories are shown to guests too, so they're translated directly on the record rather than via the dictionary. */
@@ -15,6 +17,8 @@ export interface Category {
   description: string;
   /** Lucide icon name, resolved by the components that render category chips/cards. */
   icon: string;
+  /** Inactive categories are hidden from readers and the book-creation picker, but kept for existing books that reference them. */
+  active: boolean;
 }
 
 /** A book in the catalog. Dummy data only — no backend per the PRD. */

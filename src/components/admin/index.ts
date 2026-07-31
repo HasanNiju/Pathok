@@ -8,3 +8,6 @@ export * from "./admin-stats-section";
 export * from "./admin-recent-books-section";
 export * from "./admin-quick-actions-section";
 export * from "./admin-placeholder";
+export * from "./admin-categories-view";
+export * from "./category-form-modal";
+export * from "./category-delete-dialog";

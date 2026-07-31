@@ -1,6 +1,9 @@
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import { AdminCategoriesView } from "@/components/admin/admin-categories-view";
 
-/** Reserved for a future Category Management module. */
+/** Category Management (Module 09) — create, edit, delete, activate/deactivate,
+ *  search, and list book categories. See src/hooks/use-categories.ts for the
+ *  underlying CRUD/persistence and src/components/ui/category-select.tsx for
+ *  the picker the future Book Creation module reuses. */
 export default function AdminCategoriesPage() {
-  return <AdminPlaceholder navKey="categories" subtitleKey="admin.categories.subtitle" />;
+  return <AdminCategoriesView />;
 }
