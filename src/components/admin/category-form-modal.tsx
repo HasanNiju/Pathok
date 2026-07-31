@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "@/hooks/use-translation";
 import { isValidName } from "@/lib/validation";
-import { CATEGORY_ICON_OPTIONS, resolveCategoryIcon } from "@/lib/categories";
+import { CATEGORY_ICON_OPTIONS, DEFAULT_CATEGORY_ICON, resolveCategoryIcon } from "@/lib/categories";
 import type { Category } from "@/types/book";
 import type { CategoryInput } from "@/hooks/use-categories";
 import { cn } from "@/lib/utils";
@@ -38,7 +38,7 @@ export function CategoryFormModal({ open, onClose, category, onSubmit }: Categor
   const [name, setName] = useState("");
   const [nameBn, setNameBn] = useState("");
   const [description, setDescription] = useState("");
-  const [icon, setIcon] = useState<string>(CATEGORY_ICON_OPTIONS[0]);
+  const [icon, setIcon] = useState<string>(DEFAULT_CATEGORY_ICON);
   const [errors, setErrors] = useState<FormErrors>({});
 
   // Reset the form to the target category (or blank) every time it opens.
@@ -47,7 +47,7 @@ export function CategoryFormModal({ open, onClose, category, onSubmit }: Categor
     setName(category?.name ?? "");
     setNameBn(category?.nameBn ?? "");
     setDescription(category?.description ?? "");
-    setIcon(category?.icon ?? CATEGORY_ICON_OPTIONS[0]);
+    setIcon(category?.icon ?? DEFAULT_CATEGORY_ICON);
     setErrors({});
   }, [open, category]);
 

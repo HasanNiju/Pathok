@@ -37,6 +37,11 @@ export function resolveCategoryIcon(icon: string): LucideIcon {
   return icons[icon] ?? LucideIcons.BookOpen;
 }
 
+/** First option, used as the form's default before a category is picked
+ *  (avoids indexing CATEGORY_ICON_OPTIONS[0], which TS treats as possibly
+ *  undefined under noUncheckedIndexedAccess). */
+export const DEFAULT_CATEGORY_ICON: string = CATEGORY_ICON_OPTIONS[0] ?? "BookOpen";
+
 /** Converts a display name to a URL-safe slug, e.g. "Young Adult" -> "young-adult". */
 export function slugify(value: string): string {
   return value
