@@ -23,7 +23,7 @@ type FormErrors = Partial<Record<keyof FormState, string>>;
 
 export default function SignupPage() {
   const { t } = useTranslation();
-  const { signup, requestOtp } = useAuth();
+  const { signup } = useAuth();
   const { addToast } = useToast();
   const router = useRouter();
 
@@ -50,10 +50,9 @@ export default function SignupPage() {
     setIsSubmitting(true);
     try {
       await signup({ name: form.name, email: form.email, password: form.password });
-      const otp = await requestOtp(form.email, "signup");
       addToast({
         title: t("auth.toasts.signupSuccess"),
-        description: `Demo code: ${otp}`,
+        description: "We emailed you a verification code.",
         variant: "success",
       });
       router.push(`/otp?purpose=signup&email=${encodeURIComponent(form.email)}`);

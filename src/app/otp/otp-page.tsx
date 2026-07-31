@@ -62,8 +62,8 @@ function OtpPageContent() {
   async function handleResend() {
     setIsResending(true);
     try {
-      const otp = await resendOtp(email, purpose);
-      addToast({ title: t("auth.toasts.otpResent"), description: `Demo code: ${otp}`, variant: "success" });
+      await resendOtp(email, purpose);
+      addToast({ title: t("auth.toasts.otpResent"), description: "Check your email for the new code.", variant: "success" });
       setCooldown(RESEND_COOLDOWN_SECONDS);
       setCode("");
     } catch (err) {

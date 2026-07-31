@@ -2,55 +2,69 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AuthContext } from "@/context/auth-context";
-import { mockAuth } from "@/lib/mock-auth";
+import { realAuth } from "@/lib/supabase/auth-service";
 import type { AuthUser, LoginInput, OtpPurpose, SignupInput } from "@/types/auth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Restore a persisted session (localStorage for "remember me", otherwise
-  // sessionStorage) once on mount — same pattern as TranslationProvider.
+  // Restore the real Supabase session on load, then keep listening for
+  // login/logout events (including ones triggered from another tab).
   useEffect(() => {
-    setUser(mockAuth.readSession());
-    setIsLoading(false);
+    let active = true;
+
+    realAuth.getSessionUser().then((sessionUser) => {
+      if (active) {
+        setUser(sessionUser);
+        setIsLoading(false);
+      }
+    });
+
+    const subscription = realAuth.onAuthStateChange((nextUser) => {
+      if (active) setUser(nextUser);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = useCallback(async (input: LoginInput) => {
-    const authUser = await mockAuth.login(input);
-    mockAuth.persistSession(authUser, input.rememberMe);
+    const authUser = await realAuth.login(input);
     setUser(authUser);
     return authUser;
   }, []);
 
   const signup = useCallback(async (input: SignupInput) => {
-    await mockAuth.signup(input);
+    await realAuth.signup(input);
     // Not logged in yet — email must be verified via OTP first.
   }, []);
 
-  const logout = useCallback(() => {
-    mockAuth.clearSession();
+  const logout = useCallback(async () => {
+    await realAuth.logout();
     setUser(null);
   }, []);
 
   const requestOtp = useCallback((email: string, purpose: OtpPurpose) => {
-    return mockAuth.requestOtp(email, purpose);
+    return realAuth.requestOtp(email, purpose);
   }, []);
 
   const resendOtp = useCallback((email: string, purpose: OtpPurpose) => {
-    return mockAuth.resendOtp(email, purpose);
+    return realAuth.resendOtp(email, purpose);
   }, []);
 
   const verifyOtp = useCallback(async (email: string, purpose: OtpPurpose, code: string) => {
-    await mockAuth.verifyOtp(email, purpose, code);
+    await realAuth.verifyOtp(email, purpose, code);
   }, []);
 
   const forgotPassword = useCallback((email: string) => {
-    return mockAuth.requestOtp(email, "reset");
+    return realAuth.requestOtp(email, "reset");
   }, []);
 
   const resetPassword = useCallback(async (email: string, newPassword: string) => {
-    await mockAuth.resetPassword(email, newPassword);
+    await realAuth.resetPassword(email, newPassword);
   }, []);
 
   const value = useMemo(
