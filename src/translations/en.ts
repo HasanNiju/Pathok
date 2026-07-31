@@ -511,6 +511,54 @@ const en = {
       moreComingSoon: "More preferences are on the way.",
     },
   },
+  admin: {
+    badge: "Admin",
+    nav: {
+      dashboard: "Dashboard",
+      books: "Books",
+      categories: "Categories",
+      users: "Users",
+      branding: "Branding",
+      settings: "Settings",
+      backToSite: "Back to site",
+      menu: "Admin menu",
+    },
+    overview: {
+      greeting: "Welcome back, {name}",
+      subtitle: "Here's what's happening across Pathok today.",
+    },
+    stats: {
+      totalBooks: "Total Books",
+      totalCategories: "Categories",
+      totalUsers: "Users",
+      totalReviews: "Reviews & Comments",
+    },
+    recentBooks: {
+      title: "Recent Books",
+      subtitle: "The latest titles added to the catalog.",
+    },
+    quickActions: {
+      title: "Quick Actions",
+      subtitle: "Jump straight into common admin tasks.",
+      uploadBook: "Upload a Book",
+      uploadBookDescription: "Add a new title to the catalog.",
+      manageCategories: "Manage Categories",
+      manageCategoriesDescription: "Organize the library's genres.",
+      manageUsers: "Manage Users",
+      manageUsersDescription: "Review reader accounts and roles.",
+      branding: "Branding",
+      brandingDescription: "Customize logo, colors, and copy.",
+    },
+    placeholder: {
+      title: "Coming soon",
+      description: "This admin section isn't built yet — check back in a future update.",
+    },
+    books: { subtitle: "Add, edit, and remove catalog titles." },
+    categories: { subtitle: "Create and organize book categories." },
+    users: { subtitle: "View and manage reader accounts." },
+    branding: { subtitle: "Customize Pathok's look and feel." },
+    settings: { subtitle: "Configure admin preferences." },
+  },
 };
 
 export default en;

@@ -513,6 +513,54 @@ const bn: typeof en = {
       moreComingSoon: "আরও পছন্দসমূহ শীঘ্রই আসছে।",
     },
   },
+  admin: {
+    badge: "অ্যাডমিন",
+    nav: {
+      dashboard: "ড্যাশবোর্ড",
+      books: "বইসমূহ",
+      categories: "বিভাগসমূহ",
+      users: "ব্যবহারকারীগণ",
+      branding: "ব্র্যান্ডিং",
+      settings: "সেটিংস",
+      backToSite: "সাইটে ফিরে যান",
+      menu: "অ্যাডমিন মেনু",
+    },
+    overview: {
+      greeting: "স্বাগতম, {name}",
+      subtitle: "আজ পাঠকে যা ঘটছে তার সারসংক্ষেপ।",
+    },
+    stats: {
+      totalBooks: "মোট বই",
+      totalCategories: "বিভাগ",
+      totalUsers: "ব্যবহারকারী",
+      totalReviews: "রিভিউ ও মন্তব্য",
+    },
+    recentBooks: {
+      title: "সাম্প্রতিক বই",
+      subtitle: "লাইব্রেরিতে সদ্য যুক্ত হওয়া বইসমূহ।",
+    },
+    quickActions: {
+      title: "দ্রুত কার্যক্রম",
+      subtitle: "সাধারণ অ্যাডমিন কাজে সরাসরি যান।",
+      uploadBook: "বই আপলোড করুন",
+      uploadBookDescription: "লাইব্রেরিতে নতুন বই যুক্ত করুন।",
+      manageCategories: "বিভাগ পরিচালনা করুন",
+      manageCategoriesDescription: "লাইব্রেরির ধরনসমূহ সাজান।",
+      manageUsers: "ব্যবহারকারী পরিচালনা করুন",
+      manageUsersDescription: "পাঠকের অ্যাকাউন্ট ও ভূমিকা পর্যালোচনা করুন।",
+      branding: "ব্র্যান্ডিং",
+      brandingDescription: "লোগো, রং এবং লেখা কাস্টমাইজ করুন।",
+    },
+    placeholder: {
+      title: "শীঘ্রই আসছে",
+      description: "এই অ্যাডমিন বিভাগটি এখনো তৈরি হয়নি — পরবর্তী আপডেটে দেখুন।",
+    },
+    books: { subtitle: "লাইব্রেরির বই যোগ, সম্পাদনা ও অপসারণ করুন।" },
+    categories: { subtitle: "বইয়ের বিভাগ তৈরি ও সাজান।" },
+    users: { subtitle: "পাঠকের অ্যাকাউন্ট দেখুন ও পরিচালনা করুন।" },
+    branding: { subtitle: "পাঠকের চেহারা কাস্টমাইজ করুন।" },
+    settings: { subtitle: "অ্যাডমিন পছন্দসমূহ কনফিগার করুন।" },
+  },
 };
 
 export default bn;
