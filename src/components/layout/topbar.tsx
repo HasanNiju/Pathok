@@ -16,6 +16,7 @@ import {
   User as UserIcon,
   BookOpen,
   LayoutDashboard,
+  ShieldCheck,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
@@ -167,6 +168,15 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
                   icon: <LayoutDashboard className="h-4 w-4" aria-hidden="true" />,
                   onSelect: () => router.push("/dashboard"),
                 },
+                ...(user.role === "admin"
+                  ? [
+                      {
+                        label: t("nav.adminPanel"),
+                        icon: <ShieldCheck className="h-4 w-4" aria-hidden="true" />,
+                        onSelect: () => router.push("/admin"),
+                      },
+                    ]
+                  : []),
                 {
                   label: t("auth.nav.account"),
                   icon: <UserIcon className="h-4 w-4" aria-hidden="true" />,

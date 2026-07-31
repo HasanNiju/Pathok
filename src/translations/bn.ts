@@ -17,6 +17,7 @@ const bn: typeof en = {
     categories: "ক্যাটাগরি",
     continueReading: "পড়া চালিয়ে যান",
     dashboard: "ড্যাশবোর্ড",
+    adminPanel: "অ্যাডমিন প্যানেল",
     create: "তৈরি করুন",
     menu: "মেনু",
   },

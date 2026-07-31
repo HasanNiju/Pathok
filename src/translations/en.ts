@@ -15,6 +15,7 @@ const en = {
     categories: "Categories",
     continueReading: "Continue Reading",
     dashboard: "Dashboard",
+    adminPanel: "Admin Panel",
     create: "Create",
     menu: "Menu",
   },

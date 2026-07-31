@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, Search, LayoutGrid, Bookmark, PlusCircle, LayoutDashboard, type LucideIcon } from "lucide-react";
+import { Home, Search, LayoutGrid, Bookmark, PlusCircle, LayoutDashboard, ShieldCheck, type LucideIcon } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: "categories", href: "/#categories", icon: LayoutGrid },
   { key: "continueReading", href: "/#continue-reading", icon: Bookmark, requiresAuth: true },
   { key: "dashboard", href: "/dashboard", icon: LayoutDashboard, requiresAuth: true },
+  { key: "adminPanel", href: "/admin", icon: ShieldCheck, adminOnly: true },
   { key: "create", href: "/create", icon: PlusCircle, adminOnly: true },
 ];
 
