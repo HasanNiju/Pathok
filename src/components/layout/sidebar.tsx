@@ -39,7 +39,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   const items = NAV_ITEMS.filter((item) => {
-    if (item.adminOnly) return user?.role === "admin";
+    if (item.adminOnly) return user?.role === "admin" || user?.role === "super_admin";
     if (item.requiresAuth) return Boolean(user);
     return true;
   });

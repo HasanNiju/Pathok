@@ -56,7 +56,7 @@ function AccountContent() {
         </CardContent>
       </Card>
 
-      {user.role === "admin" && (
+      {(user.role === "admin" || user.role === "super_admin") && (
         <Card className="border-amber-500/30 bg-amber-500/[0.04]">
           <CardContent className="flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">

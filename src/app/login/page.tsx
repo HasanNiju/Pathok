@@ -52,7 +52,7 @@ export default function LoginPage() {
     try {
       const authUser = await login(form);
       addToast({ title: t("auth.toasts.welcomeBack"), variant: "success" });
-      router.push(authUser.role === "admin" ? "/admin" : "/account");
+      router.push(authUser.role === "admin" || authUser.role === "super_admin" ? "/admin" : "/account");
     } catch (error) {
       if (error instanceof AuthError && error.code === "email_not_verified") {
         await requestOtp(form.email, "signup");

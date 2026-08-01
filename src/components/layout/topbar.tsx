@@ -170,7 +170,7 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
                   icon: <LayoutDashboard className="h-4 w-4" aria-hidden="true" />,
                   onSelect: () => router.push("/dashboard"),
                 },
-                ...(user.role === "admin"
+                ...(user.role === "admin" || user.role === "super_admin"
                   ? [
                       {
                         label: t("nav.adminPanel"),
