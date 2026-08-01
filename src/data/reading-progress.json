@@ -1,9 +1,0 @@
-[
-  { "userId": "seed-user", "bookId": "b04", "progress": 72, "lastReadAt": "2026-07-29" },
-  { "userId": "seed-user", "bookId": "b19", "progress": 34, "lastReadAt": "2026-07-27" },
-  { "userId": "seed-user", "bookId": "b09", "progress": 90, "lastReadAt": "2026-07-25" },
-  { "userId": "seed-user", "bookId": "b01", "progress": 12, "lastReadAt": "2026-07-21" },
-  { "userId": "seed-admin", "bookId": "b25", "progress": 55, "lastReadAt": "2026-07-28" },
-  { "userId": "seed-admin", "bookId": "b13", "progress": 81, "lastReadAt": "2026-07-26" },
-  { "userId": "seed-admin", "bookId": "b06", "progress": 20, "lastReadAt": "2026-07-19" }
-]
