@@ -299,5 +299,20 @@ export async function uploadBookFile(supabase: SupabaseClient, bookId: string, f
   const path = `${bookId}/source-${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from("book-files").upload(path, file, { upsert: true });
   if (error) throw error;
-  return path;
+  return supabase.storage.from("book-files").getPublicUrl(path).data.publicUrl;
+}
+
+/** Records the uploaded source file on the book row. For PDFs this alone
+ *  marks the book ready to read (Module 01) — the file is served as-is by
+ *  the native PDF reader, no text extraction involved. */
+export async function setBookFileMeta(
+  supabase: SupabaseClient,
+  bookId: string,
+  meta: { fileUrl: string; fileType: "pdf" | "docx"; contentReady: boolean }
+) {
+  const { error } = await supabase
+    .from("books")
+    .update({ file_url: meta.fileUrl, file_type: meta.fileType, content_ready: meta.contentReady })
+    .eq("id", bookId);
+  if (error) throw error;
 }

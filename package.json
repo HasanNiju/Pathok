@@ -22,7 +22,8 @@
     "class-variance-authority": "^0.7.0",
     "tailwindcss-animate": "^1.0.7",
     "pdf-parse": "^1.1.1",
-    "mammoth": "^1.8.0"
+    "mammoth": "^1.8.0",
+    "react-pdf": "^9.2.1"
   },
   "devDependencies": {
     "typescript": "^5.6.3",

@@ -21,6 +21,7 @@ import {
   updateBookRow,
   uploadBookCover,
   uploadBookFile,
+  setBookFileMeta,
   saveBookChapters,
   fetchBookById,
   fetchBookMetadata,
@@ -183,14 +184,28 @@ export function BookForm({ mode, bookId }: BookFormProps) {
     }
   };
 
-  /** Upload → Extract → Store, per the PRD pipeline. Requires the draft to already exist. */
+  /** Upload → Store, per the PRD pipeline. Requires the draft to already
+   *  exist. PDFs are never text-extracted — they're uploaded and served
+   *  exactly as authored by the native PDF reader. DOCX still goes
+   *  through extraction, since there's no "view as-is" equivalent for it. */
   const handleExtract = async () => {
     if (!savedBook || !sourceFile) return;
+
+    const isPdf = sourceFile.name.toLowerCase().endsWith(".pdf");
 
     setIsExtracting(true);
     try {
       const supabase = createClient();
-      await uploadBookFile(supabase, savedBook.id, sourceFile);
+      const fileUrl = await uploadBookFile(supabase, savedBook.id, sourceFile);
+
+      if (isPdf) {
+        await setBookFileMeta(supabase, savedBook.id, { fileUrl, fileType: "pdf", contentReady: true });
+        setSavedBook((current) => (current ? { ...current, fileUrl, fileType: "pdf", contentReady: true } : current));
+        setChapters(null);
+        setSourceFile(null);
+        addToast({ title: t("create.form.toast.pdfReady"), variant: "success" });
+        return;
+      }
 
       const formData = new FormData();
       formData.append("file", sourceFile);
@@ -204,7 +219,9 @@ export function BookForm({ mode, bookId }: BookFormProps) {
         return;
       }
 
+      await setBookFileMeta(supabase, savedBook.id, { fileUrl, fileType: "docx", contentReady: false });
       await saveBookChapters(supabase, savedBook.id, result.chapters);
+      setSavedBook((current) => (current ? { ...current, fileUrl, fileType: "docx", contentReady: true } : current));
       setChapters(result.chapters);
       setSourceFile(null);
       addToast({ title: t("create.form.toast.extracted"), variant: "success" });
@@ -213,6 +230,7 @@ export function BookForm({ mode, bookId }: BookFormProps) {
     } finally {
       setIsExtracting(false);
     }
+
   };
 
   const handlePublish = async () => {
@@ -348,6 +366,13 @@ export function BookForm({ mode, bookId }: BookFormProps) {
           </Button>
         </div>
 
+        {savedBook?.fileType === "pdf" && savedBook.contentReady && (
+          <div className="flex items-center gap-2 rounded-lg bg-secondary/60 p-4 text-sm font-medium text-foreground">
+            <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />
+            {t("create.form.pdfReadyLabel")}
+          </div>
+        )}
+
         {chapters && chapters.length > 0 && (
           <div className="flex flex-col gap-2 rounded-lg bg-secondary/60 p-4">
             <div className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -369,7 +394,7 @@ export function BookForm({ mode, bookId }: BookFormProps) {
         <Button
           onClick={handlePublish}
           isLoading={isPublishing}
-          disabled={!savedBook || !chapters || chapters.length === 0 || savedBook.status === "published"}
+          disabled={!savedBook || !savedBook.contentReady || savedBook.status === "published"}
         >
           {savedBook?.status === "published" ? t("admin.books.status.published") : t("create.form.publish")}
         </Button>

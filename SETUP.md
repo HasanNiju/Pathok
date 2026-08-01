@@ -140,6 +140,34 @@ update profiles set role = 'super_admin' where id = '<your-auth-user-uuid>';
 ```
 (Find your UUID under Supabase → Authentication → Users.)
 
+## 5. Native PDF reader (this batch)
+
+Uploaded **PDFs** are no longer text-extracted — they're shown to readers
+exactly as designed (original layout, images, fonts), two pages side by
+side on desktop, one page at a time on mobile, sitting on a background
+that matches the app's light/dark theme.
+
+**DOCX uploads are unchanged** — they still go through text extraction into
+the typography Reader, since there's no "view as-is" option for a Word
+file the way there is for a PDF.
+
+### Run this extra SQL once
+
+A second migration file, `src/lib/supabase/migration_v2_pdf_native.sql`,
+makes the file-storage bucket public (same as book covers already are) so
+the PDF reader can load files directly. Paste it into the SQL Editor and
+run it, same as before.
+
+### Known trade-off
+
+Because PDFs are shown as real pages now (not extracted text), a few
+Reader features only work for DOCX-based books, not PDF ones: **Read
+Aloud (TTS), in-book text search, and text highlighting/annotations**.
+Position bookmarks and reading-progress percentage *do* still work for
+PDFs. If you'd like Read Aloud to work for PDFs too, that's possible as a
+follow-up (extracting text quietly in the background just for narration,
+while still showing the PDF visually as-is) — just ask.
+
 ### Known simplifications (deliberately left out of this pass)
 
 - The book-level "quick bookmark" toggle on the Book Details page (distinct
