@@ -11,6 +11,7 @@ import {
   Minimize,
   Search,
   Settings2,
+  Volume2,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ interface ReaderTopBarProps {
   onToggleBookmark: () => void;
   onToggleAnnotations: () => void;
   onToggleSettings: () => void;
+  onToggleTts: () => void;
   onToggleFullscreen: () => void;
 }
 
@@ -71,6 +73,7 @@ export function ReaderTopBar({
   onToggleBookmark,
   onToggleAnnotations,
   onToggleSettings,
+  onToggleTts,
   onToggleFullscreen,
 }: ReaderTopBarProps) {
   const { t } = useTranslation();
@@ -117,6 +120,9 @@ export function ReaderTopBar({
             </IconButton>
             <IconButton label={t("reader.actions.annotations")} onClick={onToggleAnnotations}>
               <Highlighter className="h-[18px] w-[18px]" aria-hidden="true" />
+            </IconButton>
+            <IconButton label={t("reader.tts.title")} onClick={onToggleTts}>
+              <Volume2 className="h-[18px] w-[18px]" aria-hidden="true" />
             </IconButton>
             <IconButton label={t("reader.actions.settings")} onClick={onToggleSettings}>
               <Settings2 className="h-[18px] w-[18px]" aria-hidden="true" />

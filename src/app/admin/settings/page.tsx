@@ -1,6 +1,8 @@
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import type { Metadata } from "next";
+import { AdminSettingsView } from "@/components/admin/admin-settings-view";
 
-/** Reserved for a future Admin Settings module. */
+export const metadata: Metadata = { title: "Settings — Pathok" };
+
 export default function AdminSettingsPage() {
-  return <AdminPlaceholder navKey="settings" subtitleKey="admin.settings.subtitle" />;
+  return <AdminSettingsView />;
 }

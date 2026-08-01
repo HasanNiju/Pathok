@@ -4,18 +4,19 @@ import { CheckCircle2 } from "lucide-react";
 import { SectionHeader } from "@/components/home/section-header";
 import { DashboardBookGrid } from "@/components/dashboard/dashboard-book-grid";
 import { useTranslation } from "@/hooks/use-translation";
-import { getBookById } from "@/data/books";
+import { getBookById } from "@/lib/books";
 import type { ReadingHistoryEntry } from "@/types/dashboard";
 import type { Book } from "@/types/book";
 
 interface CompletedBooksSectionProps {
   entries: ReadingHistoryEntry[];
+  books: Book[];
 }
 
-export function CompletedBooksSection({ entries }: CompletedBooksSectionProps) {
+export function CompletedBooksSection({ entries, books: catalog }: CompletedBooksSectionProps) {
   const { t } = useTranslation();
   const books = entries
-    .map((entry) => getBookById(entry.bookId))
+    .map((entry) => getBookById(catalog, entry.bookId))
     .filter((book): book is Book => Boolean(book));
 
   return (

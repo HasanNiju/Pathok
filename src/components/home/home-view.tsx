@@ -8,13 +8,14 @@ import { ContinueReadingSection } from "@/components/home/continue-reading-secti
 import { BookRail } from "@/components/home/book-rail";
 import { CategoriesSection } from "@/components/home/categories-section";
 import { useTranslation } from "@/hooks/use-translation";
+import { useBooks } from "@/hooks/use-books";
 import {
   getLatestBooks,
   getTrendingBooks,
   getPopularBooks,
   getRecommendedBooks,
   getRecentlyAddedBooks,
-} from "@/data/books";
+} from "@/lib/books";
 
 /**
  * Composes every Home page section. A search query and a category filter
@@ -23,6 +24,7 @@ import {
  */
 export function HomeView() {
   const { t } = useTranslation();
+  const { books } = useBooks();
   const [query, setQuery] = useState("");
   const [categorySlug, setCategorySlug] = useState<string | null>(null);
 
@@ -47,28 +49,28 @@ export function HomeView() {
       <HeroSearch query={query} onQueryChange={setQuery} />
 
       {isFiltering ? (
-        <SearchResults query={query} categorySlug={categorySlug} onClearFilter={handleClearFilter} />
+        <SearchResults query={query} categorySlug={categorySlug} onClearFilter={handleClearFilter} books={books} />
       ) : (
         <ContinueReadingSection />
       )}
 
-      <BookRail id="latest" title={t("home.latest.title")} subtitle={t("home.latest.subtitle")} books={getLatestBooks()} />
-      <BookRail id="trending" title={t("home.trending.title")} subtitle={t("home.trending.subtitle")} books={getTrendingBooks()} />
-      <BookRail id="popular" title={t("home.popular.title")} subtitle={t("home.popular.subtitle")} books={getPopularBooks()} />
+      <BookRail id="latest" title={t("home.latest.title")} subtitle={t("home.latest.subtitle")} books={getLatestBooks(books)} />
+      <BookRail id="trending" title={t("home.trending.title")} subtitle={t("home.trending.subtitle")} books={getTrendingBooks(books)} />
+      <BookRail id="popular" title={t("home.popular.title")} subtitle={t("home.popular.subtitle")} books={getPopularBooks(books)} />
       <BookRail
         id="recommended"
         title={t("home.recommended.title")}
         subtitle={t("home.recommended.subtitle")}
-        books={getRecommendedBooks()}
+        books={getRecommendedBooks(books)}
       />
 
-      <CategoriesSection activeCategory={categorySlug} onSelectCategory={handleSelectCategory} />
+      <CategoriesSection activeCategory={categorySlug} onSelectCategory={handleSelectCategory} books={books} />
 
       <BookRail
         id="recently-added"
         title={t("home.recentlyAdded.title")}
         subtitle={t("home.recentlyAdded.subtitle")}
-        books={getRecentlyAddedBooks()}
+        books={getRecentlyAddedBooks(books)}
       />
     </ResponsiveContainer>
   );

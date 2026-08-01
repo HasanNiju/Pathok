@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "@/hooks/use-translation";
-import { getCategoryBySlug } from "@/data/categories";
+import { useCategories } from "@/hooks/use-categories";
+import { getCategoryBySlug } from "@/lib/categories";
 import type { Book } from "@/types/book";
 import type { BookMetadata } from "@/types/book-details";
 
@@ -14,7 +15,8 @@ interface BookAboutSectionProps {
 
 export function BookAboutSection({ book, metadata }: BookAboutSectionProps) {
   const { t, language } = useTranslation();
-  const category = getCategoryBySlug(book.categorySlug);
+  const { categories } = useCategories();
+  const category = getCategoryBySlug(categories, book.categorySlug);
   const genreLabel = category ? (language === "bn" ? category.nameBn : category.name) : book.categorySlug;
 
   const rows: { label: string; value: string }[] = [

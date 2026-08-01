@@ -24,7 +24,7 @@ import { Loading } from "@/components/ui/loading";
  */
 export function DashboardView() {
   const { user } = useAuth();
-  const { isHydrated, history, inProgress, completed, favoriteBooks, bookmarkedBooks, stats, achievements } =
+  const { isHydrated, books, history, inProgress, completed, favoriteBooks, bookmarkedBooks, stats, achievements } =
     useDashboard();
 
   if (!user || !isHydrated) {
@@ -41,10 +41,10 @@ export function DashboardView() {
       <DashboardSubnav />
 
       <StatsSection stats={stats} />
-      <ContinueReadingSection entries={inProgress} />
-      <ReadingProgressSection entries={inProgress} />
-      <ReadingHistorySection entries={history} />
-      <CompletedBooksSection entries={completed} />
+      <ContinueReadingSection entries={inProgress} books={books} />
+      <ReadingProgressSection entries={inProgress} books={books} />
+      <ReadingHistorySection entries={history} books={books} />
+      <CompletedBooksSection entries={completed} books={books} />
       <BookmarksSection books={bookmarkedBooks} />
       <FavoritesSection books={favoriteBooks} />
       <AchievementsSection achievements={achievements} />

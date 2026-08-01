@@ -21,7 +21,8 @@ import {
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, APP_NAME } from "@/constants";
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "@/constants";
+import { useBranding } from "@/providers/branding-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -45,6 +46,7 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const { addToast } = useToast();
+  const { branding } = useBranding();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -104,7 +106,7 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
           className="flex items-center gap-2 rounded-md px-1 text-lg font-bold tracking-tight text-foreground transition-opacity duration-200 hover:opacity-80"
         >
           <BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />
-          {APP_NAME}
+          {branding.siteName}
         </Link>
       </div>
 

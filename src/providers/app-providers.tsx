@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { TranslationProvider } from "@/providers/translation-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { AuthProvider } from "@/providers/auth-provider";
+import { BrandingProvider } from "@/providers/branding-provider";
 import { Toaster } from "@/components/ui/toast";
 
 /**
@@ -20,14 +21,16 @@ import { Toaster } from "@/components/ui/toast";
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <TranslationProvider>
-        <ToastProvider>
-          <AuthProvider>
-            {children}
-            <Toaster />
-          </AuthProvider>
-        </ToastProvider>
-      </TranslationProvider>
+      <BrandingProvider>
+        <TranslationProvider>
+          <ToastProvider>
+            <AuthProvider>
+              {children}
+              <Toaster />
+            </AuthProvider>
+          </ToastProvider>
+        </TranslationProvider>
+      </BrandingProvider>
     </ThemeProvider>
   );
 }

@@ -6,6 +6,7 @@ import {
   Palette,
   Settings,
   UploadCloud,
+  ShieldCheck,
 } from "lucide-react";
 import type { AdminNavItem, AdminQuickAction } from "@/types/admin";
 
@@ -15,6 +16,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { key: "books", href: "/admin/books", icon: BookOpen },
   { key: "categories", href: "/admin/categories", icon: LayoutGrid },
   { key: "users", href: "/admin/users", icon: Users },
+  { key: "admins", href: "/admin/admins", icon: ShieldCheck, roles: ["super_admin"] },
   { key: "branding", href: "/admin/branding", icon: Palette },
   { key: "settings", href: "/admin/settings", icon: Settings },
 ];

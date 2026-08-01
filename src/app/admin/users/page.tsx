@@ -1,6 +1,8 @@
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import type { Metadata } from "next";
+import { AdminUsersView } from "@/components/admin/admin-users-view";
 
-/** Reserved for a future User Management module. */
+export const metadata: Metadata = { title: "User Management — Pathok" };
+
 export default function AdminUsersPage() {
-  return <AdminPlaceholder navKey="users" subtitleKey="admin.users.subtitle" />;
+  return <AdminUsersView />;
 }

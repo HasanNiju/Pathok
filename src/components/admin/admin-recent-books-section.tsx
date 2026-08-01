@@ -5,15 +5,17 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/home/section-header";
 import { useTranslation } from "@/hooks/use-translation";
-import { getRecentBooksForAdmin } from "@/data/admin";
-import { getCategoryBySlug } from "@/data/categories";
+import { useAdminOverview } from "@/hooks/use-admin-overview";
+import { useCategories } from "@/hooks/use-categories";
+import { getCategoryBySlug } from "@/lib/categories";
 import { formatDate } from "@/lib/utils";
 
 /** Most recently added catalog titles — read-only glance, links out to the
  *  public book page (a dedicated admin book editor is out of scope here). */
 export function AdminRecentBooksSection() {
   const { t, language } = useTranslation();
-  const books = getRecentBooksForAdmin(5);
+  const { recentBooks: books } = useAdminOverview();
+  const { categories } = useCategories();
 
   return (
     <section>
@@ -21,7 +23,7 @@ export function AdminRecentBooksSection() {
 
       <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-card">
         {books.map((book, index) => {
-          const category = getCategoryBySlug(book.categorySlug);
+          const category = getCategoryBySlug(categories, book.categorySlug);
 
           return (
             <motion.div

@@ -11,6 +11,7 @@ export interface AuthUser extends AppUser {
   email: string;
   avatarUrl?: string;
   isEmailVerified: boolean;
+  status?: "active" | "suspended";
 }
 
 /** What an OTP code is being requested/verified for. */
@@ -51,6 +52,7 @@ export type AuthErrorCode =
   | "user_not_found"
   | "invalid_otp"
   | "otp_expired"
-  | "otp_not_verified";
+  | "otp_not_verified"
+  | "account_suspended";
 
 export type { UserRole };

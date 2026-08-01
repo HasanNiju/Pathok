@@ -9,7 +9,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
  */
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
+    <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
       <AdminShell>{children}</AdminShell>
     </ProtectedRoute>
   );

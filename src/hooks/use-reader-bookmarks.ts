@@ -1,46 +1,25 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { READER_STORAGE_KEYS } from "@/constants/reader";
+import { createClient } from "@/lib/supabase/client";
+import { fetchBookmarks, addBookmarkRow, removeBookmarkRow } from "@/lib/supabase/progress-service";
 import type { ReaderBookmark } from "@/types/reader";
 
-function storageKey(userId: string | undefined, bookId: string) {
-  return `${READER_STORAGE_KEYS.bookmarks}:${userId ?? "guest"}:${bookId}`;
-}
-
-function readAll(userId: string | undefined, bookId: string): ReaderBookmark[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(storageKey(userId, bookId));
-    return raw ? (JSON.parse(raw) as ReaderBookmark[]) : [];
-  } catch {
-    return [];
-  }
-}
-
 /**
- * Saved page positions within one book — lets a person mark a spot
- * without leaving text-level commentary (see useReaderAnnotations for
- * highlights/notes). Persisted per user+book, same pattern as favorites.
+ * Saved page positions within one book (Module 08) — lets a person mark a
+ * spot without leaving text-level commentary. Persisted in Supabase's
+ * `bookmarks` table per user+book, so it follows the reader across devices.
  */
 export function useReaderBookmarks(userId: string | undefined, bookId: string) {
   const [bookmarks, setBookmarks] = useState<ReaderBookmark[]>([]);
 
   useEffect(() => {
-    setBookmarks(readAll(userId, bookId));
+    if (!userId) {
+      setBookmarks([]);
+      return;
+    }
+    fetchBookmarks(createClient(), userId, bookId).then(setBookmarks);
   }, [userId, bookId]);
-
-  const persist = useCallback(
-    (next: ReaderBookmark[]) => {
-      setBookmarks(next);
-      try {
-        window.localStorage.setItem(storageKey(userId, bookId), JSON.stringify(next));
-      } catch {
-        // Best-effort persistence only.
-      }
-    },
-    [userId, bookId]
-  );
 
   const isBookmarked = useCallback(
     (chapterId: string, pageIndex: number) =>
@@ -49,30 +28,28 @@ export function useReaderBookmarks(userId: string | undefined, bookId: string) {
   );
 
   const toggleBookmark = useCallback(
-    (chapterId: string, pageIndex: number, excerpt: string) => {
+    async (chapterId: string, pageIndex: number, excerpt: string) => {
+      if (!userId) return "unavailable" as const;
       const existing = bookmarks.find((b) => b.chapterId === chapterId && b.pageIndex === pageIndex);
+      const supabase = createClient();
+
       if (existing) {
-        persist(bookmarks.filter((b) => b.id !== existing.id));
+        await removeBookmarkRow(supabase, existing.id);
+        setBookmarks((current) => current.filter((b) => b.id !== existing.id));
         return "removed" as const;
       }
-      const bookmark: ReaderBookmark = {
-        id: `bm-${Date.now()}`,
-        bookId,
-        chapterId,
-        pageIndex,
-        excerpt,
-        createdAt: new Date().toISOString(),
-      };
-      persist([bookmark, ...bookmarks]);
+
+      const bookmark = await addBookmarkRow(supabase, { userId, bookId, chapterId, pageIndex, excerpt });
+      setBookmarks((current) => [bookmark, ...current]);
       return "added" as const;
     },
-    [bookmarks, bookId, persist]
+    [bookmarks, bookId, userId]
   );
 
-  const removeBookmark = useCallback(
-    (id: string) => persist(bookmarks.filter((b) => b.id !== id)),
-    [bookmarks, persist]
-  );
+  const removeBookmark = useCallback(async (id: string) => {
+    await removeBookmarkRow(createClient(), id);
+    setBookmarks((current) => current.filter((b) => b.id !== id));
+  }, []);
 
   return { bookmarks, isBookmarked, toggleBookmark, removeBookmark };
 }

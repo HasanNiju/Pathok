@@ -8,6 +8,7 @@ const ROLE_STYLES: Record<UserRole, string> = {
   guest: "bg-secondary text-secondary-foreground",
   user: "bg-primary/10 text-primary",
   admin: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  super_admin: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
 };
 
 export function RoleBadge({ role }: { role: UserRole }) {

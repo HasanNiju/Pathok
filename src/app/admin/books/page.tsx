@@ -1,6 +1,8 @@
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import type { Metadata } from "next";
+import { AdminBooksView } from "@/components/admin/admin-books-view";
 
-/** Reserved for a future Book Management module (edit/remove catalog titles). */
+export const metadata: Metadata = { title: "Book Management — Pathok" };
+
 export default function AdminBooksPage() {
-  return <AdminPlaceholder navKey="books" subtitleKey="admin.books.subtitle" />;
+  return <AdminBooksView />;
 }

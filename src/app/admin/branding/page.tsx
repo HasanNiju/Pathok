@@ -1,6 +1,8 @@
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import type { Metadata } from "next";
+import { AdminBrandingView } from "@/components/admin/admin-branding-view";
 
-/** Reserved for a future Branding module (logo, colors, app copy). */
+export const metadata: Metadata = { title: "Branding — Pathok" };
+
 export default function AdminBrandingPage() {
-  return <AdminPlaceholder navKey="branding" subtitleKey="admin.branding.subtitle" />;
+  return <AdminBrandingView />;
 }

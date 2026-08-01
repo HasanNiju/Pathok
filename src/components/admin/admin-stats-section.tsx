@@ -3,13 +3,13 @@
 import { BookOpen, LayoutGrid, Users, MessageSquare } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { useTranslation } from "@/hooks/use-translation";
-import { getAdminStats } from "@/data/admin";
+import { useAdminOverview } from "@/hooks/use-admin-overview";
 
-/** Dummy Statistics Cards for the Overview page — reuses the dashboard
- *  module's StatCard rather than duplicating a near-identical tile. */
+/** Statistics Cards for the Overview page — reuses the dashboard module's
+ *  StatCard rather than duplicating a near-identical tile. */
 export function AdminStatsSection() {
   const { t } = useTranslation();
-  const stats = getAdminStats();
+  const { stats } = useAdminOverview();
 
   const items = [
     { key: "totalBooks", icon: BookOpen, label: t("admin.stats.totalBooks"), value: String(stats.totalBooks) },

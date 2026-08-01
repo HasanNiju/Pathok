@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
 import { AdminNav } from "@/components/admin/admin-nav";
-import { APP_NAME } from "@/constants";
+import { useBranding } from "@/providers/branding-provider";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ interface AdminSidebarProps {
 /** Persistent rail for the admin panel — brand mark + AdminNav. Below the
  *  md breakpoint this is replaced by a drawer (see AdminShell). */
 export function AdminSidebar({ className }: AdminSidebarProps) {
+  const { branding } = useBranding();
   const { t } = useTranslation();
 
   return (
@@ -29,7 +30,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
     >
       <Link href="/admin" className="mb-6 flex items-center gap-2 px-1 text-lg font-bold tracking-tight text-foreground">
         <BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />
-        {APP_NAME}
+        {branding.siteName}
         <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
           {t("admin.badge")}
         </span>

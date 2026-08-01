@@ -9,18 +9,20 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/home/empty-state";
 import { SectionHeader } from "@/components/home/section-header";
 import { useTranslation } from "@/hooks/use-translation";
-import { getBookById } from "@/data/books";
+import { getBookById } from "@/lib/books";
 import { formatDate } from "@/lib/utils";
 import type { ReadingHistoryEntry } from "@/types/dashboard";
+import type { Book } from "@/types/book";
 
 interface ReadingProgressSectionProps {
   entries: ReadingHistoryEntry[];
+  books: Book[];
 }
 
 /** Detailed breakdown of every in-progress book — percentage, last-read
  *  date, and (when known from a live Reader session) minutes spent —
  *  each row resuming straight into the Reader on click. */
-export function ReadingProgressSection({ entries }: ReadingProgressSectionProps) {
+export function ReadingProgressSection({ entries, books: catalog }: ReadingProgressSectionProps) {
   const { t, language } = useTranslation();
   const router = useRouter();
 
@@ -37,7 +39,7 @@ export function ReadingProgressSection({ entries }: ReadingProgressSectionProps)
       ) : (
         <div className="flex flex-col gap-3">
           {entries.map((entry, index) => {
-            const book = getBookById(entry.bookId);
+            const book = getBookById(catalog, entry.bookId);
             if (!book) return null;
 
             return (

@@ -21,14 +21,18 @@ export interface Category {
   active: boolean;
 }
 
-/** A book in the catalog. Dummy data only — no backend per the PRD. */
+/** A book in the catalog — sourced from Supabase's `books` table. */
 export interface Book {
   id: string;
   title: string;
+  altTitle?: string;
   author: string;
-  /** Local generated cover art, e.g. "/covers/book-01.svg". */
+  translator?: string;
+  publisher?: string;
+  /** Cover art URL — either a Supabase Storage public URL or a local /covers/*.svg fallback. */
   coverUrl: string;
   categorySlug: string;
+  tags: string[];
   description: string;
   /** 0–5, one decimal. */
   rating: number;
@@ -44,13 +48,23 @@ export interface Book {
   trendingRank?: number;
   /** Editorial pick surfaced in "Recommended". */
   isRecommended?: boolean;
+  /** Book Management workflow — draft until published by an admin. */
+  status: "draft" | "published";
+  fileUrl?: string;
+  fileType?: "pdf" | "docx";
+  /** True once upload → extract → store has produced chapters. */
+  contentReady: boolean;
+  deletedAt?: string | null;
 }
 
-/** A reader's progress in a book — keyed by the demo user id in the dummy dataset. */
+/** A reader's progress in a book — one row per user+book in Supabase. */
 export interface ReadingProgress {
   userId: string;
   bookId: string;
   /** 0–100. */
   progress: number;
   lastReadAt: string;
+  chapterId?: string;
+  pageIndex?: number;
+  minutesSpent?: number;
 }

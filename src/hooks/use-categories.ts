@@ -2,9 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Category } from "@/types/book";
-import { categories as seedCategories } from "@/data/categories";
-import { getBooksByCategory } from "@/data/books";
-import { STORAGE_KEYS } from "@/constants";
+import { createClient } from "@/lib/supabase/client";
+import {
+  fetchCategories,
+  fetchCategoryBookCounts,
+  createCategoryRow,
+  updateCategoryRow,
+  toggleCategoryActiveRow,
+  deleteCategoryRow,
+} from "@/lib/supabase/categories-service";
 import { slugify, uniqueSlug } from "@/lib/categories";
 
 export interface CategoryInput {
@@ -14,103 +20,84 @@ export interface CategoryInput {
   icon: string;
 }
 
-function readStoredCategories(): Category[] {
-  if (typeof window === "undefined") return seedCategories;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEYS.categories);
-    if (!raw) return seedCategories;
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? (parsed as Category[]) : seedCategories;
-  } catch {
-    return seedCategories;
-  }
-}
-
 function generateCategoryId(): string {
   return `cat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
 /**
- * Category Management module — client-side CRUD over the category catalog.
- * No backend per the PRD: seeded from data/categories.ts, then persisted to
- * localStorage (same mock-persistence pattern useBookInteractions already
- * uses for favorites/bookmarks), so admin edits survive a refresh. Every
- * place that lists or picks categories — Home's browse section, the future
- * Book Creation module's category picker — should read through this hook
- * rather than the static `categories` array, so create/edit/activate take
- * effect everywhere at once instead of only inside the admin panel.
+ * Category Management module — Supabase-backed CRUD over the category
+ * catalog. Every place that lists or picks categories (Home's browse
+ * section, the Book Creation category picker) reads through this hook,
+ * so create/edit/activate take effect everywhere at once.
  */
 export function useCategories() {
-  const [categories, setCategories] = useState<Category[]>(seedCategories);
-  const [hydrated, setHydrated] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [bookCounts, setBookCounts] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load any admin edits from localStorage after mount (client-only).
-  useEffect(() => {
-    setCategories(readStoredCategories());
-    setHydrated(true);
+  const reload = useCallback(async () => {
+    const supabase = createClient();
+    const [cats, counts] = await Promise.all([fetchCategories(supabase), fetchCategoryBookCounts(supabase)]);
+    setCategories(cats);
+    setBookCounts(counts);
+    setIsLoading(false);
   }, []);
 
-  // Persist every change, but only once the real (possibly stored) state
-  // has loaded — otherwise this would overwrite storage with the seed.
   useEffect(() => {
-    if (!hydrated || typeof window === "undefined") return;
-    window.localStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(categories));
-  }, [categories, hydrated]);
+    reload();
+  }, [reload]);
 
-  const createCategory = useCallback((input: CategoryInput) => {
-    setCategories((current) => {
-      const slug = uniqueSlug(slugify(input.name), current);
-      const category: Category = {
-        id: generateCategoryId(),
-        slug,
-        name: input.name.trim(),
-        nameBn: input.nameBn.trim(),
-        description: input.description.trim(),
-        icon: input.icon,
-        active: true,
-      };
-      return [category, ...current];
-    });
-  }, []);
+  const createCategory = useCallback(
+    async (input: CategoryInput) => {
+      const supabase = createClient();
+      const slug = uniqueSlug(slugify(input.name), categories);
+      const category = await createCategoryRow(supabase, { id: generateCategoryId(), slug, ...input });
+      setCategories((current) => [category, ...current]);
+    },
+    [categories]
+  );
 
-  const updateCategory = useCallback((id: string, input: CategoryInput) => {
-    setCategories((current) => {
-      const slug = uniqueSlug(slugify(input.name), current, id);
-      return current.map((category) =>
-        category.id === id
-          ? {
-              ...category,
-              slug,
-              name: input.name.trim(),
-              nameBn: input.nameBn.trim(),
-              description: input.description.trim(),
-              icon: input.icon,
-            }
-          : category
+  const updateCategory = useCallback(
+    async (id: string, input: CategoryInput) => {
+      const supabase = createClient();
+      const slug = uniqueSlug(slugify(input.name), categories, id);
+      const updated = await updateCategoryRow(supabase, id, { slug, ...input });
+      setCategories((current) => current.map((category) => (category.id === id ? updated : category)));
+    },
+    [categories]
+  );
+
+  const toggleActive = useCallback(
+    async (id: string) => {
+      const target = categories.find((category) => category.id === id);
+      if (!target) return;
+      const supabase = createClient();
+      await toggleCategoryActiveRow(supabase, id, !target.active);
+      setCategories((current) =>
+        current.map((category) => (category.id === id ? { ...category, active: !category.active } : category))
       );
-    });
-  }, []);
+    },
+    [categories]
+  );
 
-  const toggleActive = useCallback((id: string) => {
-    setCategories((current) =>
-      current.map((category) => (category.id === id ? { ...category, active: !category.active } : category))
-    );
-  }, []);
-
-  const deleteCategory = useCallback((id: string) => {
+  const deleteCategory = useCallback(async (id: string) => {
+    const supabase = createClient();
+    await deleteCategoryRow(supabase, id);
     setCategories((current) => current.filter((category) => category.id !== id));
   }, []);
 
   /** Books currently filed under a category (by slug) — used to guard/warn on delete. */
-  const getBookCount = useCallback((slug: string) => getBooksByCategory(slug).length, []);
+  const getBookCount = useCallback((slug: string) => bookCounts[slug] ?? 0, [bookCounts]);
 
   return {
     categories,
     activeCategories: categories.filter((category) => category.active),
+    isLoading,
     createCategory,
     updateCategory,
     toggleActive,
     deleteCategory,
     getBookCount,
+    reload,
   };
 }

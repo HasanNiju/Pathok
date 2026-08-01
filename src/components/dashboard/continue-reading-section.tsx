@@ -5,22 +5,23 @@ import { BookRail } from "@/components/home/book-rail";
 import { EmptyState } from "@/components/home/empty-state";
 import { SectionHeader } from "@/components/home/section-header";
 import { useTranslation } from "@/hooks/use-translation";
-import { getBookById } from "@/data/books";
+import { getBookById } from "@/lib/books";
 import type { ReadingHistoryEntry } from "@/types/dashboard";
 import type { Book } from "@/types/book";
 
 interface ContinueReadingSectionProps {
   entries: ReadingHistoryEntry[];
+  books: Book[];
 }
 
 /** One-click resume rail — the fast path back into whatever's already open,
  *  distinct from Reading Progress below it (which shows the same books with
  *  full detail: dates, minutes spent, and a per-book progress readout). */
-export function ContinueReadingSection({ entries }: ContinueReadingSectionProps) {
+export function ContinueReadingSection({ entries, books: catalog }: ContinueReadingSectionProps) {
   const { t } = useTranslation();
 
   const books = entries
-    .map((entry) => getBookById(entry.bookId))
+    .map((entry) => getBookById(catalog, entry.bookId))
     .filter((book): book is Book => Boolean(book));
   const progressByBookId = Object.fromEntries(entries.map((entry) => [entry.bookId, entry.progress]));
 

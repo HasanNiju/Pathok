@@ -11,8 +11,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useBookInteractions } from "@/hooks/use-book-interactions";
 import { useBookReviews } from "@/hooks/use-book-reviews";
-import { getCategoryBySlug } from "@/data/categories";
-import { getProgressForBook } from "@/data/reading-progress";
+import { useCategories } from "@/hooks/use-categories";
+import { getCategoryBySlug } from "@/lib/categories";
+import { useBookProgress } from "@/hooks/use-book-progress";
 import { cn } from "@/lib/utils";
 import type { Book } from "@/types/book";
 import type { BookMetadata } from "@/types/book-details";
@@ -52,9 +53,10 @@ export function BookHero({ book, metadata }: BookHeroProps) {
   const { isFavorite, isBookmarked, toggleFavorite, toggleBookmark } = useBookInteractions(book.id);
   const { reviews } = useBookReviews(book.id);
 
-  const category = getCategoryBySlug(book.categorySlug);
+  const { categories } = useCategories();
+  const category = getCategoryBySlug(categories, book.categorySlug);
   const categoryLabel = category ? (language === "bn" ? category.nameBn : category.name) : book.categorySlug;
-  const progress = getProgressForBook(user?.id, book.id);
+  const progress = useBookProgress(user?.id, book.id);
 
   const handleShare = async () => {
     const result = await shareCurrentPage(book.title);

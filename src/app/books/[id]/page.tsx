@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BookDetailsView } from "@/components/book-details/book-details-view";
-import { getBookById } from "@/data/books";
+import { createClient } from "@/lib/supabase/server";
+import { fetchBookById, fetchBookMetadata } from "@/lib/supabase/books-service";
 
 interface BookPageProps {
   params: Promise<{ id: string }>;
@@ -9,7 +10,8 @@ interface BookPageProps {
 
 export async function generateMetadata({ params }: BookPageProps): Promise<Metadata> {
   const { id } = await params;
-  const book = getBookById(id);
+  const supabase = await createClient();
+  const book = await fetchBookById(supabase, id);
 
   return {
     title: book ? `${book.title} — Pathok` : "Pathok",
@@ -18,17 +20,18 @@ export async function generateMetadata({ params }: BookPageProps): Promise<Metad
 }
 
 /**
- * Book Details module. Composition of the hero, About, Reviews, Comments,
- * and Related Books sections lives in BookDetailsView (client component,
- * since it needs auth/translation/localStorage-backed hooks) — this file
- * stays a server component, resolves the book from the dummy catalog, and
- * 404s for an unknown id.
+ * Book Details module. Resolves the book from Supabase server-side (RLS
+ * already limits this to published, non-deleted books for guests/readers)
+ * and 404s for an unknown/unpublished id.
  */
 export default async function BookPage({ params }: BookPageProps) {
   const { id } = await params;
-  const book = getBookById(id);
+  const supabase = await createClient();
+  const book = await fetchBookById(supabase, id);
 
-  if (!book) notFound();
+  if (!book || book.status !== "published" || book.deletedAt) notFound();
 
-  return <BookDetailsView book={book} />;
+  const metadata = await fetchBookMetadata(supabase, book.id);
+
+  return <BookDetailsView book={book} metadata={metadata} />;
 }

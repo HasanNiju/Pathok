@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/hooks/use-translation";
+import { useAuth } from "@/hooks/use-auth";
 import { ADMIN_NAV_ITEMS } from "@/constants/admin";
 import { cn } from "@/lib/utils";
 
@@ -14,11 +15,13 @@ interface AdminNavProps {
  *  mirroring the split used by the main app's Sidebar/SidebarNav. */
 export function AdminNav({ onNavigate }: AdminNavProps) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const pathname = usePathname();
+  const items = ADMIN_NAV_ITEMS.filter((item) => !item.roles || (user && item.roles.includes(user.role as "admin" | "super_admin")));
 
   return (
     <nav className="flex flex-1 flex-col gap-1">
-      {ADMIN_NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const Icon = item.icon;
         const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
 

@@ -2,16 +2,21 @@
 
 import { BookRail } from "@/components/home/book-rail";
 import { useTranslation } from "@/hooks/use-translation";
-import { getBooksByCategory, getRecommendedBooks } from "@/data/books";
+import { useBooks } from "@/hooks/use-books";
+import { recommendBooks } from "@/lib/recommendations";
 import type { Book } from "@/types/book";
 
 export function RelatedBooksSection({ book }: { book: Book }) {
   const { t } = useTranslation();
+  const { books } = useBooks();
 
-  const sameGenre = getBooksByCategory(book.categorySlug).filter((candidate) => candidate.id !== book.id);
-  const related = sameGenre.length > 0
-    ? sameGenre
-    : getRecommendedBooks().filter((candidate) => candidate.id !== book.id);
+  // Reuses this book itself as the "recently read" seed so the engine's
+  // same-category/same-author priority ranks against *this* book.
+  const related = recommendBooks({
+    books,
+    history: [{ userId: "", bookId: book.id, progress: 0, lastReadAt: new Date().toISOString() }],
+    excludeBookId: book.id,
+  });
 
   return (
     <BookRail

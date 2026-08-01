@@ -37,6 +37,11 @@ export function resolveCategoryIcon(icon: string): LucideIcon {
   return icons[icon] ?? LucideIcons.BookOpen;
 }
 
+/** Finds a category by slug within a live (Supabase-fetched) categories array. */
+export function getCategoryBySlug<T extends { slug: string }>(categories: T[], slug: string): T | undefined {
+  return categories.find((category) => category.slug === slug);
+}
+
 /** First option, used as the form's default before a category is picked
  *  (avoids indexing CATEGORY_ICON_OPTIONS[0], which TS treats as possibly
  *  undefined under noUncheckedIndexedAccess). */

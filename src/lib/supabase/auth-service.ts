@@ -30,7 +30,7 @@ function mapError(message: string): AuthError {
 }
 
 async function profileToAuthUser(userId: string, email: string, isEmailVerified: boolean): Promise<AuthUser> {
-  const { data } = await supabase.from("profiles").select("name, role, avatar_url").eq("id", userId).single();
+  const { data } = await supabase.from("profiles").select("name, role, avatar_url, status").eq("id", userId).single();
 
   return {
     id: userId,
@@ -39,6 +39,7 @@ async function profileToAuthUser(userId: string, email: string, isEmailVerified:
     role: (data?.role as AuthUser["role"]) ?? "user",
     avatarUrl: data?.avatar_url ?? undefined,
     isEmailVerified,
+    status: (data?.status as "active" | "suspended") ?? "active",
   };
 }
 
@@ -69,7 +70,12 @@ export const realAuth = {
     if (error) throw mapError(error.message);
     if (!data.user) throw mapError("Login failed.");
 
-    return profileToAuthUser(data.user.id, data.user.email ?? input.email, !!data.user.email_confirmed_at);
+    const authUser = await profileToAuthUser(data.user.id, data.user.email ?? input.email, !!data.user.email_confirmed_at);
+    if (authUser.status === "suspended") {
+      await supabase.auth.signOut();
+      throw new AuthError("account_suspended", "This account has been suspended.");
+    }
+    return authUser;
   },
 
   async logout(): Promise<void> {

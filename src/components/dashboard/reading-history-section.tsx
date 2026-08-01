@@ -9,20 +9,22 @@ import { EmptyState } from "@/components/home/empty-state";
 import { SectionHeader } from "@/components/home/section-header";
 import { useOpenBook } from "@/hooks/use-book-open";
 import { useTranslation } from "@/hooks/use-translation";
-import { getBookById } from "@/data/books";
+import { getBookById } from "@/lib/books";
 import { formatDate } from "@/lib/utils";
 import { HISTORY_PAGE_SIZE } from "@/constants/dashboard";
 import type { ReadingHistoryEntry } from "@/types/dashboard";
+import type { Book } from "@/types/book";
 
 interface ReadingHistorySectionProps {
   entries: ReadingHistoryEntry[];
+  books: Book[];
 }
 
 /** Every book the user has ever opened, most recent activity first —
  *  in-progress and completed alike. Distinct from Reading Progress (which
  *  filters to in-progress only) and Completed Books (which drops the
  *  timeline in favor of a plain grid). */
-export function ReadingHistorySection({ entries }: ReadingHistorySectionProps) {
+export function ReadingHistorySection({ entries, books: catalog }: ReadingHistorySectionProps) {
   const { t, language } = useTranslation();
   const openBook = useOpenBook();
   const [visibleCount, setVisibleCount] = useState(HISTORY_PAGE_SIZE);
@@ -42,7 +44,7 @@ export function ReadingHistorySection({ entries }: ReadingHistorySectionProps) {
       ) : (
         <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-card">
           {visible.map((entry, index) => {
-            const book = getBookById(entry.bookId);
+            const book = getBookById(catalog, entry.bookId);
             if (!book) return null;
 
             return (

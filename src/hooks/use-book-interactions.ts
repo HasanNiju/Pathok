@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/hooks/use-translation";
+import { createClient } from "@/lib/supabase/client";
+import { fetchFavoriteBookIds, toggleFavoriteRow } from "@/lib/supabase/favorites-service";
 import { STORAGE_KEYS } from "@/constants";
 
 function readIds(storageKey: string): string[] {
@@ -22,12 +24,10 @@ function writeIds(storageKey: string, ids: string[]) {
 }
 
 /**
- * Favorite + bookmark state for a single book, scoped to the signed-in
- * user and persisted in localStorage (per the PRD, there's no backend —
- * this is the same "no fake APIs" mock-persistence pattern mockAuth uses
- * for sessions). Guests can see the buttons but toggling prompts a toast
- * instead of silently doing nothing, same spirit as the Continue Reading
- * empty state gating on auth.
+ * Favorite (Supabase-backed, syncs across devices) + quick-bookmark
+ * (localStorage, a lightweight per-device "save for later" toggle distinct
+ * from the Reader's in-book position bookmarks — see use-reader-bookmarks)
+ * state for a single book.
  */
 export function useBookInteractions(bookId: string) {
   const { user } = useAuth();
@@ -37,33 +37,38 @@ export function useBookInteractions(bookId: string) {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
 
-  const favoriteKey = user ? `${STORAGE_KEYS.favoriteBooks}:${user.id}` : null;
   const bookmarkKey = user ? `${STORAGE_KEYS.bookmarkedBooks}:${user.id}` : null;
 
   useEffect(() => {
-    setFavoriteIds(favoriteKey ? readIds(favoriteKey) : []);
     setBookmarkedIds(bookmarkKey ? readIds(bookmarkKey) : []);
-  }, [favoriteKey, bookmarkKey]);
+  }, [bookmarkKey]);
+
+  useEffect(() => {
+    if (!user) {
+      setFavoriteIds([]);
+      return;
+    }
+    fetchFavoriteBookIds(createClient(), user.id).then(setFavoriteIds);
+  }, [user]);
 
   const requireAuth = useCallback(() => {
     addToast({ title: t("bookDetails.actions.loginRequired") });
   }, [addToast, t]);
 
-  const toggleFavorite = useCallback(() => {
-    if (!favoriteKey) return requireAuth();
+  const toggleFavorite = useCallback(async () => {
+    if (!user) return requireAuth();
+    const isFavorite = favoriteIds.includes(bookId);
 
-    setFavoriteIds((current) => {
-      const isFavorite = current.includes(bookId);
-      const next = isFavorite ? current.filter((id) => id !== bookId) : [...current, bookId];
-      writeIds(favoriteKey, next);
+    try {
+      await toggleFavoriteRow(createClient(), user.id, bookId, isFavorite);
+      setFavoriteIds((current) => (isFavorite ? current.filter((id) => id !== bookId) : [...current, bookId]));
       addToast({
-        title: isFavorite
-          ? t("bookDetails.actions.removedFromFavorites")
-          : t("bookDetails.actions.addedToFavorites"),
+        title: isFavorite ? t("bookDetails.actions.removedFromFavorites") : t("bookDetails.actions.addedToFavorites"),
       });
-      return next;
-    });
-  }, [favoriteKey, bookId, requireAuth, addToast, t]);
+    } catch {
+      addToast({ title: t("common.error"), variant: "error" });
+    }
+  }, [user, favoriteIds, bookId, requireAuth, addToast, t]);
 
   const toggleBookmark = useCallback(() => {
     if (!bookmarkKey) return requireAuth();
@@ -73,9 +78,7 @@ export function useBookInteractions(bookId: string) {
       const next = isBookmarked ? current.filter((id) => id !== bookId) : [...current, bookId];
       writeIds(bookmarkKey, next);
       addToast({
-        title: isBookmarked
-          ? t("bookDetails.actions.removedBookmark")
-          : t("bookDetails.actions.addedBookmark"),
+        title: isBookmarked ? t("bookDetails.actions.removedBookmark") : t("bookDetails.actions.addedBookmark"),
       });
       return next;
     });

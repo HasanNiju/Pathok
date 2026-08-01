@@ -1,18 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { getBooksByCategory } from "@/data/books";
+import { getBooksByCategory } from "@/lib/books";
 import { CategoryCard } from "@/components/home/category-card";
 import { SectionHeader } from "@/components/home/section-header";
 import { useTranslation } from "@/hooks/use-translation";
 import { useCategories } from "@/hooks/use-categories";
+import type { Book } from "@/types/book";
 
 interface CategoriesSectionProps {
   activeCategory: string | null;
   onSelectCategory: (slug: string) => void;
+  books: Book[];
 }
 
-export function CategoriesSection({ activeCategory, onSelectCategory }: CategoriesSectionProps) {
+export function CategoriesSection({ activeCategory, onSelectCategory, books }: CategoriesSectionProps) {
   const { t } = useTranslation();
   const { activeCategories } = useCategories();
 
@@ -31,7 +33,7 @@ export function CategoriesSection({ activeCategory, onSelectCategory }: Categori
           <CategoryCard
             key={category.slug}
             category={category}
-            bookCount={getBooksByCategory(category.slug).length}
+            bookCount={getBooksByCategory(books, category.slug).length}
             active={activeCategory === category.slug}
             onClick={() => onSelectCategory(category.slug)}
           />

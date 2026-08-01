@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getBookById } from "@/data/books";
-import { getBookContent } from "@/data/book-content";
+import { createClient } from "@/lib/supabase/server";
+import { fetchBookById, fetchBookChapters } from "@/lib/supabase/books-service";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { ReaderView } from "@/components/reader/reader-view";
 
@@ -11,7 +11,8 @@ interface ReadPageProps {
 
 export async function generateMetadata({ params }: ReadPageProps): Promise<Metadata> {
   const { id } = await params;
-  const book = getBookById(id);
+  const supabase = await createClient();
+  const book = await fetchBookById(supabase, id);
   return { title: book ? `${book.title} — Pathok` : "Pathok" };
 }
 
@@ -23,16 +24,17 @@ export async function generateMetadata({ params }: ReadPageProps): Promise<Metad
  */
 export default async function ReadPage({ params }: ReadPageProps) {
   const { id } = await params;
-  const book = getBookById(id);
-  const content = book ? getBookContent(book.id) : undefined;
+  const supabase = await createClient();
+  const book = await fetchBookById(supabase, id);
+  const chapters = book ? await fetchBookChapters(supabase, book.id) : [];
 
-  if (!book || !content || content.chapters.length === 0) {
+  if (!book || !book.contentReady || chapters.length === 0) {
     notFound();
   }
 
   return (
     <ProtectedRoute>
-      <ReaderView book={book} content={content} />
+      <ReaderView book={book} content={{ bookId: book.id, chapters }} />
     </ProtectedRoute>
   );
 }

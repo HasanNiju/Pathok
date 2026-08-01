@@ -1,29 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { READER_STORAGE_KEYS } from "@/constants/reader";
+import { createClient } from "@/lib/supabase/client";
+import { fetchProgressForBook, saveReadingProgress } from "@/lib/supabase/progress-service";
 import type { Chapter, ReadingSession } from "@/types/reader";
-
-interface StoredSession {
-  chapterId: string;
-  pageIndex: number;
-  minutesSpent: number;
-  updatedAt: string;
-}
-
-function storageKey(userId: string | undefined, bookId: string) {
-  return `${READER_STORAGE_KEYS.session}:${userId ?? "guest"}:${bookId}`;
-}
-
-function readSession(userId: string | undefined, bookId: string): StoredSession | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(storageKey(userId, bookId));
-    return raw ? (JSON.parse(raw) as StoredSession) : null;
-  } catch {
-    return null;
-  }
-}
 
 /** How many paragraphs come strictly before this chapter, in reading order —
  *  used as a stable proxy for "how far into the book" a chapter starts. */
@@ -38,9 +18,10 @@ function paragraphsBefore(chapters: Chapter[], chapterId: string): number {
 
 /**
  * Tracks where a person is in a book — chapter, in-chapter page, and a
- * derived overall progress percentage — and persists it locally per
- * user+book so returning to the book resumes exactly where they left off.
- * Also accumulates minutes spent reading, shown in the progress panel.
+ * derived overall progress percentage — and persists it to Supabase's
+ * reading_progress table per user+book (Module 07), so returning to the
+ * book resumes exactly where they left off, on any device. Also accumulates
+ * minutes spent reading, shown in the progress panel and Dashboard.
  */
 export function useReadingSession(userId: string | undefined, bookId: string, chapters: Chapter[]) {
   const totalParagraphs = useMemo(
@@ -54,57 +35,82 @@ export function useReadingSession(userId: string | undefined, bookId: string, ch
   const [minutesSpent, setMinutesSpent] = useState(0);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  const sessionStartRef = useRef<number>(Date.now());
+  const supabaseRef = useRef(createClient());
+
+  const progressOf = useCallback(
+    (chId: string, pIndex: number, pagesInChapter: number) => {
+      if (totalParagraphs === 0) return 0;
+      const before = paragraphsBefore(chapters, chId);
+      const chapter = chapters.find((c) => c.id === chId);
+      const chapterParagraphs = chapter?.paragraphs.length ?? 0;
+      const fractionOfChapter = pagesInChapter > 1 ? pIndex / (pagesInChapter - 1) : pIndex > 0 ? 1 : 0;
+      const paragraphsInto = before + fractionOfChapter * chapterParagraphs;
+      return Math.max(0, Math.min(100, Math.round((paragraphsInto / totalParagraphs) * 100)));
+    },
+    [chapters, totalParagraphs]
+  );
 
   // Load any saved position once on mount / when switching books.
   useEffect(() => {
-    const saved = readSession(userId, bookId);
-    if (saved && chapters.some((c) => c.id === saved.chapterId)) {
-      setChapterIdState(saved.chapterId);
-      setPageIndexState(saved.pageIndex);
-      setMinutesSpent(saved.minutesSpent);
-    } else {
+    let active = true;
+    if (!userId) {
       setChapterIdState(chapters[0]?.id ?? "");
       setPageIndexState(0);
+      setIsHydrated(true);
+      return;
     }
-    sessionStartRef.current = Date.now();
-    setIsHydrated(true);
+
+    fetchProgressForBook(supabaseRef.current, userId, bookId).then((saved) => {
+      if (!active) return;
+      if (saved && saved.chapterId && chapters.some((c) => c.id === saved.chapterId)) {
+        setChapterIdState(saved.chapterId);
+        setPageIndexState(saved.pageIndex ?? 0);
+        setMinutesSpent(saved.minutesSpent ?? 0);
+      } else {
+        setChapterIdState(chapters[0]?.id ?? "");
+        setPageIndexState(0);
+      }
+      setIsHydrated(true);
+    });
+
+    return () => {
+      active = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, bookId]);
 
   const persist = useCallback(
-    (next: Partial<StoredSession>) => {
-      const current: StoredSession = {
-        chapterId,
-        pageIndex,
-        minutesSpent,
-        updatedAt: new Date().toISOString(),
-        ...next,
-      };
-      try {
-        window.localStorage.setItem(storageKey(userId, bookId), JSON.stringify(current));
-      } catch {
-        // Best-effort persistence only.
-      }
+    (nextChapterId: string, nextPageIndex: number, nextMinutes: number, pagesInChapter: number) => {
+      if (!userId) return;
+      saveReadingProgress(supabaseRef.current, {
+        userId,
+        bookId,
+        progress: progressOf(nextChapterId, nextPageIndex, pagesInChapter),
+        chapterId: nextChapterId,
+        pageIndex: nextPageIndex,
+        minutesSpent: nextMinutes,
+      }).catch(() => {
+        // Best-effort — a failed save shouldn't interrupt reading.
+      });
     },
-    [userId, bookId, chapterId, pageIndex, minutesSpent]
+    [userId, bookId, progressOf]
   );
 
   const setChapterId = useCallback(
     (id: string, page = 0) => {
       setChapterIdState(id);
       setPageIndexState(page);
-      persist({ chapterId: id, pageIndex: page });
+      persist(id, page, minutesSpent, totalPagesInChapter);
     },
-    [persist]
+    [persist, minutesSpent, totalPagesInChapter]
   );
 
   const setPageIndex = useCallback(
     (page: number) => {
       setPageIndexState(page);
-      persist({ pageIndex: page });
+      persist(chapterId, page, minutesSpent, totalPagesInChapter);
     },
-    [persist]
+    [persist, chapterId, minutesSpent, totalPagesInChapter]
   );
 
   // Accrue reading minutes in the background while the tab is visible.
@@ -113,24 +119,18 @@ export function useReadingSession(userId: string | undefined, bookId: string, ch
       if (document.visibilityState !== "visible") return;
       setMinutesSpent((prev) => {
         const next = prev + 1;
-        persist({ minutesSpent: next });
+        persist(chapterId, pageIndex, next, totalPagesInChapter);
         return next;
       });
     }, 60_000);
     return () => window.clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, bookId]);
+  }, [userId, bookId, chapterId, pageIndex, totalPagesInChapter]);
 
-  const progress = useMemo<number>(() => {
-    if (totalParagraphs === 0) return 0;
-    const before = paragraphsBefore(chapters, chapterId);
-    const chapter = chapters.find((c) => c.id === chapterId);
-    const chapterParagraphs = chapter?.paragraphs.length ?? 0;
-    const fractionOfChapter =
-      totalPagesInChapter > 1 ? pageIndex / (totalPagesInChapter - 1) : pageIndex > 0 ? 1 : 0;
-    const paragraphsInto = before + fractionOfChapter * chapterParagraphs;
-    return Math.max(0, Math.min(100, Math.round((paragraphsInto / totalParagraphs) * 100)));
-  }, [chapters, chapterId, pageIndex, totalPagesInChapter, totalParagraphs]);
+  const progress = useMemo(
+    () => progressOf(chapterId, pageIndex, totalPagesInChapter),
+    [progressOf, chapterId, pageIndex, totalPagesInChapter]
+  );
 
   const session: ReadingSession = {
     bookId,

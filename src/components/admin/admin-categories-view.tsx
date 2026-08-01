@@ -59,30 +59,43 @@ export function AdminCategoriesView() {
     setFormOpen(true);
   };
 
-  const handleSubmit = (input: CategoryInput) => {
-    if (editing) {
-      updateCategory(editing.id, input);
-      addToast({ title: t("admin.categories.toast.updated"), variant: "success" });
-    } else {
-      createCategory(input);
-      addToast({ title: t("admin.categories.toast.created"), variant: "success" });
+  const handleSubmit = async (input: CategoryInput) => {
+    try {
+      if (editing) {
+        await updateCategory(editing.id, input);
+        addToast({ title: t("admin.categories.toast.updated"), variant: "success" });
+      } else {
+        await createCategory(input);
+        addToast({ title: t("admin.categories.toast.created"), variant: "success" });
+      }
+    } catch {
+      addToast({ title: t("common.error"), variant: "error" });
     }
   };
 
-  const handleToggle = (category: Category) => {
-    toggleActive(category.id);
-    addToast({
-      title: category.active
-        ? t("admin.categories.toast.deactivated")
-        : t("admin.categories.toast.activated"),
-    });
+  const handleToggle = async (category: Category) => {
+    try {
+      await toggleActive(category.id);
+      addToast({
+        title: category.active
+          ? t("admin.categories.toast.deactivated")
+          : t("admin.categories.toast.activated"),
+      });
+    } catch {
+      addToast({ title: t("common.error"), variant: "error" });
+    }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleting) return;
-    deleteCategory(deleting.id);
-    addToast({ title: t("admin.categories.toast.deleted"), variant: "success" });
-    setDeleting(null);
+    try {
+      await deleteCategory(deleting.id);
+      addToast({ title: t("admin.categories.toast.deleted"), variant: "success" });
+    } catch {
+      addToast({ title: t("common.error"), variant: "error" });
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (

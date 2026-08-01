@@ -21,6 +21,7 @@ import { TocPanel } from "@/components/reader/toc-panel";
 import { SettingsPanel } from "@/components/reader/settings-panel";
 import { SearchPanel } from "@/components/reader/search-panel";
 import { AnnotationsPanel } from "@/components/reader/annotations-panel";
+import { TtsPanel } from "@/components/reader/tts-panel";
 import type { Book } from "@/types/book";
 import type {
   AnnotationColor,
@@ -30,7 +31,7 @@ import type {
   ReaderSearchResult,
 } from "@/types/reader";
 
-type PanelName = "toc" | "settings" | "search" | "annotations" | null;
+type PanelName = "toc" | "settings" | "search" | "annotations" | "tts" | null;
 
 interface ReaderViewProps {
   book: Book;
@@ -172,9 +173,13 @@ export function ReaderView({ book, content }: ReaderViewProps) {
     if (!selection) setChromeVisible((v) => !v);
   };
 
-  const handleToggleBookmark = () => {
+  const handleToggleBookmark = async () => {
     const excerpt = contentRef.current?.getFirstParagraphOnPage(pageIndex)?.text ?? currentChapter?.title ?? "";
-    const result = toggleBookmark(chapterId, pageIndex, excerpt);
+    const result = await toggleBookmark(chapterId, pageIndex, excerpt);
+    if (result === "unavailable") {
+      addToast({ title: t("bookDetails.actions.loginRequired") });
+      return;
+    }
     addToast({
       title: result === "added" ? t("reader.actions.bookmarkAdded") : t("reader.actions.bookmarkRemoved"),
       variant: "success",
@@ -245,6 +250,7 @@ export function ReaderView({ book, content }: ReaderViewProps) {
         onToggleBookmark={handleToggleBookmark}
         onToggleAnnotations={() => setPanel(panel === "annotations" ? null : "annotations")}
         onToggleSettings={() => setPanel(panel === "settings" ? null : "settings")}
+        onToggleTts={() => setPanel(panel === "tts" ? null : "tts")}
         onToggleFullscreen={toggleFullscreen}
       />
 
@@ -307,6 +313,8 @@ export function ReaderView({ book, content }: ReaderViewProps) {
         results={results}
         onSelectResult={handleSelectResult}
       />
+
+      <TtsPanel open={panel === "tts"} onClose={() => setPanel(null)} text={currentChapter.paragraphs.join("\n\n")} />
 
       <AnnotationsPanel
         open={panel === "annotations"}

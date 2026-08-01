@@ -9,6 +9,7 @@ const ERROR_KEYS: Record<AuthErrorCode, string> = {
   invalid_otp: "auth.errors.invalidOtp",
   otp_expired: "auth.errors.otpExpired",
   otp_not_verified: "auth.errors.otpNotVerified",
+  account_suspended: "auth.errors.accountSuspended",
 };
 
 /** Resolves any thrown error to a translation key, falling back to a generic one. */

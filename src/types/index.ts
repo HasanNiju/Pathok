@@ -10,8 +10,8 @@ export type Language = "en" | "bn";
 /** Theme modes surfaced to the user, backed by next-themes. */
 export type ThemeMode = "light" | "dark" | "system";
 
-/** The three user types defined in the PRD. */
-export type UserRole = "guest" | "user" | "admin";
+/** The user types defined in the PRD, plus super_admin (Admin Management module). */
+export type UserRole = "guest" | "user" | "admin" | "super_admin";
 
 /** Minimal identity shape shared across the app before Auth module exists. */
 export interface AppUser {
