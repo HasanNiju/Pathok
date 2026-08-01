@@ -19,7 +19,7 @@ interface BrandLogoProps {
  * logo has been uploaded yet, and swaps to the dark-mode logo variant
  * when one exists and the app is in dark mode.
  */
-export function BrandLogo({ className, imageHeight = 22 }: BrandLogoProps) {
+export function BrandLogo({ className, imageHeight = 32 }: BrandLogoProps) {
   const { branding } = useBranding();
   const { resolvedTheme } = useTheme();
 

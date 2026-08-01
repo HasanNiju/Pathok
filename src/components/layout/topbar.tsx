@@ -84,30 +84,15 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
       )}
     >
       <div className="flex items-center gap-1">
-        {onMenuClick && (
-          <button
-            type="button"
-            onClick={onMenuClick}
-            aria-label={t("nav.menu")}
-            className={cn(
-              "inline-flex h-9 w-9 items-center justify-center rounded-md md:hidden",
-              "text-muted-foreground hover:bg-secondary hover:text-foreground",
-              "transition-colors duration-200"
-            )}
-          >
-            <Menu className="h-5 w-5" aria-hidden="true" />
-          </button>
-        )}
-
         <Link
           href="/"
           className="flex items-center gap-2 rounded-md px-1 text-lg font-bold tracking-tight text-foreground transition-opacity duration-200 hover:opacity-80"
         >
-          <BrandLogo />
+          <BrandLogo imageHeight={34} />
         </Link>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         <Link
           href="/#search"
           aria-label={t("nav.search")}
@@ -125,7 +110,7 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
           onClick={cycleLanguage}
           aria-label={t("language.label")}
           className={cn(
-            "inline-flex h-9 w-9 items-center justify-center rounded-md",
+            "hidden h-9 w-9 items-center justify-center rounded-md sm:inline-flex",
             "text-muted-foreground hover:bg-secondary hover:text-foreground",
             "transition-colors duration-200"
           )}
@@ -139,7 +124,7 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
             onClick={cycleTheme}
             aria-label={t("theme.light")}
             className={cn(
-              "inline-flex h-9 w-9 items-center justify-center rounded-md",
+              "hidden h-9 w-9 items-center justify-center rounded-md sm:inline-flex",
               "text-muted-foreground hover:bg-secondary hover:text-foreground",
               "transition-colors duration-200"
             )}
@@ -196,6 +181,21 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
               </Button>
             </Link>
           ))}
+
+        {onMenuClick && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            aria-label={t("nav.menu")}
+            className={cn(
+              "inline-flex h-9 w-9 items-center justify-center rounded-md md:hidden",
+              "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              "transition-colors duration-200"
+            )}
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
+          </button>
+        )}
       </div>
     </motion.header>
   );

@@ -2,9 +2,8 @@
 
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useBranding } from "@/providers/branding-provider";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { cn } from "@/lib/utils";
 
 export interface AuthShellProps {
@@ -23,19 +22,15 @@ export interface AuthShellProps {
  * language switch and dark-mode toggle, so this shell doesn't duplicate them.
  */
 export function AuthShell({ title, description, children, footer, className }: AuthShellProps) {
-  const { branding } = useBranding();
   return (
     <div className="mx-auto flex w-full max-w-md flex-col items-center py-8 sm:py-16">
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="mb-8 flex flex-col items-center gap-2 text-center"
+        className="mb-8 flex flex-col items-center gap-3 text-center"
       >
-        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-soft">
-          <BookOpen className="h-6 w-6" aria-hidden="true" />
-        </span>
-        <span className="text-lg font-bold tracking-tight">{branding.siteName}</span>
+        <BrandLogo imageHeight={44} className="text-xl" />
       </motion.div>
 
       <motion.div
