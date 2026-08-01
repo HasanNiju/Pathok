@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { useToast } from "@/hooks/use-toast";
-import { useBranding } from "@/providers/branding-provider";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { cn } from "@/lib/utils";
 import { ResponsiveContainer } from "@/components/layout/responsive-container";
 
@@ -29,7 +28,6 @@ const UNBUILT_LINK_KEYS = {
 } as const;
 
 export function Footer({ className }: FooterProps) {
-  const { branding } = useBranding();
   const { t } = useTranslation();
   const { addToast } = useToast();
 
@@ -40,8 +38,7 @@ export function Footer({ className }: FooterProps) {
       <ResponsiveContainer className="grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:py-16">
         <div className="flex flex-col gap-3">
           <Link href="/" className="flex w-fit items-center gap-2 text-lg font-bold tracking-tight text-foreground">
-            <BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />
-            {branding.siteName}
+            <BrandLogo />
           </Link>
           <p className="max-w-xs text-sm text-muted-foreground">{t("footer.tagline")}</p>
         </div>
