@@ -17,8 +17,11 @@ interface PdfBookReaderProps {
   /** 1-based page currently shown (left page, on a desktop spread). */
   pageNumber: number;
   onLoadSuccess: (numPages: number) => void;
-  /** Width available for the reading area, in pixels — pages are sized to fit it. */
+  /** Space available for the reading area, in pixels — pages are sized to
+   *  fit fully inside both, whichever constraint is tighter, so a page
+   *  never needs to be scrolled to be read in full. */
   availableWidth: number;
+  availableHeight: number;
 }
 
 /**
@@ -28,19 +31,24 @@ interface PdfBookReaderProps {
  * shows one page at a time. Each page keeps its natural (usually white)
  * paper color; only the surrounding app chrome follows the site theme.
  */
-export function PdfBookReader({ fileUrl, pageNumber, onLoadSuccess, availableWidth }: PdfBookReaderProps) {
+export function PdfBookReader({ fileUrl, pageNumber, onLoadSuccess, availableWidth, availableHeight }: PdfBookReaderProps) {
   const { t } = useTranslation();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [numPages, setNumPages] = useState(0);
+  // width / height of one page at its native resolution, from the first
+  // page loaded — used to fit every page to the tighter of the two bounds.
+  const [aspectRatio, setAspectRatio] = useState(0.72);
 
   useEffect(() => {
     setNumPages(0);
   }, [fileUrl]);
 
-  const gap = 16;
-  const pageWidth = isDesktop ? Math.min(560, (availableWidth - gap) / 2) : Math.min(560, availableWidth);
+  const gap = 20;
+  const widthCap = isDesktop ? Math.min(520, (availableWidth - gap) / 2) : Math.min(560, availableWidth);
+  const heightDrivenWidth = availableHeight * aspectRatio;
+  const pageWidth = Math.max(200, Math.min(widthCap, heightDrivenWidth));
 
-  const pageClassName = "overflow-hidden rounded-sm bg-white shadow-soft";
+  const pageClassName = "overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black/5";
 
   return (
     <Document
@@ -60,8 +68,13 @@ export function PdfBookReader({ fileUrl, pageNumber, onLoadSuccess, availableWid
         onLoadSuccess(total);
       }}
     >
-      <div className="flex items-start justify-center" style={{ gap }}>
-        <Page pageNumber={pageNumber} width={pageWidth} className={pageClassName} />
+      <div className="flex items-center justify-center" style={{ gap }}>
+        <Page
+          pageNumber={pageNumber}
+          width={pageWidth}
+          className={pageClassName}
+          onLoadSuccess={(page) => setAspectRatio(page.width / page.height)}
+        />
         {isDesktop && pageNumber + 1 <= numPages && (
           <Page pageNumber={pageNumber + 1} width={pageWidth} className={pageClassName} />
         )}
