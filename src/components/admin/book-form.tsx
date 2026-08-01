@@ -184,10 +184,13 @@ export function BookForm({ mode, bookId }: BookFormProps) {
     }
   };
 
-  /** Upload → Store, per the PRD pipeline. Requires the draft to already
-   *  exist. PDFs are never text-extracted — they're uploaded and served
-   *  exactly as authored by the native PDF reader. DOCX still goes
-   *  through extraction, since there's no "view as-is" equivalent for it. */
+  /** Upload → Extract → Store, per the PRD pipeline. Requires the draft to
+   *  already exist. Both PDF and DOCX now go through the same text
+   *  extraction step, so every book — regardless of source format — reads
+   *  through the same reflowable, searchable, highlightable typography
+   *  Reader (two columns on desktop, one on mobile). The original file is
+   *  still uploaded/stored (kept as the source of truth / future re-extract),
+   *  but readers never see the raw PDF pages. */
   const handleExtract = async () => {
     if (!savedBook || !sourceFile) return;
 
@@ -197,15 +200,6 @@ export function BookForm({ mode, bookId }: BookFormProps) {
     try {
       const supabase = createClient();
       const fileUrl = await uploadBookFile(supabase, savedBook.id, sourceFile);
-
-      if (isPdf) {
-        await setBookFileMeta(supabase, savedBook.id, { fileUrl, fileType: "pdf", contentReady: true });
-        setSavedBook((current) => (current ? { ...current, fileUrl, fileType: "pdf", contentReady: true } : current));
-        setChapters(null);
-        setSourceFile(null);
-        addToast({ title: t("create.form.toast.pdfReady"), variant: "success" });
-        return;
-      }
 
       const formData = new FormData();
       formData.append("file", sourceFile);
@@ -219,9 +213,10 @@ export function BookForm({ mode, bookId }: BookFormProps) {
         return;
       }
 
-      await setBookFileMeta(supabase, savedBook.id, { fileUrl, fileType: "docx", contentReady: false });
+      const fileType = isPdf ? "pdf" : "docx";
+      await setBookFileMeta(supabase, savedBook.id, { fileUrl, fileType, contentReady: false });
       await saveBookChapters(supabase, savedBook.id, result.chapters);
-      setSavedBook((current) => (current ? { ...current, fileUrl, fileType: "docx", contentReady: true } : current));
+      setSavedBook((current) => (current ? { ...current, fileUrl, fileType, contentReady: true } : current));
       setChapters(result.chapters);
       setSourceFile(null);
       addToast({ title: t("create.form.toast.extracted"), variant: "success" });
@@ -230,7 +225,6 @@ export function BookForm({ mode, bookId }: BookFormProps) {
     } finally {
       setIsExtracting(false);
     }
-
   };
 
   const handlePublish = async () => {
@@ -365,13 +359,6 @@ export function BookForm({ mode, bookId }: BookFormProps) {
             {t("create.form.extract")}
           </Button>
         </div>
-
-        {savedBook?.fileType === "pdf" && savedBook.contentReady && (
-          <div className="flex items-center gap-2 rounded-lg bg-secondary/60 p-4 text-sm font-medium text-foreground">
-            <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />
-            {t("create.form.pdfReadyLabel")}
-          </div>
-        )}
 
         {chapters && chapters.length > 0 && (
           <div className="flex flex-col gap-2 rounded-lg bg-secondary/60 p-4">

@@ -264,16 +264,15 @@ const bn: typeof en = {
       tagsPlaceholder: "কমা, দিয়ে, আলাদা, করা, ট্যাগ",
       description: "সংক্ষিপ্ত বিবরণ",
       saveDraft: "খসড়া সংরক্ষণ করুন",
-      contentHint: "একটি PDF আপলোড করুন যা হুবহু দেখানো হবে, অথবা একটি DOCX আপলোড করুন যা থেকে পঠনযোগ্য অধ্যায় তৈরি হবে।",
+      contentHint: "একটি PDF বা DOCX আপলোড করুন — এর টেক্সট এক্সট্র্যাক্ট করে পঠনযোগ্য অধ্যায়ে সাজানো হবে।",
       contentLocked: "ফাইল আপলোড আনলক করতে প্রথমে বইয়ের তথ্য সংরক্ষণ করুন।",
       dropFile: "একটি PDF বা DOCX ফাইল বেছে নিতে ক্লিক করুন",
       fileTypes: "PDF বা DOCX, সর্বোচ্চ ২৫MB",
       extract: "আপলোড ও এক্সট্র্যাক্ট করুন",
       previewTitle: "{count} টি অধ্যায় প্রস্তুত",
-      pdfReadyLabel: "PDF আপলোড হয়েছে — এটি পাঠকদের কাছে হুবহু, পৃষ্ঠা অনুযায়ী দেখানো হবে।",
       publish: "বই প্রকাশ করুন",
       errors: { required: "শিরোনাম, লেখক এবং বিভাগ আবশ্যক।" },
-      toast: { saved: "সংরক্ষিত হয়েছে।", extracted: "টেক্সট এক্সট্র্যাক্ট ও সংরক্ষণ করা হয়েছে।", pdfReady: "PDF আপলোড ও প্রস্তুত হয়েছে।", published: "বই প্রকাশিত হয়েছে।" },
+      toast: { saved: "সংরক্ষিত হয়েছে।", extracted: "টেক্সট এক্সট্র্যাক্ট ও সংরক্ষণ করা হয়েছে।", published: "বই প্রকাশিত হয়েছে।" },
     },
   },
   bookDetails: {
@@ -339,11 +338,6 @@ const bn: typeof en = {
   },
   reader: {
     loading: "বইটি খোলা হচ্ছে",
-    pdf: {
-      loadError: "এই PDF টি লোড করা যায়নি।",
-      pageOf: "পৃষ্ঠা {page} / {total}",
-      spreadOf: "পৃষ্ঠা {start}–{end} / {total}",
-    },
     tts: {
       title: "উচ্চস্বরে পড়ুন",
       play: "চালান",

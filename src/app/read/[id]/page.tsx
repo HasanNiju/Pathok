@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchBookById, fetchBookChapters } from "@/lib/supabase/books-service";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { ReaderView } from "@/components/reader/reader-view";
-import { PdfReaderLoader } from "@/components/reader/pdf-reader-loader";
 
 interface ReadPageProps {
   params: Promise<{ id: string }>;
@@ -18,16 +17,15 @@ export async function generateMetadata({ params }: ReadPageProps): Promise<Metad
 }
 
 /**
- * The Reader page itself renders full-bleed (see ReaderView/PdfReaderView,
- * which cover the viewport as a fixed overlay above the app shell rather
- * than sitting inside it) — a distraction-free reading surface.
+ * The Reader page itself renders full-bleed (see ReaderView, which covers
+ * the viewport as a fixed overlay above the app shell rather than sitting
+ * inside it) — a distraction-free reading surface.
  *
- * Two entirely different reading experiences, chosen by how the book was
- * uploaded: a PDF is shown exactly as authored (react-pdf, no text
- * extraction, so original formatting/layout/images are preserved) with a
- * two-page desktop spread / one-page mobile layout; a DOCX-sourced book
- * uses the extracted-text typography Reader, which is what makes
- * highlighting, in-book search, and Read Aloud possible for it.
+ * Every book — PDF or DOCX — is uploaded → text-extracted → chunked into
+ * chapters (see /api/books/extract), then read through the same
+ * extracted-text typography Reader: a two-column spread on desktop, one
+ * column on mobile, with in-book search, highlighting, bookmarks, and
+ * Read Aloud all working the same way regardless of source format.
  */
 export default async function ReadPage({ params }: ReadPageProps) {
   const { id } = await params;
@@ -35,15 +33,6 @@ export default async function ReadPage({ params }: ReadPageProps) {
   const book = await fetchBookById(supabase, id);
 
   if (!book || !book.contentReady) notFound();
-
-  if (book.fileType === "pdf") {
-    if (!book.fileUrl) notFound();
-    return (
-      <ProtectedRoute>
-        <PdfReaderLoader book={book} />
-      </ProtectedRoute>
-    );
-  }
 
   const chapters = await fetchBookChapters(supabase, book.id);
   if (chapters.length === 0) notFound();

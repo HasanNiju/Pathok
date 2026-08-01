@@ -262,16 +262,15 @@ const en = {
       tagsPlaceholder: "comma, separated, tags",
       description: "Short description",
       saveDraft: "Save draft",
-      contentHint: "Upload a PDF to show it exactly as designed, or a DOCX to extract its text into readable chapters.",
+      contentHint: "Upload a PDF or DOCX — its text is extracted and reflowed into readable chapters.",
       contentLocked: "Save the book's information first to unlock file upload.",
       dropFile: "Click to choose a PDF or DOCX file",
       fileTypes: "PDF or DOCX, up to 25MB",
       extract: "Upload & extract",
       previewTitle: "{count} chapters ready",
-      pdfReadyLabel: "PDF uploaded — it will be shown to readers exactly as-is, page by page.",
       publish: "Publish book",
       errors: { required: "Title, author, and category are required." },
-      toast: { saved: "Saved.", extracted: "Text extracted and stored.", pdfReady: "PDF uploaded and ready.", published: "Book published." },
+      toast: { saved: "Saved.", extracted: "Text extracted and stored.", published: "Book published." },
     },
   },
   bookDetails: {
@@ -337,11 +336,6 @@ const en = {
   },
   reader: {
     loading: "Opening your book",
-    pdf: {
-      loadError: "This PDF couldn't be loaded.",
-      pageOf: "Page {page} of {total}",
-      spreadOf: "Pages {start}–{end} of {total}",
-    },
     tts: {
       title: "Read Aloud",
       play: "Play",
