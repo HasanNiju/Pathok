@@ -235,7 +235,7 @@ export async function restoreBook(supabase: SupabaseClient, id: string) {
   if (error) throw error;
 }
 
-/** Replaces a book's chapters after a new file has been uploaded + extracted, and marks content ready. */
+/** Replaces a book's chapters with what's currently in the chapter editor, and marks content ready. */
 export async function saveBookChapters(supabase: SupabaseClient, bookId: string, chapters: Chapter[]) {
   await supabase.from("book_chapters").delete().eq("book_id", bookId);
   if (chapters.length > 0) {
@@ -302,25 +302,4 @@ export async function uploadBookCover(supabase: SupabaseClient, bookId: string, 
   return supabase.storage.from("book-covers").getPublicUrl(path).data.publicUrl;
 }
 
-export async function uploadBookFile(supabase: SupabaseClient, bookId: string, file: File): Promise<string> {
-  const ext = file.name.split(".").pop() ?? "pdf";
-  const path = `${bookId}/source-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from("book-files").upload(path, file, { upsert: true });
-  if (error) throw error;
-  return supabase.storage.from("book-files").getPublicUrl(path).data.publicUrl;
-}
 
-/** Records the uploaded source file on the book row. For PDFs this alone
- *  marks the book ready to read (Module 01) — the file is served as-is by
- *  the native PDF reader, no text extraction involved. */
-export async function setBookFileMeta(
-  supabase: SupabaseClient,
-  bookId: string,
-  meta: { fileUrl: string; fileType: "pdf" | "docx"; contentReady: boolean }
-) {
-  const { error } = await supabase
-    .from("books")
-    .update({ file_url: meta.fileUrl, file_type: meta.fileType, content_ready: meta.contentReady })
-    .eq("id", bookId);
-  if (error) throw error;
-}

@@ -219,9 +219,9 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
               return (
                 <p key={index} data-p={index} className="mb-5 break-words [-webkit-hyphens:auto] [hyphens:auto]">
                   {html && !hasHighlight ? (
-                    // Preserves the source PDF's bold/italic runs exactly —
-                    // sanitized server-side to <b>/<i>/<br> only (see
-                    // extractFormattedFromPdf), so this is safe to inject.
+                    // Bold/italic exactly as written in the chapter editor —
+                    // sanitized to <b>/<i> only on save (see
+                    // sanitizeParagraphHtml), so this is safe to inject.
                     <span dangerouslySetInnerHTML={{ __html: html }} />
                   ) : (
                     renderParagraph(paragraph, index)

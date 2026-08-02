@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { UploadCloud, FileText, CheckCircle2 } from "lucide-react";
+import { UploadCloud, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,7 @@ import { CategorySelect } from "@/components/ui/category-select";
 import { BackButton } from "@/components/ui/back-button";
 import { SectionHeader } from "@/components/home/section-header";
 import { Loading } from "@/components/ui/loading";
+import { ChapterEditor, type ChapterEditorHandle } from "@/components/admin/chapter-editor";
 import { useTranslation } from "@/hooks/use-translation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,8 +21,6 @@ import {
   createBookRow,
   updateBookRow,
   uploadBookCover,
-  uploadBookFile,
-  setBookFileMeta,
   saveBookChapters,
   fetchBookById,
   fetchBookMetadata,
@@ -64,9 +63,9 @@ const EMPTY_FORM: FormState = {
 /**
  * Book Creation + Edit (Module 01). One form drives both: create starts
  * from EMPTY_FORM and saves a new draft on first "Save"; edit loads the
- * existing book/metadata/chapters first. The upload → extract → preview →
- * publish pipeline only unlocks once the book record itself exists (a
- * draft id is required before a file can be attached to it).
+ * existing book/metadata/chapters first. The chapter editor only unlocks
+ * once the book record itself exists (a draft id is required before
+ * chapters can be attached to it).
  */
 export function BookForm({ mode, bookId }: BookFormProps) {
   const router = useRouter();
@@ -78,12 +77,12 @@ export function BookForm({ mode, bookId }: BookFormProps) {
   const [savedBook, setSavedBook] = useState<Book | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [chapters, setChapters] = useState<Chapter[] | null>(null);
+  const chapterEditorRef = useRef<ChapterEditorHandle>(null);
 
   const [isLoading, setIsLoading] = useState(mode === "edit");
   const [isSavingMeta, setIsSavingMeta] = useState(false);
-  const [isExtracting, setIsExtracting] = useState(false);
+  const [isSavingContent, setIsSavingContent] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
 
   const update = (patch: Partial<FormState>) => setForm((current) => ({ ...current, ...patch }));
@@ -184,46 +183,31 @@ export function BookForm({ mode, bookId }: BookFormProps) {
     }
   };
 
-  /** Upload → Extract → Store, per the PRD pipeline. Requires the draft to
-   *  already exist. Both PDF and DOCX now go through the same text
-   *  extraction step, so every book — regardless of source format — reads
-   *  through the same reflowable, searchable, highlightable typography
-   *  Reader (two columns on desktop, one on mobile). The original file is
-   *  still uploaded/stored (kept as the source of truth / future re-extract),
-   *  but readers never see the raw PDF pages. */
-  const handleExtract = async () => {
-    if (!savedBook || !sourceFile) return;
+  /** Reads the editor's live content and persists it as this book's
+   *  chapters — the editor replaces the old upload → extract pipeline, so
+   *  every book is written directly in the same reflowable typography the
+   *  Reader displays (two columns on desktop, one on mobile), no file or
+   *  extraction step involved. Requires the draft to already exist. */
+  const handleSaveContent = async () => {
+    if (!savedBook || !chapterEditorRef.current) return;
 
-    const isPdf = sourceFile.name.toLowerCase().endsWith(".pdf");
+    const nextChapters = chapterEditorRef.current.getChapters();
+    if (nextChapters.every((c) => c.paragraphs.length === 0)) {
+      addToast({ title: t("create.form.errors.empty"), variant: "error" });
+      return;
+    }
 
-    setIsExtracting(true);
+    setIsSavingContent(true);
     try {
       const supabase = createClient();
-      const fileUrl = await uploadBookFile(supabase, savedBook.id, sourceFile);
-
-      const formData = new FormData();
-      formData.append("file", sourceFile);
-      formData.append("bookId", savedBook.id);
-
-      const response = await fetch("/api/books/extract", { method: "POST", body: formData });
-      const result = await response.json();
-
-      if (!response.ok) {
-        addToast({ title: result.error ?? t("common.error"), variant: "error" });
-        return;
-      }
-
-      const fileType = isPdf ? "pdf" : "docx";
-      await setBookFileMeta(supabase, savedBook.id, { fileUrl, fileType, contentReady: false });
-      await saveBookChapters(supabase, savedBook.id, result.chapters);
-      setSavedBook((current) => (current ? { ...current, fileUrl, fileType, contentReady: true } : current));
-      setChapters(result.chapters);
-      setSourceFile(null);
-      addToast({ title: t("create.form.toast.extracted"), variant: "success" });
+      await saveBookChapters(supabase, savedBook.id, nextChapters);
+      setSavedBook((current) => (current ? { ...current, contentReady: true } : current));
+      setChapters(nextChapters);
+      addToast({ title: t("create.form.toast.contentSaved"), variant: "success" });
     } catch {
       addToast({ title: t("common.error"), variant: "error" });
     } finally {
-      setIsExtracting(false);
+      setIsSavingContent(false);
     }
   };
 
@@ -330,51 +314,30 @@ export function BookForm({ mode, bookId }: BookFormProps) {
       </Card>
 
       <Card className={`flex flex-col gap-4 p-5 ${!savedBook ? "opacity-50" : ""}`}>
-        <h2 className="text-sm font-bold text-foreground">{t("create.form.sectionContent")}</h2>
-        <p className="text-sm text-muted-foreground">
-          {savedBook ? t("create.form.contentHint") : t("create.form.contentLocked")}
-        </p>
-
-        <label
-          className={`flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border p-8 text-center ${
-            savedBook ? "cursor-pointer hover:bg-secondary/50" : "pointer-events-none"
-          }`}
-        >
-          <FileText className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
-          <span className="text-sm font-medium text-foreground">
-            {sourceFile ? sourceFile.name : t("create.form.dropFile")}
-          </span>
-          <span className="text-xs text-muted-foreground">{t("create.form.fileTypes")}</span>
-          <input
-            type="file"
-            accept=".pdf,.docx"
-            disabled={!savedBook}
-            className="hidden"
-            onChange={(e) => setSourceFile(e.target.files?.[0] ?? null)}
-          />
-        </label>
-
-        <div className="flex justify-end">
-          <Button onClick={handleExtract} isLoading={isExtracting} disabled={!savedBook || !sourceFile}>
-            {t("create.form.extract")}
-          </Button>
-        </div>
-
-        {chapters && chapters.length > 0 && (
-          <div className="flex flex-col gap-2 rounded-lg bg-secondary/60 p-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-bold text-foreground">{t("create.form.sectionContent")}</h2>
+            <p className="text-sm text-muted-foreground">
+              {savedBook ? t("create.form.contentHint") : t("create.form.contentLocked")}
+            </p>
+          </div>
+          {chapters && chapters.length > 0 && (
+            <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
+              <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
               {t("create.form.previewTitle").replace("{count}", String(chapters.length))}
             </div>
-            <ol className="flex max-h-48 flex-col gap-1 overflow-y-auto text-sm text-muted-foreground">
-              {chapters.map((chapter) => (
-                <li key={chapter.id} className="truncate">
-                  {chapter.order}. {chapter.title} — {chapter.paragraphs.length} ¶
-                </li>
-              ))}
-            </ol>
-          </div>
+          )}
+        </div>
+
+        {savedBook && (
+          <ChapterEditor ref={chapterEditorRef} bookId={savedBook.id} initialChapters={chapters ?? []} />
         )}
+
+        <div className="flex justify-end">
+          <Button onClick={handleSaveContent} isLoading={isSavingContent} disabled={!savedBook}>
+            {t("create.form.saveContent")}
+          </Button>
+        </div>
       </Card>
 
       <div className="flex justify-end">

@@ -21,11 +21,10 @@ export async function generateMetadata({ params }: ReadPageProps): Promise<Metad
  * the viewport as a fixed overlay above the app shell rather than sitting
  * inside it) — a distraction-free reading surface.
  *
- * Every book — PDF or DOCX — is uploaded → text-extracted → chunked into
- * chapters (see /api/books/extract), then read through the same
- * extracted-text typography Reader: a two-column spread on desktop, one
- * column on mobile, with in-book search, highlighting, bookmarks, and
- * Read Aloud all working the same way regardless of source format.
+ * Every book is written directly in the admin chapter editor (see
+ * ChapterEditor / BookForm) and read through the same reflowable
+ * typography Reader: a two-column spread on desktop, one column on
+ * mobile, with in-book search, highlighting, bookmarks, and Read Aloud.
  */
 export default async function ReadPage({ params }: ReadPageProps) {
   const { id } = await params;

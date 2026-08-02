@@ -105,3 +105,12 @@
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 }
+
+/* Admin chapter editor — placeholder text for an empty paragraph block.
+   Plain CSS (not a Tailwind arbitrary value) because `content: attr(...)`
+   inside Tailwind's bracket syntax doesn't reliably escape. */
+.rich-paragraph:empty:before {
+  content: attr(data-placeholder);
+  color: hsl(var(--muted-foreground) / 0.6);
+  pointer-events: none;
+}
