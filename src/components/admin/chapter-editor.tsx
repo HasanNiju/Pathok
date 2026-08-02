@@ -166,7 +166,7 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
     if (chapters.length <= 1) return;
     const next = chapters.filter((c) => c.id !== id);
     setChapters(next);
-    if (id === activeId) setActiveId(next[0].id);
+    if (id === activeId && next.length > 0) setActiveId(next[0]!.id);
   };
 
   const moveChapter = (id: string, dir: -1 | 1) => {
@@ -175,9 +175,11 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
       const swapWith = index + dir;
       if (index < 0 || swapWith < 0 || swapWith >= current.length) return current;
       const next = current.slice();
-      const tmp = next[index];
-      next[index] = next[swapWith];
-      next[swapWith] = tmp;
+      const a = next[index];
+      const b = next[swapWith];
+      if (!a || !b) return current;
+      next[index] = b;
+      next[swapWith] = a;
       return next;
     });
   };
@@ -210,9 +212,9 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
         const currentEl = blockRefs.current.get(blockId);
         const currentIsBlank = replaceIfBlank && currentEl ? isBlankParagraphHtml(currentEl.innerHTML) : false;
         const blocks = chapter.blocks.slice();
-        if (currentIsBlank) {
+        if (currentIsBlank && inserted.length > 0) {
           const [first, ...rest] = inserted;
-          blocks[index] = first;
+          blocks[index] = first!;
           blocks.splice(index + 1, 0, ...rest);
         } else {
           blocks.splice(index + 1, 0, ...inserted);
@@ -220,7 +222,7 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
         return { ...chapter, blocks };
       })
     );
-    return inserted[inserted.length - 1].id;
+    return inserted[inserted.length - 1]!.id;
   };
 
   const handleEnter = (blockId: string, el: HTMLDivElement) => {
@@ -242,7 +244,9 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
         const index = chapter.blocks.findIndex((b) => b.id === blockId);
         if (index === -1) return chapter;
         const blocks = chapter.blocks.slice();
-        blocks[index] = { ...blocks[index], html: remainingHtml };
+        const existing = blocks[index];
+        if (!existing) return chapter;
+        blocks[index] = { ...existing, html: remainingHtml };
         blocks.splice(index + 1, 0, { id: newId, html: newHtml });
         return { ...chapter, blocks };
       })
@@ -257,6 +261,7 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
     if (index <= 0) return; // nothing above to merge into
 
     const prevBlock = chapter.blocks[index - 1];
+    if (!prevBlock) return;
     const prevEl = blockRefs.current.get(prevBlock.id);
     const prevHtml = prevEl ? prevEl.innerHTML : prevBlock.html;
     const mergedHtml = prevHtml + el.innerHTML;
