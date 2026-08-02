@@ -15,6 +15,8 @@ import { useFullscreen } from "@/hooks/use-fullscreen";
 import { READER_THEMES } from "@/constants/reader";
 import { ReaderContent, type ReaderContentHandle, type TextSelectionInfo } from "@/components/reader/reader-content";
 import { ReaderTopBar } from "@/components/reader/reader-topbar";
+import { ReaderRail } from "@/components/reader/reader-rail";
+import { ReaderPageNav } from "@/components/reader/reader-page-nav";
 import { ReaderBottomBar } from "@/components/reader/reader-bottombar";
 import { SelectionToolbar } from "@/components/reader/selection-toolbar";
 import { TocPanel } from "@/components/reader/toc-panel";
@@ -232,15 +234,12 @@ export function ReaderView({ book, content }: ReaderViewProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-40 flex select-text flex-col"
+      className="fixed inset-0 z-40 flex select-text"
       style={{ backgroundColor: theme.bg }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <ReaderTopBar
-        visible={chromeVisible}
-        bookTitle={book.title}
-        chapterTitle={currentChapter.title.replace(/^\d+\.\s*/, "")}
+      <ReaderRail
         isBookmarked={isBookmarked(chapterId, pageIndex)}
         isFullscreen={isFullscreen}
         chromeColors={chromeColors}
@@ -254,38 +253,62 @@ export function ReaderView({ book, content }: ReaderViewProps) {
         onToggleFullscreen={toggleFullscreen}
       />
 
-      <div className="relative min-h-0 flex-1" onClick={handleContentTap}>
-        <ReaderContent
-          ref={contentRef}
-          chapter={currentChapter}
-          settings={settings}
-          colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted }}
-          pageIndex={pageIndex}
-          onTotalPagesChange={setTotalPagesInChapter}
-          annotations={annotations.filter((a) => a.chapterId === chapterId)}
-          onTextSelected={setSelection}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <ReaderTopBar
+          visible={chromeVisible}
+          bookTitle={book.title}
+          chapterTitle={currentChapter.title.replace(/^\d+\.\s*/, "")}
+          isBookmarked={isBookmarked(chapterId, pageIndex)}
+          isFullscreen={isFullscreen}
+          chromeColors={chromeColors}
+          onBack={() => router.push(`/books/${book.id}`)}
+          onToggleToc={() => setPanel(panel === "toc" ? null : "toc")}
+          onToggleSearch={() => setPanel(panel === "search" ? null : "search")}
+          onToggleBookmark={handleToggleBookmark}
+          onToggleAnnotations={() => setPanel(panel === "annotations" ? null : "annotations")}
+          onToggleSettings={() => setPanel(panel === "settings" ? null : "settings")}
+          onToggleTts={() => setPanel(panel === "tts" ? null : "tts")}
+          onToggleFullscreen={toggleFullscreen}
         />
 
-        <AnimatePresence>
-          {selection && <SelectionToolbar rect={selection.rect} onPickColor={handlePickHighlightColor} onAddNote={handleAddNoteFromSelection} />}
-        </AnimatePresence>
-      </div>
+        <div className="relative min-h-0 flex-1" onClick={handleContentTap}>
+          <ReaderContent
+            ref={contentRef}
+            chapter={currentChapter}
+            settings={settings}
+            colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted }}
+            pageIndex={pageIndex}
+            onTotalPagesChange={setTotalPagesInChapter}
+            annotations={annotations.filter((a) => a.chapterId === chapterId)}
+            onTextSelected={setSelection}
+          />
 
-      <ReaderBottomBar
-        visible={chromeVisible}
-        chromeColors={chromeColors}
-        pageIndex={pageIndex}
-        totalPagesInChapter={totalPagesInChapter}
-        chapterOrder={currentChapter.order}
-        totalChapters={chapters.length}
-        overallProgress={progress}
-        minutesSpent={minutesSpent}
-        remainingWords={remainingWords}
-        canGoPrev={pageIndex > 0 || currentChapterIndex > 0}
-        canGoNext={pageIndex < totalPagesInChapter - 1 || currentChapterIndex < chapters.length - 1}
-        onPrevPage={() => turnPage(-1)}
-        onNextPage={() => turnPage(1)}
-      />
+          <ReaderPageNav
+            visible={chromeVisible}
+            chromeColors={chromeColors}
+            canGoPrev={pageIndex > 0 || currentChapterIndex > 0}
+            canGoNext={pageIndex < totalPagesInChapter - 1 || currentChapterIndex < chapters.length - 1}
+            onPrevPage={() => turnPage(-1)}
+            onNextPage={() => turnPage(1)}
+          />
+
+          <AnimatePresence>
+            {selection && <SelectionToolbar rect={selection.rect} onPickColor={handlePickHighlightColor} onAddNote={handleAddNoteFromSelection} />}
+          </AnimatePresence>
+        </div>
+
+        <ReaderBottomBar
+          visible={chromeVisible}
+          chromeColors={chromeColors}
+          pageIndex={pageIndex}
+          totalPagesInChapter={totalPagesInChapter}
+          chapterOrder={currentChapter.order}
+          totalChapters={chapters.length}
+          overallProgress={progress}
+          minutesSpent={minutesSpent}
+          remainingWords={remainingWords}
+        />
+      </div>
 
       <TocPanel
         open={panel === "toc"}

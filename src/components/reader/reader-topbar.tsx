@@ -86,7 +86,7 @@ export function ReaderTopBar({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -56, opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="relative z-20 flex items-center gap-2 border-b px-3 py-2 sm:px-5"
+          className="relative z-20 flex items-center gap-2 border-b px-3 py-2.5 sm:px-5"
           style={{ backgroundColor: chromeColors.chrome, borderColor: chromeColors.border, color: chromeColors.fg }}
         >
           <IconButton label={t("common.close")} onClick={onBack}>
@@ -94,13 +94,13 @@ export function ReaderTopBar({
           </IconButton>
 
           <div className="min-w-0 flex-1 px-1">
-            <p className="truncate text-sm font-bold leading-tight">{bookTitle}</p>
-            <p className="truncate text-xs leading-tight" style={{ color: chromeColors.muted }}>
-              {chapterTitle}
+            <p className="truncate text-[11px] font-medium uppercase tracking-wide" style={{ color: chromeColors.muted }}>
+              {bookTitle}
             </p>
+            <p className="truncate text-sm font-bold leading-tight">{chapterTitle}</p>
           </div>
 
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-0.5 md:hidden">
             <IconButton label={t("reader.actions.toc")} onClick={onToggleToc}>
               <List className="h-[18px] w-[18px]" aria-hidden="true" />
             </IconButton>
@@ -135,6 +135,20 @@ export function ReaderTopBar({
                 <Minimize className="h-[18px] w-[18px]" aria-hidden="true" />
               ) : (
                 <Maximize className="h-[18px] w-[18px]" aria-hidden="true" />
+              )}
+            </IconButton>
+          </div>
+
+          <div className="hidden md:flex md:items-center">
+            <IconButton
+              label={isBookmarked ? t("reader.actions.removeBookmark") : t("reader.actions.addBookmark")}
+              onClick={onToggleBookmark}
+              active={isBookmarked}
+            >
+              {isBookmarked ? (
+                <BookmarkCheck className="h-[18px] w-[18px]" aria-hidden="true" />
+              ) : (
+                <Bookmark className="h-[18px] w-[18px]" aria-hidden="true" />
               )}
             </IconButton>
           </div>

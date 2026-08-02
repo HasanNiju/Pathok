@@ -45,7 +45,7 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
   const trackRef = useRef<HTMLDivElement>(null);
   const [clipWidth, setClipWidth] = useState(0);
 
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
   const marginOption = MARGIN_OPTIONS.find((m) => m.value === settings.margin) ?? MARGIN_OPTIONS[1] ?? MARGIN_OPTIONS[0];
   const marginRem = isMobile ? marginOption?.remMobile ?? 1.5 : marginOption?.remDesktop ?? 6;
   const lineHeightRatio = LINE_HEIGHT_OPTIONS.find((o) => o.value === settings.lineHeight)?.ratio ?? 1.7;
@@ -56,7 +56,7 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
   // Desktop shows a two-column spread (like a physical book laid open);
   // mobile falls back to a single column that fills the screen.
   const columnsPerPage = isMobile ? 1 : 2;
-  const columnGapPx = columnsPerPage > 1 ? 56 : 0;
+  const columnGapPx = columnsPerPage > 1 ? 72 : 0;
   const columnWidthPx = clipWidth
     ? Math.max(80, (clipWidth - (columnsPerPage - 1) * columnGapPx) / columnsPerPage)
     : 0;
@@ -185,11 +185,14 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
             reserved height is identical on every page) but only visible on
             the chapter's first page, the way a printed chapter opener works. */}
         <div
-          className={cn(fontClass, "shrink-0 pb-6 text-center transition-opacity duration-200")}
+          className={cn(fontClass, "shrink-0 pb-8 text-center transition-opacity duration-200")}
           style={{ opacity: pageIndex === 0 ? 1 : 0 }}
           aria-hidden={pageIndex !== 0}
         >
-          <h2 className="font-bold tracking-tight" style={{ fontSize: `${settings.fontSize * 1.4}px`, color: colors.fg }}>
+          <h2
+            className="font-bold tracking-tight"
+            style={{ fontSize: `${settings.fontSize * 1.55}px`, color: colors.fg, lineHeight: 1.3 }}
+          >
             {chapter.title}
           </h2>
         </div>
@@ -201,9 +204,6 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
             style={{
               columnWidth: columnWidthPx ? `${columnWidthPx}px` : "100%",
               columnGap: columnGapPx,
-              ...(columnsPerPage > 1
-                ? { columnRuleWidth: "1px", columnRuleStyle: "solid" as const, columnRuleColor: colors.muted }
-                : {}),
               columnFill: "auto",
               height: "100%",
               transform: `translateX(-${pageIndex * pageStep}px)`,
