@@ -75,6 +75,9 @@ export function ReaderView({ book, content }: ReaderViewProps) {
   const [selection, setSelection] = useState<TextSelectionInfo | null>(null);
   const [pendingGoToLastPage, setPendingGoToLastPage] = useState(false);
   const [pendingParagraphJump, setPendingParagraphJump] = useState<number | null>(null);
+  // Which way the page last turned — purely decorative, feeds the page-turn
+  // tilt/light-sweep flourish in ReaderContent.
+  const [turnDirection, setTurnDirection] = useState<1 | -1>(1);
 
   const currentChapter = chapters.find((c) => c.id === chapterId) ?? chapters[0];
   const currentChapterIndex = chapters.findIndex((c) => c.id === currentChapter?.id);
@@ -114,6 +117,7 @@ export function ReaderView({ book, content }: ReaderViewProps) {
 
   const turnPage = useCallback(
     (delta: number) => {
+      setTurnDirection(delta > 0 ? 1 : -1);
       const next = pageIndex + delta;
       if (next >= 0 && next < totalPagesInChapter) {
         setPageIndex(next);
@@ -235,7 +239,7 @@ export function ReaderView({ book, content }: ReaderViewProps) {
     <div
       ref={containerRef}
       className="fixed inset-0 z-40 flex select-text"
-      style={{ backgroundColor: theme.bg }}
+      style={{ backgroundColor: theme.desk }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -276,8 +280,9 @@ export function ReaderView({ book, content }: ReaderViewProps) {
             ref={contentRef}
             chapter={currentChapter}
             settings={settings}
-            colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted }}
+            colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted, desk: theme.desk, spine: theme.spine }}
             pageIndex={pageIndex}
+            turnDirection={turnDirection}
             onTotalPagesChange={setTotalPagesInChapter}
             annotations={annotations.filter((a) => a.chapterId === chapterId)}
             onTextSelected={setSelection}

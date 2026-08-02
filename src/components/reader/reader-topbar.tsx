@@ -86,8 +86,8 @@ export function ReaderTopBar({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -56, opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="relative z-20 flex items-center gap-2 border-b px-3 py-2.5 sm:px-5"
-          style={{ backgroundColor: chromeColors.chrome, borderColor: chromeColors.border, color: chromeColors.fg }}
+          className="relative z-20 flex items-center gap-2 border-b px-3 py-2.5 backdrop-blur-md sm:px-5"
+          style={{ backgroundColor: `${chromeColors.chrome}F2`, borderColor: chromeColors.border, color: chromeColors.fg }}
         >
           <IconButton label={t("common.close")} onClick={onBack}>
             <ArrowLeft className="h-[18px] w-[18px]" aria-hidden="true" />

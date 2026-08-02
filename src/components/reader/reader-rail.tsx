@@ -75,8 +75,8 @@ export function ReaderRail({
 
   return (
     <aside
-      className="relative z-20 hidden w-16 shrink-0 flex-col items-center border-r py-4 md:flex"
-      style={{ backgroundColor: chromeColors.chrome, borderColor: chromeColors.border }}
+      className="relative z-20 hidden w-16 shrink-0 flex-col items-center border-r py-4 backdrop-blur-md md:flex"
+      style={{ backgroundColor: `${chromeColors.chrome}F2`, borderColor: chromeColors.border }}
     >
       <RailButton label={t("common.close")} onClick={onBack} accent={chromeColors.accent} fg={chromeColors.fg}>
         <ArrowLeft className="h-[19px] w-[19px]" aria-hidden="true" />

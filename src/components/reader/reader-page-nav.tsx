@@ -39,14 +39,14 @@ function NavButton({
       disabled={disabled}
       aria-label={label}
       initial={{ opacity: 0 }}
-      animate={{ opacity: disabled ? 0.25 : 1 }}
+      animate={{ opacity: disabled ? 0 : 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border shadow-sm transition-transform duration-150 hover:scale-105 disabled:pointer-events-none sm:flex",
-        side === "left" ? "left-2 md:left-4" : "right-2 md:right-4"
+        "absolute top-1/2 z-30 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full backdrop-blur-sm transition-all duration-150 hover:scale-110 disabled:pointer-events-none sm:flex",
+        side === "left" ? "left-3 md:left-6 lg:left-10" : "right-3 md:right-6 lg:right-10"
       )}
-      style={{ backgroundColor: chromeColors.chrome, borderColor: chromeColors.border, color: chromeColors.fg }}
+      style={{ backgroundColor: `${chromeColors.chrome}CC`, color: chromeColors.fg }}
     >
       {children}
     </motion.button>

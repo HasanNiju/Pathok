@@ -17,9 +17,9 @@ interface ReaderBottomBarProps {
 }
 
 /**
- * Minimal centered footer — just the page count, like a printed book's
- * folio line. Page-turning lives in the floating edge arrows / rail now,
- * so this bar carries only progress information, not controls.
+ * A quiet caption floating on the desk beneath the book — not a toolbar.
+ * No background or border, just small serif type, the way a printed
+ * folio line sits under a page rather than inside a UI chrome bar.
  */
 export function ReaderBottomBar({
   visible,
@@ -39,27 +39,25 @@ export function ReaderBottomBar({
     <AnimatePresence>
       {visible && (
         <motion.footer
-          initial={{ y: 40, opacity: 0 }}
+          initial={{ y: 16, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 40, opacity: 0 }}
+          exit={{ y: 16, opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="relative z-20 flex flex-col items-center gap-0.5 border-t px-3 py-3 text-center"
-          style={{ backgroundColor: chromeColors.chrome, borderColor: chromeColors.border, color: chromeColors.fg }}
+          className="relative z-20 flex flex-col items-center gap-1 px-3 pb-4 pt-1 text-center"
         >
-          <p className="text-xs font-semibold tracking-wide">
+          <p
+            className="font-serif text-[11px] uppercase tracking-[0.18em]"
+            style={{ color: chromeColors.muted }}
+          >
             {t("reader.progress.pageOf")
               .replace("{current}", String(pageIndex + 1))
               .replace("{total}", String(totalPagesInChapter))}
-            <span className="mx-1.5" style={{ color: chromeColors.muted }}>
-              ·
-            </span>
-            <span style={{ color: chromeColors.muted }}>
-              {t("reader.progress.chapterOf")
-                .replace("{current}", String(chapterOrder))
-                .replace("{total}", String(totalChapters))}
-            </span>
+            <span className="mx-2">·</span>
+            {t("reader.progress.chapterOf")
+              .replace("{current}", String(chapterOrder))
+              .replace("{total}", String(totalChapters))}
           </p>
-          <p className="text-[11px]" style={{ color: chromeColors.muted }}>
+          <p className="text-[10.5px]" style={{ color: chromeColors.muted, opacity: 0.75 }}>
             {t("reader.progress.percentComplete").replace("{percent}", String(overallProgress))}
             {" · "}
             {t("reader.progress.timeLeft").replace("{minutes}", String(minutesLeft))}
