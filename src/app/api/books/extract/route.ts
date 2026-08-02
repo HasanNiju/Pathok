@@ -5,6 +5,7 @@ import {
   chunkIntoChapters,
   extractFormattedFromPdf,
   extractTextFromDocx,
+  extractTextFromPdf,
 } from "@/lib/text-extraction";
 
 export const runtime = "nodejs";
@@ -46,11 +47,23 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     if (isPdf) {
-      const blocks = await extractFormattedFromPdf(buffer);
-      if (blocks.length === 0) {
-        return NextResponse.json({ error: "No readable text could be found in this file." }, { status: 422 });
+      let chapters;
+      try {
+        const blocks = await extractFormattedFromPdf(buffer);
+        if (blocks.length === 0) throw new Error("Formatted extraction found no text blocks.");
+        chapters = chunkFormattedBlocksIntoChapters(blocks, bookId);
+      } catch (formattedError) {
+        // The font-aware pipeline can fail on an unusual PDF (malformed
+        // content stream, exotic font encoding, etc.) — fall back to a
+        // plain-text extraction instead of blocking the upload entirely.
+        // The book still gets chapters, just without preserved bold/italic.
+        console.error("[extract] formatted PDF extraction failed, falling back to plain text:", formattedError);
+        const text = await extractTextFromPdf(buffer);
+        if (!text.trim()) {
+          return NextResponse.json({ error: "No readable text could be found in this file." }, { status: 422 });
+        }
+        chapters = chunkIntoChapters(text, bookId);
       }
-      const chapters = chunkFormattedBlocksIntoChapters(blocks, bookId);
       return NextResponse.json({ chapters, fileType: "pdf" });
     }
 
@@ -60,7 +73,8 @@ export async function POST(request: Request) {
     }
     const chapters = chunkIntoChapters(text, bookId);
     return NextResponse.json({ chapters, fileType: "docx" });
-  } catch {
+  } catch (error) {
+    console.error("[extract] file could not be processed:", error);
     return NextResponse.json({ error: "This file could not be processed." }, { status: 422 });
   }
 }

@@ -158,83 +158,117 @@ interface PdfLine {
  */
 export async function extractFormattedFromPdf(buffer: Buffer): Promise<ExtractedBlock[]> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+
+  // pdfjs ships its own substitute font data (for PDFs that reference a
+  // standard font like Helvetica without embedding it) and CMap data (for
+  // CID-keyed fonts using a predefined encoding) inside its own package —
+  // point it there directly rather than relying on network fetches, which
+  // don't apply in this server context anyway.
+  const { createRequire } = await import("module");
+  const { default: path } = await import("path");
+  const require = createRequire(import.meta.url);
+  const pdfjsDistDir = path.dirname(require.resolve("pdfjs-dist/package.json"));
+
   const doc = await pdfjs.getDocument({
     data: new Uint8Array(buffer),
     useWorkerFetch: false,
     isEvalSupported: false,
-    useSystemFonts: true,
+    // Node has no window/document/FontFace — useSystemFonts defaults to
+    // false in pdfjs's own Node detection, and we keep it that way rather
+    // than forcing the browser-oriented local-font-matching path. We only
+    // need the font *descriptor* (bold/italic flags), not an actual
+    // renderable substitute, so this doesn't cost us anything.
+    useSystemFonts: false,
+    disableFontFace: true,
+    cMapUrl: path.join(pdfjsDistDir, "cmaps") + path.sep,
+    cMapPacked: true,
+    standardFontDataUrl: path.join(pdfjsDistDir, "standard_fonts") + path.sep,
   }).promise;
 
   const lines: PdfLine[] = [];
   const allFontSizes: number[] = [];
 
   for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
-    const page = await doc.getPage(pageNum);
-    const content = await page.getTextContent();
-    // pdfjs only populates page.commonObjs with font descriptors (needed
-    // below for bold/italic) once something has asked it to resolve the
-    // page's resources — getTextContent() alone doesn't trigger that.
-    await page.getOperatorList();
+    try {
+      const page = await doc.getPage(pageNum);
+      const content = await page.getTextContent();
 
-    const styleCache = new Map<string, { bold: boolean; italic: boolean }>();
-    const resolveStyle = (fontName: string) => {
-      const cached = styleCache.get(fontName);
-      if (cached) return cached;
-      let style = { bold: false, italic: false };
+      const styleCache = new Map<string, { bold: boolean; italic: boolean }>();
+      // pdfjs only populates page.commonObjs with font descriptors (needed
+      // for bold/italic) once something has asked it to resolve the page's
+      // resources — getTextContent() alone doesn't trigger that. This is a
+      // heavier call than getTextContent (it walks the whole content
+      // stream), so if it fails on some unusual/malformed page content, we
+      // still keep that page's plain text rather than losing the page.
+      let fontsResolved = true;
       try {
-        // pdfjs has usually already resolved page fonts by the time
-        // getTextContent() returns (it needs glyph widths); when it
-        // hasn't, this just throws and the run falls back to plain text.
-        const fontObj = page.commonObjs.get(fontName) as
-          | { name?: string; bold?: boolean; italic?: boolean }
-          | undefined;
-        if (fontObj) {
-          const name = (fontObj.name ?? "").toLowerCase();
-          style = {
-            bold: Boolean(fontObj.bold) || /bold|black|heavy|semibold/.test(name),
-            italic: Boolean(fontObj.italic) || /italic|oblique/.test(name),
-          };
+        await page.getOperatorList();
+      } catch (err) {
+        fontsResolved = false;
+        console.warn(`[pdf-extract] page ${pageNum}: font resolution failed, continuing without bold/italic`, err);
+      }
+
+      const resolveStyle = (fontName: string) => {
+        if (!fontsResolved) return { bold: false, italic: false };
+        const cached = styleCache.get(fontName);
+        if (cached) return cached;
+        let style = { bold: false, italic: false };
+        try {
+          const fontObj = page.commonObjs.get(fontName) as
+            | { name?: string; bold?: boolean; italic?: boolean }
+            | undefined;
+          if (fontObj) {
+            const name = (fontObj.name ?? "").toLowerCase();
+            style = {
+              bold: Boolean(fontObj.bold) || /bold|black|heavy|semibold/.test(name),
+              italic: Boolean(fontObj.italic) || /italic|oblique/.test(name),
+            };
+          }
+        } catch {
+          // Object not resolved for this specific font — degrade to plain text for it.
         }
-      } catch {
-        // Ignore — degrade to unstyled text for this run.
-      }
-      styleCache.set(fontName, style);
-      return style;
-    };
+        styleCache.set(fontName, style);
+        return style;
+      };
 
-    // Bucket items into lines by baseline Y (rounded, so near-identical
-    // baselines within the same line merge together).
-    const buckets = new Map<number, PdfTextItem[]>();
-    for (const raw of content.items) {
-      if (!("str" in raw) || !raw.str) continue;
-      const item = raw as unknown as PdfTextItem;
-      const y = Math.round((item.transform[5] ?? 0) / 2) * 2;
-      const bucket = buckets.get(y);
-      if (bucket) bucket.push(item);
-      else buckets.set(y, [item]);
-    }
-
-    const orderedLines = Array.from(buckets.entries()).sort((a, b) => b[0] - a[0]); // top → bottom (PDF y grows upward)
-
-    for (const [y, items] of orderedLines) {
-      const sorted = items.slice().sort((a, b) => (a.transform[4] ?? 0) - (b.transform[4] ?? 0)); // left → right
-      const runs: TextRun[] = [];
-      let maxFontSize = 0;
-      let expectedX: number | null = null;
-
-      for (const item of sorted) {
-        const fontSize = Math.hypot(item.transform[0] ?? 0, item.transform[1] ?? 0) || 1;
-        maxFontSize = Math.max(maxFontSize, fontSize);
-        allFontSizes.push(fontSize);
-        const style = resolveStyle(item.fontName);
-        const x = item.transform[4] ?? 0;
-        const gap = expectedX === null ? 0 : x - expectedX;
-        const needsSpace = expectedX !== null && gap > fontSize * 0.15 && !/^\s/.test(item.str);
-        runs.push({ text: (needsSpace ? " " : "") + item.str, bold: style.bold, italic: style.italic });
-        expectedX = x + item.width;
+      // Bucket items into lines by baseline Y (rounded, so near-identical
+      // baselines within the same line merge together).
+      const buckets = new Map<number, PdfTextItem[]>();
+      for (const raw of content.items) {
+        if (!("str" in raw) || !raw.str) continue;
+        const item = raw as unknown as PdfTextItem;
+        const y = Math.round((item.transform[5] ?? 0) / 2) * 2;
+        const bucket = buckets.get(y);
+        if (bucket) bucket.push(item);
+        else buckets.set(y, [item]);
       }
 
-      if (runs.length > 0) lines.push({ runs: mergeRuns(runs), y, fontSize: maxFontSize });
+      const orderedLines = Array.from(buckets.entries()).sort((a, b) => b[0] - a[0]); // top → bottom (PDF y grows upward)
+
+      for (const [y, items] of orderedLines) {
+        const sorted = items.slice().sort((a, b) => (a.transform[4] ?? 0) - (b.transform[4] ?? 0)); // left → right
+        const runs: TextRun[] = [];
+        let maxFontSize = 0;
+        let expectedX: number | null = null;
+
+        for (const item of sorted) {
+          const fontSize = Math.hypot(item.transform[0] ?? 0, item.transform[1] ?? 0) || 1;
+          maxFontSize = Math.max(maxFontSize, fontSize);
+          allFontSizes.push(fontSize);
+          const style = resolveStyle(item.fontName);
+          const x = item.transform[4] ?? 0;
+          const gap = expectedX === null ? 0 : x - expectedX;
+          const needsSpace = expectedX !== null && gap > fontSize * 0.15 && !/^\s/.test(item.str);
+          runs.push({ text: (needsSpace ? " " : "") + item.str, bold: style.bold, italic: style.italic });
+          expectedX = x + item.width;
+        }
+
+        if (runs.length > 0) lines.push({ runs: mergeRuns(runs), y, fontSize: maxFontSize });
+      }
+    } catch (err) {
+      // One malformed page shouldn't sink the whole book — skip it and
+      // keep going so the reader still gets every other page.
+      console.warn(`[pdf-extract] page ${pageNum}: could not be read, skipping`, err);
     }
   }
 
