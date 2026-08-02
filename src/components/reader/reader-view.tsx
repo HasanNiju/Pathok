@@ -281,7 +281,7 @@ export function ReaderView({ book, content }: ReaderViewProps) {
         onToggleFullscreen={toggleFullscreen}
       />
 
-      <div className="relative min-w-0 flex-1" onClick={handleContentTap}>
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col" onClick={handleContentTap}>
         {/* Floating header — a plain back link and a few bare icons sitting
             directly on the page, instead of a bordered toolbar. */}
         <AnimatePresence>
@@ -340,30 +340,32 @@ export function ReaderView({ book, content }: ReaderViewProps) {
           )}
         </AnimatePresence>
 
-        <ReaderContent
-          ref={contentRef}
-          chapter={currentChapter}
-          settings={settings}
-          colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted }}
-          pageIndex={pageIndex}
-          turnDirection={turnDirection}
-          onTotalPagesChange={setTotalPagesInChapter}
-          annotations={annotations.filter((a) => a.chapterId === chapterId)}
-          onTextSelected={setSelection}
-        />
+        <div className="relative min-h-0 flex-1">
+          <ReaderContent
+            ref={contentRef}
+            chapter={currentChapter}
+            settings={settings}
+            colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted }}
+            pageIndex={pageIndex}
+            turnDirection={turnDirection}
+            onTotalPagesChange={setTotalPagesInChapter}
+            annotations={annotations.filter((a) => a.chapterId === chapterId)}
+            onTextSelected={setSelection}
+          />
 
-        <ReaderPageNav
-          visible={chromeVisible}
-          chromeColors={chromeColors}
-          canGoPrev={pageIndex > 0 || currentChapterIndex > 0}
-          canGoNext={pageIndex < totalPagesInChapter - 1 || currentChapterIndex < chapters.length - 1}
-          onPrevPage={() => turnPage(-1)}
-          onNextPage={() => turnPage(1)}
-        />
+          <ReaderPageNav
+            visible={chromeVisible}
+            chromeColors={chromeColors}
+            canGoPrev={pageIndex > 0 || currentChapterIndex > 0}
+            canGoNext={pageIndex < totalPagesInChapter - 1 || currentChapterIndex < chapters.length - 1}
+            onPrevPage={() => turnPage(-1)}
+            onNextPage={() => turnPage(1)}
+          />
 
-        <AnimatePresence>
-          {selection && <SelectionToolbar rect={selection.rect} onPickColor={handlePickHighlightColor} onAddNote={handleAddNoteFromSelection} />}
-        </AnimatePresence>
+          <AnimatePresence>
+            {selection && <SelectionToolbar rect={selection.rect} onPickColor={handlePickHighlightColor} onAddNote={handleAddNoteFromSelection} />}
+          </AnimatePresence>
+        </div>
 
         <ReaderBottomBar
           visible={chromeVisible}
