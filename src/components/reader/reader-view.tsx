@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, Bookmark, BookmarkCheck, Highlighter, Settings2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +15,6 @@ import { useReaderSearch } from "@/hooks/use-reader-search";
 import { useFullscreen } from "@/hooks/use-fullscreen";
 import { READER_THEMES } from "@/constants/reader";
 import { ReaderContent, type ReaderContentHandle, type TextSelectionInfo } from "@/components/reader/reader-content";
-import { ReaderTopBar } from "@/components/reader/reader-topbar";
 import { ReaderRail } from "@/components/reader/reader-rail";
 import { ReaderPageNav } from "@/components/reader/reader-page-nav";
 import { ReaderBottomBar } from "@/components/reader/reader-bottombar";
@@ -38,6 +38,33 @@ type PanelName = "toc" | "settings" | "search" | "annotations" | "tts" | null;
 interface ReaderViewProps {
   book: Book;
   content: BookContent;
+}
+
+function FloatingIconButton({
+  label,
+  onClick,
+  active,
+  color,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  active?: boolean;
+  color: { fg: string; accent: string };
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-opacity duration-150 hover:opacity-70"
+      style={{ color: active ? color.accent : color.fg }}
+    >
+      {children}
+    </button>
+  );
 }
 
 export function ReaderView({ book, content }: ReaderViewProps) {
@@ -76,7 +103,7 @@ export function ReaderView({ book, content }: ReaderViewProps) {
   const [pendingGoToLastPage, setPendingGoToLastPage] = useState(false);
   const [pendingParagraphJump, setPendingParagraphJump] = useState<number | null>(null);
   // Which way the page last turned — purely decorative, feeds the page-turn
-  // tilt/light-sweep flourish in ReaderContent.
+  // light-sweep flourish in ReaderContent.
   const [turnDirection, setTurnDirection] = useState<1 | -1>(1);
 
   const currentChapter = chapters.find((c) => c.id === chapterId) ?? chapters[0];
@@ -235,72 +262,108 @@ export function ReaderView({ book, content }: ReaderViewProps) {
 
   if (!currentChapter) return null;
 
+  const bookmarked = isBookmarked(chapterId, pageIndex);
+
   return (
     <div
       ref={containerRef}
       className="fixed inset-0 z-40 flex select-text"
-      style={{ backgroundColor: theme.desk }}
+      style={{ backgroundColor: theme.bg }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       <ReaderRail
-        isBookmarked={isBookmarked(chapterId, pageIndex)}
         isFullscreen={isFullscreen}
         chromeColors={chromeColors}
-        onBack={() => router.push(`/books/${book.id}`)}
         onToggleToc={() => setPanel(panel === "toc" ? null : "toc")}
         onToggleSearch={() => setPanel(panel === "search" ? null : "search")}
-        onToggleBookmark={handleToggleBookmark}
-        onToggleAnnotations={() => setPanel(panel === "annotations" ? null : "annotations")}
-        onToggleSettings={() => setPanel(panel === "settings" ? null : "settings")}
         onToggleTts={() => setPanel(panel === "tts" ? null : "tts")}
         onToggleFullscreen={toggleFullscreen}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <ReaderTopBar
-          visible={chromeVisible}
-          bookTitle={book.title}
-          chapterTitle={currentChapter.title.replace(/^\d+\.\s*/, "")}
-          isBookmarked={isBookmarked(chapterId, pageIndex)}
-          isFullscreen={isFullscreen}
-          chromeColors={chromeColors}
-          onBack={() => router.push(`/books/${book.id}`)}
-          onToggleToc={() => setPanel(panel === "toc" ? null : "toc")}
-          onToggleSearch={() => setPanel(panel === "search" ? null : "search")}
-          onToggleBookmark={handleToggleBookmark}
-          onToggleAnnotations={() => setPanel(panel === "annotations" ? null : "annotations")}
-          onToggleSettings={() => setPanel(panel === "settings" ? null : "settings")}
-          onToggleTts={() => setPanel(panel === "tts" ? null : "tts")}
-          onToggleFullscreen={toggleFullscreen}
+      <div className="relative min-w-0 flex-1" onClick={handleContentTap}>
+        {/* Floating header — a plain back link and a few bare icons sitting
+            directly on the page, instead of a bordered toolbar. */}
+        <AnimatePresence>
+          {chromeVisible && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 py-6 sm:px-10"
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/books/${book.id}`);
+                }}
+                className="inline-flex min-w-0 items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-70"
+                style={{ color: chromeColors.muted }}
+              >
+                <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span className="truncate">{book.title}</span>
+              </button>
+
+              <div className="flex shrink-0 items-center gap-3" onClick={(e) => e.stopPropagation()}>
+                <FloatingIconButton
+                  label={bookmarked ? t("reader.actions.removeBookmark") : t("reader.actions.addBookmark")}
+                  onClick={handleToggleBookmark}
+                  active={bookmarked}
+                  color={{ fg: chromeColors.muted, accent: chromeColors.accent }}
+                >
+                  {bookmarked ? (
+                    <BookmarkCheck className="h-[18px] w-[18px]" aria-hidden="true" />
+                  ) : (
+                    <Bookmark className="h-[18px] w-[18px]" aria-hidden="true" />
+                  )}
+                </FloatingIconButton>
+                <FloatingIconButton
+                  label={t("reader.actions.annotations")}
+                  onClick={() => setPanel(panel === "annotations" ? null : "annotations")}
+                  active={panel === "annotations"}
+                  color={{ fg: chromeColors.muted, accent: chromeColors.accent }}
+                >
+                  <Highlighter className="h-[18px] w-[18px]" aria-hidden="true" />
+                </FloatingIconButton>
+                <FloatingIconButton
+                  label={t("reader.actions.settings")}
+                  onClick={() => setPanel(panel === "settings" ? null : "settings")}
+                  active={panel === "settings"}
+                  color={{ fg: chromeColors.muted, accent: chromeColors.accent }}
+                >
+                  <Settings2 className="h-[18px] w-[18px]" aria-hidden="true" />
+                </FloatingIconButton>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <ReaderContent
+          ref={contentRef}
+          chapter={currentChapter}
+          settings={settings}
+          colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted }}
+          pageIndex={pageIndex}
+          turnDirection={turnDirection}
+          onTotalPagesChange={setTotalPagesInChapter}
+          annotations={annotations.filter((a) => a.chapterId === chapterId)}
+          onTextSelected={setSelection}
         />
 
-        <div className="relative min-h-0 flex-1" onClick={handleContentTap}>
-          <ReaderContent
-            ref={contentRef}
-            chapter={currentChapter}
-            settings={settings}
-            colors={{ bg: theme.bg, fg: theme.fg, muted: theme.muted, desk: theme.desk, spine: theme.spine }}
-            pageIndex={pageIndex}
-            turnDirection={turnDirection}
-            onTotalPagesChange={setTotalPagesInChapter}
-            annotations={annotations.filter((a) => a.chapterId === chapterId)}
-            onTextSelected={setSelection}
-          />
+        <ReaderPageNav
+          visible={chromeVisible}
+          chromeColors={chromeColors}
+          canGoPrev={pageIndex > 0 || currentChapterIndex > 0}
+          canGoNext={pageIndex < totalPagesInChapter - 1 || currentChapterIndex < chapters.length - 1}
+          onPrevPage={() => turnPage(-1)}
+          onNextPage={() => turnPage(1)}
+        />
 
-          <ReaderPageNav
-            visible={chromeVisible}
-            chromeColors={chromeColors}
-            canGoPrev={pageIndex > 0 || currentChapterIndex > 0}
-            canGoNext={pageIndex < totalPagesInChapter - 1 || currentChapterIndex < chapters.length - 1}
-            onPrevPage={() => turnPage(-1)}
-            onNextPage={() => turnPage(1)}
-          />
-
-          <AnimatePresence>
-            {selection && <SelectionToolbar rect={selection.rect} onPickColor={handlePickHighlightColor} onAddNote={handleAddNoteFromSelection} />}
-          </AnimatePresence>
-        </div>
+        <AnimatePresence>
+          {selection && <SelectionToolbar rect={selection.rect} onPickColor={handlePickHighlightColor} onAddNote={handleAddNoteFromSelection} />}
+        </AnimatePresence>
 
         <ReaderBottomBar
           visible={chromeVisible}

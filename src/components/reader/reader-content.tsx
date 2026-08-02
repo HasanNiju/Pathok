@@ -31,10 +31,10 @@ export interface TextSelectionInfo {
 interface ReaderContentProps {
   chapter: Chapter;
   settings: ReaderSettings;
-  colors: { bg: string; fg: string; muted: string; desk: string; spine: string };
+  colors: { bg: string; fg: string; muted: string };
   pageIndex: number;
-  /** Sign of the most recent page turn, used only to pick which way the
-   *  page-turn flourish tilts — purely decorative, never affects layout. */
+  /** Sign of the most recent page turn — purely decorative, feeds a very
+   *  subtle light-catch flourish, never affects layout. */
   turnDirection: 1 | -1;
   onTotalPagesChange: (total: number) => void;
   annotations: ReaderAnnotation[];
@@ -51,16 +51,18 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
 
   const isMobile = useMediaQuery("(max-width: 767px)");
   const marginOption = MARGIN_OPTIONS.find((m) => m.value === settings.margin) ?? MARGIN_OPTIONS[1] ?? MARGIN_OPTIONS[0];
-  const marginRem = isMobile ? marginOption?.remMobile ?? 1.5 : marginOption?.remDesktop ?? 6;
+  const marginRem = isMobile ? marginOption?.remMobile ?? 1.5 : marginOption?.remDesktop ?? 7;
   const lineHeightRatio = LINE_HEIGHT_OPTIONS.find((o) => o.value === settings.lineHeight)?.ratio ?? 1.7;
   const letterSpacingEm = LETTER_SPACING_OPTIONS.find((o) => o.value === settings.letterSpacing)?.em ?? 0;
   const fontClass =
     settings.fontFamily === "sans" ? "font-sans" : settings.fontFamily === "literary" ? "font-literary" : "font-serif";
 
   // Desktop shows a two-column spread (like a physical book laid open);
-  // mobile falls back to a single column that fills the screen.
+  // mobile falls back to a single column that fills the screen. The gap
+  // between columns is generous — closer to the gutter of a printed
+  // two-page layout than a typical web multi-column grid.
   const columnsPerPage = isMobile ? 1 : 2;
-  const columnGapPx = columnsPerPage > 1 ? 72 : 0;
+  const columnGapPx = columnsPerPage > 1 ? 96 : 0;
   const columnWidthPx = clipWidth
     ? Math.max(80, (clipWidth - (columnsPerPage - 1) * columnGapPx) / columnsPerPage)
     : 0;
@@ -178,150 +180,101 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
   }
 
   // ——— Page-turn flourish ———
-  // A physical book page doesn't just slide — it tilts very slightly and
-  // catches the light as it turns. This is purely decorative: it animates
-  // the page card as a whole (never the measured `clipRef`, so pagination
-  // math above is completely unaffected), triggered whenever the visible
-  // page or chapter changes.
-  const pageControls = useAnimationControls();
+  // Purely decorative: a very brief light-catch sweep whenever the page
+  // changes. Applied to an overlay, never to the measured `clipRef`, so
+  // the pagination math above is completely unaffected.
   const sweepControls = useAnimationControls();
   const prevKeyRef = useRef(`${chapter.id}:${pageIndex}`);
 
   useEffect(() => {
     const key = `${chapter.id}:${pageIndex}`;
     if (prevKeyRef.current !== key) {
-      pageControls.start({
-        rotateY: [0, -turnDirection * 2, 0],
-        scale: [1, 0.995, 1],
-        transition: { duration: 0.42, ease: [0.32, 0, 0.2, 1] },
-      });
       sweepControls.start({
-        opacity: [0, 0.5, 0],
-        transition: { duration: 0.42, ease: "easeOut" },
+        opacity: [0, 0.35, 0],
+        transition: { duration: 0.38, ease: "easeOut" },
       });
       prevKeyRef.current = key;
     }
-  }, [chapter.id, pageIndex, turnDirection, pageControls, sweepControls]);
+  }, [chapter.id, pageIndex, sweepControls]);
 
   return (
-    <div
-      className="relative flex h-full w-full items-stretch justify-center"
-      style={{ backgroundColor: colors.desk, perspective: 2200 }}
-    >
-      {/* The book itself — a paper-colored card resting on the desk. Full
-          bleed on mobile (like a phone e-reader), inset with depth on
-          wider screens (like a book lying open on a table). */}
+    <div className="relative h-full w-full" style={{ backgroundColor: colors.bg }}>
+      {/* Light sweep — a brief catch-the-light highlight on every turn. */}
       <motion.div
-        animate={pageControls}
-        style={{ backgroundColor: colors.bg, transformStyle: "preserve-3d" }}
-        className={cn(
-          "relative flex h-full w-full flex-col overflow-hidden",
-          "md:my-6 md:h-[calc(100%-3rem)] md:max-w-[1400px] md:rounded-[3px]",
-          "md:shadow-[0_1px_1px_rgba(0,0,0,0.05),0_12px_28px_-8px_rgba(0,0,0,0.35),0_2px_6px_rgba(0,0,0,0.12)]",
-          "md:ring-1 md:ring-black/5"
-        )}
+        aria-hidden="true"
+        animate={sweepControls}
+        initial={{ opacity: 0 }}
+        className="pointer-events-none absolute inset-0 z-10"
+        style={{
+          background:
+            turnDirection > 0
+              ? "linear-gradient(100deg, transparent 25%, rgba(255,255,255,0.3) 50%, transparent 75%)"
+              : "linear-gradient(260deg, transparent 25%, rgba(255,255,255,0.3) 50%, transparent 75%)",
+        }}
+      />
+
+      <div
+        ref={clipRef}
+        className="relative h-full w-full overflow-hidden"
+        style={{ padding: `${isMobile ? 4.5 : 5}rem ${marginRem}rem ${isMobile ? 2 : 3}rem` }}
       >
-        {/* Center spine — the shadowed gutter of an open two-page spread. */}
-        {columnsPerPage === 2 && (
+        <div className="flex h-full w-full flex-col overflow-hidden" onMouseUp={handleMouseUp}>
+          {/* Chapter title — spans the full page width above the column(s),
+              unlike the flowing paragraphs below. Always rendered (so the
+              reserved height is identical on every page) but only visible on
+              the chapter's first page, the way a printed chapter opener works. */}
           <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-16 -translate-x-1/2"
-            style={{
-              background: `linear-gradient(to right, transparent, ${colors.spine} 45%, ${colors.spine} 55%, transparent)`,
-            }}
-          />
-        )}
-
-        {/* Light sweep — a brief catch-the-light highlight on every turn. */}
-        <motion.div
-          aria-hidden="true"
-          animate={sweepControls}
-          initial={{ opacity: 0 }}
-          className="pointer-events-none absolute inset-0 z-10"
-          style={{
-            background:
-              turnDirection > 0
-                ? "linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.35) 50%, transparent 80%)"
-                : "linear-gradient(260deg, transparent 20%, rgba(255,255,255,0.35) 50%, transparent 80%)",
-          }}
-        />
-
-        <div
-          ref={clipRef}
-          className="relative h-full w-full overflow-hidden"
-          style={{ padding: `${isMobile ? 1.25 : 2.75}rem ${marginRem}rem` }}
-        >
-          <div className="flex h-full w-full flex-col overflow-hidden" onMouseUp={handleMouseUp}>
-            {/* Chapter title — spans the full page width above the column(s),
-                unlike the flowing paragraphs below. Always rendered (so the
-                reserved height is identical on every page) but only visible on
-                the chapter's first page, the way a printed chapter opener works. */}
-            <div
-              className={cn(fontClass, "shrink-0 pb-8 text-center transition-opacity duration-200")}
-              style={{ opacity: pageIndex === 0 ? 1 : 0 }}
-              aria-hidden={pageIndex !== 0}
+            className={cn(fontClass, "shrink-0 pb-10 text-center transition-opacity duration-200")}
+            style={{ opacity: pageIndex === 0 ? 1 : 0 }}
+            aria-hidden={pageIndex !== 0}
+          >
+            <p className="mb-2 text-sm font-sans" style={{ color: colors.muted }}>
+              Chapter {chapter.order}
+            </p>
+            <h2
+              className="font-bold tracking-tight"
+              style={{ fontSize: `${settings.fontSize * 1.5}px`, color: colors.fg, lineHeight: 1.3 }}
             >
-              <p
-                className="mb-2 text-[11px] font-sans font-semibold uppercase tracking-[0.2em]"
-                style={{ color: colors.muted }}
-              >
-                Chapter {chapter.order}
-              </p>
-              <h2
-                className="font-bold tracking-tight"
-                style={{ fontSize: `${settings.fontSize * 1.55}px`, color: colors.fg, lineHeight: 1.3 }}
-              >
-                {chapter.title.replace(/^\d+\.\s*/, "")}
-              </h2>
-            </div>
+              {chapter.title.replace(/^\d+\.\s*/, "")}
+            </h2>
+          </div>
 
-            <div className="min-h-0 flex-1 overflow-hidden">
-              <div
-                ref={trackRef}
-                className={cn(fontClass, "transition-transform duration-300 ease-out")}
-                style={{
-                  columnWidth: columnWidthPx ? `${columnWidthPx}px` : "100%",
-                  columnGap: columnGapPx,
-                  columnFill: "auto",
-                  height: "100%",
-                  transform: `translateX(-${pageIndex * pageStep}px)`,
-                  fontSize: `${settings.fontSize}px`,
-                  lineHeight: lineHeightRatio,
-                  letterSpacing: `${letterSpacingEm}em`,
-                  color: colors.fg,
-                }}
-              >
-                {chapter.paragraphs.map((paragraph, index) => {
-                  const html = chapter.paragraphsHtml?.[index];
-                  const hasHighlight = annotations.some((a) => a.paragraphIndex === index);
-                  return (
-                    <p key={index} data-p={index} className="mb-5 break-words [-webkit-hyphens:auto] [hyphens:auto]">
-                      {html && !hasHighlight ? (
-                        // Bold/italic exactly as written in the chapter editor —
-                        // sanitized to <b>/<i> only on save (see
-                        // sanitizeParagraphHtml), so this is safe to inject.
-                        <span dangerouslySetInnerHTML={{ __html: html }} />
-                      ) : (
-                        renderParagraph(paragraph, index)
-                      )}
-                    </p>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Folio — small printed-style page number in the bottom corner,
-                like a real book, echoing (not replacing) the progress
-                footer rendered by ReaderBottomBar outside the page. */}
+          <div className="min-h-0 flex-1 overflow-hidden">
             <div
-              className="pointer-events-none shrink-0 pt-4 text-center font-serif text-xs"
-              style={{ color: colors.muted, opacity: 0.7 }}
+              ref={trackRef}
+              className={cn(fontClass, "transition-transform duration-300 ease-out")}
+              style={{
+                columnWidth: columnWidthPx ? `${columnWidthPx}px` : "100%",
+                columnGap: columnGapPx,
+                columnFill: "auto",
+                height: "100%",
+                transform: `translateX(-${pageIndex * pageStep}px)`,
+                fontSize: `${settings.fontSize}px`,
+                lineHeight: lineHeightRatio,
+                letterSpacing: `${letterSpacingEm}em`,
+                color: colors.fg,
+              }}
             >
-              {pageIndex + 1}
+              {chapter.paragraphs.map((paragraph, index) => {
+                const html = chapter.paragraphsHtml?.[index];
+                const hasHighlight = annotations.some((a) => a.paragraphIndex === index);
+                return (
+                  <p key={index} data-p={index} className="mb-5 break-words [-webkit-hyphens:auto] [hyphens:auto]">
+                    {html && !hasHighlight ? (
+                      // Bold/italic exactly as written in the chapter editor —
+                      // sanitized to <b>/<i> only on save (see
+                      // sanitizeParagraphHtml), so this is safe to inject.
+                      <span dangerouslySetInnerHTML={{ __html: html }} />
+                    ) : (
+                      renderParagraph(paragraph, index)
+                    )}
+                  </p>
+                );
+              })}
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 });

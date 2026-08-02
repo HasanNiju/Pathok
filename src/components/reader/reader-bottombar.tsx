@@ -45,19 +45,14 @@ export function ReaderBottomBar({
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="relative z-20 flex flex-col items-center gap-1 px-3 pb-4 pt-1 text-center"
         >
-          <p
-            className="font-serif text-[11px] uppercase tracking-[0.18em]"
-            style={{ color: chromeColors.muted }}
-          >
-            {t("reader.progress.pageOf")
-              .replace("{current}", String(pageIndex + 1))
-              .replace("{total}", String(totalPagesInChapter))}
-            <span className="mx-2">·</span>
+          <p className="text-sm" style={{ color: chromeColors.muted }}>
+            {pageIndex + 1} / {totalPagesInChapter}
+          </p>
+          <p className="text-[10.5px]" style={{ color: chromeColors.muted, opacity: 0.7 }}>
             {t("reader.progress.chapterOf")
               .replace("{current}", String(chapterOrder))
               .replace("{total}", String(totalChapters))}
-          </p>
-          <p className="text-[10.5px]" style={{ color: chromeColors.muted, opacity: 0.75 }}>
+            {" · "}
             {t("reader.progress.percentComplete").replace("{percent}", String(overallProgress))}
             {" · "}
             {t("reader.progress.timeLeft").replace("{minutes}", String(minutesLeft))}
