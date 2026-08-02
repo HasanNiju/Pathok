@@ -73,7 +73,8 @@ create table book_chapters (
   book_id text not null references books(id) on delete cascade,
   "order" integer not null,
   title text not null,
-  paragraphs jsonb not null default '[]'
+  paragraphs jsonb not null default '[]',
+  paragraphs_html jsonb
 );
 
 -- 6. REVIEWS (star rating + written review)

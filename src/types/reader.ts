@@ -8,8 +8,9 @@
  */
 
 /** One chapter's extracted text — the end of the PDF/DOCX -> extract ->
- *  store pipeline described in the PRD. Paragraphs are plain strings;
- *  the reader is responsible for all typography, not the data layer. */
+ *  store pipeline described in the PRD. `paragraphs` are plain strings and
+ *  drive search, TTS, and bookmark excerpts; the reader is responsible for
+ *  typography, not the data layer. */
 export interface Chapter {
   id: string;
   bookId: string;
@@ -17,6 +18,12 @@ export interface Chapter {
   order: number;
   title: string;
   paragraphs: string[];
+  /** Same paragraphs, but as sanitized inline HTML (<b>/<i> only) that
+   *  preserves the bold/italic/heading formatting the source PDF actually
+   *  had. Populated for PDF-sourced chapters; absent for chapters extracted
+   *  before this shipped or from formats without a reliable style signal —
+   *  the reader falls back to plain `paragraphs` when it's missing. */
+  paragraphsHtml?: string[];
 }
 
 /** A book's full extracted text, chapter by chapter. */

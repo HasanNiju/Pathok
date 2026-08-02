@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/supabase/route-guard";
-import { chunkIntoChapters, extractTextFromDocx, extractTextFromPdf } from "@/lib/text-extraction";
+import {
+  chunkFormattedBlocksIntoChapters,
+  chunkIntoChapters,
+  extractFormattedFromPdf,
+  extractTextFromDocx,
+} from "@/lib/text-extraction";
 
 export const runtime = "nodejs";
 
@@ -9,6 +14,12 @@ export const runtime = "nodejs";
  * Admin-only. Returns chapters for client-side preview; nothing is persisted
  * here — the admin still has to hit Publish/Save Draft, which calls
  * saveBookChapters via the Supabase client directly.
+ *
+ * PDFs go through extractFormattedFromPdf, which reads each glyph run's
+ * position and font to preserve bold/italic and detect headings by actual
+ * font size — not just a plain text dump. DOCX still uses plain-text
+ * extraction + heading-guessing (chunkIntoChapters), since it has no
+ * equivalent to check.
  */
 export async function POST(request: Request) {
   const auth = await requireRole(["admin", "super_admin"]);
@@ -33,14 +44,22 @@ export async function POST(request: Request) {
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const text = isPdf ? await extractTextFromPdf(buffer) : await extractTextFromDocx(buffer);
 
+    if (isPdf) {
+      const blocks = await extractFormattedFromPdf(buffer);
+      if (blocks.length === 0) {
+        return NextResponse.json({ error: "No readable text could be found in this file." }, { status: 422 });
+      }
+      const chapters = chunkFormattedBlocksIntoChapters(blocks, bookId);
+      return NextResponse.json({ chapters, fileType: "pdf" });
+    }
+
+    const text = await extractTextFromDocx(buffer);
     if (!text.trim()) {
       return NextResponse.json({ error: "No readable text could be found in this file." }, { status: 422 });
     }
-
     const chapters = chunkIntoChapters(text, bookId);
-    return NextResponse.json({ chapters, fileType: isPdf ? "pdf" : "docx" });
+    return NextResponse.json({ chapters, fileType: "docx" });
   } catch {
     return NextResponse.json({ error: "This file could not be processed." }, { status: 422 });
   }

@@ -54,9 +54,8 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
     settings.fontFamily === "sans" ? "font-sans" : settings.fontFamily === "literary" ? "font-literary" : "font-serif";
 
   // Desktop shows a two-column spread (like a physical book laid open);
-  // mobile — and any window too narrow for two comfortable columns — falls
-  // back to a single column that fills the screen.
-  const columnsPerPage = !isMobile && clipWidth >= 640 ? 2 : 1;
+  // mobile falls back to a single column that fills the screen.
+  const columnsPerPage = isMobile ? 1 : 2;
   const columnGapPx = columnsPerPage > 1 ? 56 : 0;
   const columnWidthPx = clipWidth
     ? Math.max(80, (clipWidth - (columnsPerPage - 1) * columnGapPx) / columnsPerPage)
@@ -214,11 +213,22 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
               color: colors.fg,
             }}
           >
-            {chapter.paragraphs.map((paragraph, index) => (
-              <p key={index} data-p={index} className="mb-5 break-words [-webkit-hyphens:auto] [hyphens:auto]">
-                {renderParagraph(paragraph, index)}
-              </p>
-            ))}
+            {chapter.paragraphs.map((paragraph, index) => {
+              const html = chapter.paragraphsHtml?.[index];
+              const hasHighlight = annotations.some((a) => a.paragraphIndex === index);
+              return (
+                <p key={index} data-p={index} className="mb-5 break-words [-webkit-hyphens:auto] [hyphens:auto]">
+                  {html && !hasHighlight ? (
+                    // Preserves the source PDF's bold/italic runs exactly —
+                    // sanitized server-side to <b>/<i>/<br> only (see
+                    // extractFormattedFromPdf), so this is safe to inject.
+                    <span dangerouslySetInnerHTML={{ __html: html }} />
+                  ) : (
+                    renderParagraph(paragraph, index)
+                  )}
+                </p>
+              );
+            })}
           </div>
         </div>
       </div>

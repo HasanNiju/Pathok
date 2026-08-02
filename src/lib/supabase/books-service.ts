@@ -246,6 +246,7 @@ export async function saveBookChapters(supabase: SupabaseClient, bookId: string,
         order: chapter.order,
         title: chapter.title,
         paragraphs: chapter.paragraphs,
+        paragraphs_html: chapter.paragraphsHtml ?? null,
       }))
     );
     if (error) throw error;
@@ -260,13 +261,20 @@ export async function saveBookChapters(supabase: SupabaseClient, bookId: string,
 export async function fetchBookChapters(supabase: SupabaseClient, bookId: string): Promise<Chapter[]> {
   const { data, error } = await supabase
     .from("book_chapters")
-    .select("id,book_id,order,title,paragraphs")
+    .select("id,book_id,order,title,paragraphs,paragraphs_html")
     .eq("book_id", bookId)
     .order("order");
   if (error) throw error;
-  return (data as { id: string; book_id: string; order: number; title: string; paragraphs: string[] }[]).map(
-    (row) => ({ id: row.id, bookId: row.book_id, order: row.order, title: row.title, paragraphs: row.paragraphs })
-  );
+  return (
+    data as { id: string; book_id: string; order: number; title: string; paragraphs: string[]; paragraphs_html: string[] | null }[]
+  ).map((row) => ({
+    id: row.id,
+    bookId: row.book_id,
+    order: row.order,
+    title: row.title,
+    paragraphs: row.paragraphs,
+    paragraphsHtml: row.paragraphs_html ?? undefined,
+  }));
 }
 
 export async function fetchBookMetadata(supabase: SupabaseClient, bookId: string): Promise<BookMetadata | undefined> {
