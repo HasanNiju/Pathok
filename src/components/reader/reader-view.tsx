@@ -97,6 +97,21 @@ export function ReaderView({ book, content }: ReaderViewProps) {
   const contentRef = useRef<ReaderContentHandle>(null);
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(containerRef);
 
+  // The reader is a fixed full-viewport overlay, not a real Fullscreen-API
+  // surface, until the person explicitly toggles Fullscreen. Left unlocked,
+  // the page underneath can still scroll — and on mobile browsers a
+  // scrollable body destabilizes `position: fixed; inset: 0` sizing as the
+  // address bar shows/hides, which is exactly why the page-column layout
+  // only ever measured correctly once true Fullscreen forced a stable
+  // viewport. Locking scroll here removes that dependency.
+  useEffect(() => {
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, []);
+
   const [chromeVisible, setChromeVisible] = useState(true);
   const [panel, setPanel] = useState<PanelName>(null);
   const [selection, setSelection] = useState<TextSelectionInfo | null>(null);
@@ -267,12 +282,13 @@ export function ReaderView({ book, content }: ReaderViewProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-40 flex select-text"
+      className="fixed inset-0 z-40 flex h-dvh w-full select-text"
       style={{ backgroundColor: theme.bg }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       <ReaderRail
+        visible={chromeVisible}
         isFullscreen={isFullscreen}
         chromeColors={chromeColors}
         onToggleToc={() => setPanel(panel === "toc" ? null : "toc")}

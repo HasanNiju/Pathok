@@ -52,9 +52,9 @@ export const LETTER_SPACING_OPTIONS: { value: ReaderLetterSpacing; labelKey: str
 ];
 
 export const MARGIN_OPTIONS: { value: ReaderMargin; labelKey: string; remDesktop: number; remMobile: number }[] = [
-  { value: "narrow", labelKey: "reader.settings.marginOptions.narrow", remDesktop: 3, remMobile: 1 },
-  { value: "comfortable", labelKey: "reader.settings.marginOptions.comfortable", remDesktop: 6, remMobile: 1.5 },
-  { value: "wide", labelKey: "reader.settings.marginOptions.wide", remDesktop: 10, remMobile: 2 },
+  { value: "narrow", labelKey: "reader.settings.marginOptions.narrow", remDesktop: 5, remMobile: 1.5 },
+  { value: "comfortable", labelKey: "reader.settings.marginOptions.comfortable", remDesktop: 9, remMobile: 2 },
+  { value: "wide", labelKey: "reader.settings.marginOptions.wide", remDesktop: 14, remMobile: 2.75 },
 ];
 
 /** Reader color themes — deliberately plain hex, not Tailwind/HSL tokens,

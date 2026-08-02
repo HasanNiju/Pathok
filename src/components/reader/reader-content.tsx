@@ -216,7 +216,7 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
       <div
         ref={clipRef}
         className="relative h-full w-full overflow-hidden"
-        style={{ padding: `${isMobile ? 4.5 : 5}rem ${marginRem}rem ${isMobile ? 2 : 3}rem` }}
+        style={{ padding: `${isMobile ? 3.75 : 4.5}rem ${marginRem}rem ${isMobile ? 1 : 1.5}rem` }}
       >
         <div className="flex h-full w-full flex-col overflow-hidden" onMouseUp={handleMouseUp}>
           {/* Chapter title — spans the full page width above the column(s),
