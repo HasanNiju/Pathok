@@ -3,14 +3,28 @@
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
   type ClipboardEvent,
   type KeyboardEvent,
   type MouseEvent,
 } from "react";
-import { Bold, Italic, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  Undo2,
+  Redo2,
+  Plus,
+  Trash2,
+  ChevronUp,
+  ChevronDown,
+  BookText,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { htmlToPlainText, isBlankParagraphHtml, sanitizeParagraphHtml } from "@/lib/rich-text";
@@ -42,6 +56,17 @@ interface ChapterEditorProps {
   disabled?: boolean;
 }
 
+/** Reading speed used for the footer's "~N min" estimate — an average
+ *  adult silent-reading pace, same ballpark the Reader's own progress
+ *  math assumes elsewhere in the app. */
+const WORDS_PER_MINUTE = 220;
+
+const WRITING_SCALES = [
+  { label: "S", fontSize: "15px", lineHeight: 1.75, maxWidth: "34rem" },
+  { label: "M", fontSize: "17px", lineHeight: 1.85, maxWidth: "38rem" },
+  { label: "L", fontSize: "19px", lineHeight: 1.95, maxWidth: "42rem" },
+] as const;
+
 let uidCounter = 0;
 const nextId = () => `b${Date.now().toString(36)}${(uidCounter++).toString(36)}`;
 
@@ -72,6 +97,11 @@ function isCaretAtStart(el: HTMLElement): boolean {
   return pre.toString().length === 0;
 }
 
+function wordCount(text: string): number {
+  const trimmed = text.trim();
+  return trimmed.length === 0 ? 0 : trimmed.split(/\s+/).length;
+}
+
 /**
  * A from-scratch paragraph-block rich text editor — no external editor
  * library (this environment has no network access to install one), just
@@ -80,12 +110,22 @@ function isCaretAtStart(el: HTMLElement): boolean {
  * without fighting the browser's inconsistent multi-line contentEditable
  * behavior.
  *
+ * On top of that plumbing this renders a small word-processor-style shell:
+ * a sticky formatting toolbar with live active-state highlighting, a
+ * Notion/Medium-style floating bubble menu that appears over a text
+ * selection, a paper-like writing surface with an adjustable comfort
+ * scale, and a live word count / reading-time footer — so drafting a
+ * chapter feels closer to Docs or Word than to a bare textarea, without
+ * literally cloning either.
+ *
  * KEY INVARIANT for a smooth typing experience: `ParagraphBlock.html` in
  * React state is only ever written with a value that already matches (or
  * is about to become) the live DOM — never touched on every keystroke.
  * React's dangerouslySetInnerHTML diffs by string value, so re-renders
  * that don't actually change a block's html leave that DOM node — and the
- * caret sitting inside it — untouched.
+ * caret sitting inside it — untouched. The live word count relies on the
+ * same guarantee: it's driven by a separate `tick` counter, never by
+ * writing into `chapters`, so it can update on every keystroke for free.
  */
 export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>(function ChapterEditor(
   { bookId, initialChapters, disabled },
@@ -97,7 +137,13 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
       : [{ id: `${bookId}-ch-1`, title: "Chapter 1", blocks: [{ id: nextId(), html: "" }] }]
   );
   const [activeId, setActiveId] = useState<string>(() => chapters[0]?.id ?? "");
+  const [scaleIndex, setScaleIndex] = useState(1);
+  const [format, setFormat] = useState({ bold: false, italic: false, underline: false, strike: false });
+  const [bubble, setBubble] = useState<{ top: number; left: number } | null>(null);
+  const [, setTick] = useState(0);
   const blockRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const editorAreaRef = useRef<HTMLDivElement>(null);
+  const tickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const registerRef = useCallback((id: string, el: HTMLDivElement | null) => {
     if (el) blockRefs.current.set(id, el);
@@ -152,6 +198,7 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
     if (id === activeId) return;
     setChapters((current) => snapshot(current));
     setActiveId(id);
+    setBubble(null);
   };
 
   const addChapter = () => {
@@ -326,71 +373,190 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
     focusBlock(newId);
   };
 
-  const applyFormat = (command: "bold" | "italic") => (e: MouseEvent) => {
+  /** Recomputes toolbar active-state (bold/italic/underline/strike) from
+   *  whatever the current selection sits in. Cheap and read-only — safe
+   *  to call on every selection change. */
+  const refreshFormatState = useCallback(() => {
+    const active = document.activeElement;
+    const withinEditor = active instanceof HTMLElement && active.classList.contains("rich-paragraph");
+    if (!withinEditor) return;
+    setFormat({
+      bold: document.queryCommandState("bold"),
+      italic: document.queryCommandState("italic"),
+      underline: document.queryCommandState("underline"),
+      strike: document.queryCommandState("strikeThrough"),
+    });
+  }, []);
+
+  /** Positions (or hides) the floating selection toolbar. Uses fixed
+   *  viewport coordinates from the Range rect; hidden again on scroll so
+   *  it never drifts away from the text it's attached to. */
+  const refreshBubble = useCallback(() => {
+    const sel = window.getSelection();
+    const active = document.activeElement;
+    const withinEditor = active instanceof HTMLElement && active.classList.contains("rich-paragraph");
+    if (!withinEditor || !sel || sel.rangeCount === 0 || sel.isCollapsed) {
+      setBubble(null);
+      return;
+    }
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) {
+      setBubble(null);
+      return;
+    }
+    setBubble({ top: rect.top, left: rect.left + rect.width / 2 });
+  }, []);
+
+  useEffect(() => {
+    const onSelectionChange = () => {
+      refreshFormatState();
+      refreshBubble();
+    };
+    const onScroll = () => setBubble(null);
+    document.addEventListener("selectionchange", onSelectionChange);
+    window.addEventListener("scroll", onScroll, true);
+    return () => {
+      document.removeEventListener("selectionchange", onSelectionChange);
+      window.removeEventListener("scroll", onScroll, true);
+    };
+  }, [refreshFormatState, refreshBubble]);
+
+  /** Word count / reading time is intentionally driven by a debounced
+   *  `tick` rather than by writing into `chapters` on every keystroke —
+   *  see file header. It reads live DOM for the active chapter's blocks
+   *  and last-synced html for every other chapter. */
+  const scheduleTick = () => {
+    if (tickTimer.current) clearTimeout(tickTimer.current);
+    tickTimer.current = setTimeout(() => setTick((t) => t + 1), 250);
+  };
+
+  const chapterWordCount = useCallback(
+    (chapter: EditableChapter) => {
+      const texts = chapter.blocks.map((block) => {
+        if (chapter.id === activeId) {
+          const el = blockRefs.current.get(block.id);
+          if (el) return el.textContent ?? "";
+        }
+        return htmlToPlainText(block.html);
+      });
+      return wordCount(texts.join(" "));
+    },
+    [activeId]
+  );
+
+  const activeWordCount = activeChapter ? chapterWordCount(activeChapter) : 0;
+  const bookWordCount = useMemo(
+    () => chapters.reduce((sum, c) => sum + chapterWordCount(c), 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- also depends on live DOM text, refreshed via `tick`
+    [chapters, chapterWordCount]
+  );
+  const readingMinutes = Math.max(1, Math.round(bookWordCount / WORDS_PER_MINUTE));
+
+  const applyFormat = (command: "bold" | "italic" | "underline" | "strikeThrough") => (e: MouseEvent) => {
     e.preventDefault();
     document.execCommand(command);
+    refreshFormatState();
+    scheduleTick();
   };
+
+  const runHistory = (command: "undo" | "redo") => (e: MouseEvent) => {
+    e.preventDefault();
+    document.execCommand(command);
+    scheduleTick();
+  };
+
+  const scale = WRITING_SCALES[scaleIndex]!;
 
   if (!activeChapter) return null;
 
+  const formatButtons: Array<{
+    key: keyof typeof format;
+    command: "bold" | "italic" | "underline" | "strikeThrough";
+    icon: typeof Bold;
+    label: string;
+    shortcut: string;
+  }> = [
+    { key: "bold", command: "bold", icon: Bold, label: "Bold", shortcut: "Ctrl+B" },
+    { key: "italic", command: "italic", icon: Italic, label: "Italic", shortcut: "Ctrl+I" },
+    { key: "underline", command: "underline", icon: Underline, label: "Underline", shortcut: "Ctrl+U" },
+    { key: "strike", command: "strikeThrough", icon: Strikethrough, label: "Strikethrough", shortcut: "" },
+  ];
+
   return (
     <div className={cn("flex flex-col gap-4 sm:flex-row sm:gap-5", disabled && "pointer-events-none opacity-50")}>
-      {/* Chapter list */}
-      <div className="flex shrink-0 flex-col gap-2 sm:w-52">
-        <div className="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-lg border border-border p-1.5 sm:max-h-[420px]">
-          {chapters.map((chapter, index) => (
-            <div
-              key={chapter.id}
-              className={cn(
-                "group flex items-center gap-1 rounded-md px-2 py-1.5 text-sm",
-                chapter.id === activeId ? "bg-primary/10 text-primary" : "text-foreground hover:bg-secondary"
-              )}
-            >
-              <button
-                type="button"
-                onClick={() => selectChapter(chapter.id)}
-                className="flex-1 truncate text-left"
-                title={chapter.title}
+      {/* Outline sidebar */}
+      <div className="flex shrink-0 flex-col gap-2 sm:w-56">
+        <div className="flex items-center justify-between px-1">
+          <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <BookText className="h-3.5 w-3.5" /> Outline
+          </span>
+          <span className="text-xs text-muted-foreground">{bookWordCount.toLocaleString()} words</span>
+        </div>
+        <div className="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-xl border border-border p-1.5 sm:max-h-[420px]">
+          {chapters.map((chapter, index) => {
+            const isActive = chapter.id === activeId;
+            return (
+              <div
+                key={chapter.id}
+                className={cn(
+                  "group flex items-center gap-1 rounded-lg py-1.5 pl-2 pr-1.5 text-sm transition-colors",
+                  isActive ? "bg-primary/10 text-primary shadow-[inset_2px_0_0_hsl(var(--primary))]" : "text-foreground hover:bg-secondary"
+                )}
               >
-                {index + 1}. {chapter.title || "Untitled"}
-              </button>
-              <button
-                type="button"
-                onClick={() => moveChapter(chapter.id, -1)}
-                disabled={index === 0}
-                className="hidden shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-30 group-hover:block"
-                aria-label="Move chapter up"
-              >
-                <ChevronUp className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => moveChapter(chapter.id, 1)}
-                disabled={index === chapters.length - 1}
-                className="hidden shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-30 group-hover:block"
-                aria-label="Move chapter down"
-              >
-                <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-              {chapters.length > 1 && (
+                <span
+                  className={cn(
+                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold",
+                    isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+                  )}
+                >
+                  {index + 1}
+                </span>
                 <button
                   type="button"
-                  onClick={() => removeChapter(chapter.id)}
-                  className="hidden shrink-0 text-muted-foreground hover:text-destructive group-hover:block"
-                  aria-label="Delete chapter"
+                  onClick={() => selectChapter(chapter.id)}
+                  className="flex-1 truncate text-left"
+                  title={chapter.title}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  {chapter.title || "Untitled"}
                 </button>
-              )}
-            </div>
-          ))}
+                <button
+                  type="button"
+                  onClick={() => moveChapter(chapter.id, -1)}
+                  disabled={index === 0}
+                  className="hidden shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-30 group-hover:block"
+                  aria-label="Move chapter up"
+                >
+                  <ChevronUp className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveChapter(chapter.id, 1)}
+                  disabled={index === chapters.length - 1}
+                  className="hidden shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-30 group-hover:block"
+                  aria-label="Move chapter down"
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                {chapters.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeChapter(chapter.id)}
+                    className="hidden shrink-0 text-muted-foreground hover:text-destructive group-hover:block"
+                    aria-label="Delete chapter"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
         <Button type="button" variant="outline" size="sm" onClick={addChapter} className="gap-1.5">
           <Plus className="h-3.5 w-3.5" /> Add chapter
         </Button>
       </div>
 
-      {/* Active chapter body */}
+      {/* Writing surface */}
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <input
           value={activeChapter.title}
@@ -399,29 +565,77 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
           className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm font-semibold text-foreground outline-none focus:border-primary"
         />
 
-        <div className="flex items-center gap-1 rounded-lg border border-border p-1">
-          <button
-            type="button"
-            onMouseDown={applyFormat("bold")}
-            className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
-            aria-label="Bold"
-            title="Bold (Ctrl+B)"
-          >
-            <Bold className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onMouseDown={applyFormat("italic")}
-            className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
-            aria-label="Italic"
-            title="Italic (Ctrl+I)"
-          >
-            <Italic className="h-4 w-4" />
-          </button>
+        {/* Sticky formatting toolbar */}
+        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 rounded-xl border border-border bg-card/95 p-1.5 shadow-sm backdrop-blur">
+          <div className="flex items-center gap-0.5">
+            {formatButtons.map(({ key, command, icon: Icon, label, shortcut }) => (
+              <button
+                key={key}
+                type="button"
+                onMouseDown={applyFormat(command)}
+                className={cn(
+                  "rounded-md p-1.5 transition-colors",
+                  format[key] ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                )}
+                aria-label={label}
+                aria-pressed={format[key]}
+                title={shortcut ? `${label} (${shortcut})` : label}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            ))}
+          </div>
+
+          <div className="mx-1 h-5 w-px bg-border" />
+
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              onMouseDown={runHistory("undo")}
+              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              aria-label="Undo"
+              title="Undo (Ctrl+Z)"
+            >
+              <Undo2 className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onMouseDown={runHistory("redo")}
+              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              aria-label="Redo"
+              title="Redo (Ctrl+Y)"
+            >
+              <Redo2 className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="ml-auto flex items-center gap-1 rounded-lg bg-secondary/60 p-0.5">
+            {WRITING_SCALES.map((s, i) => (
+              <button
+                key={s.label}
+                type="button"
+                onClick={() => setScaleIndex(i)}
+                className={cn(
+                  "rounded-md px-2 py-1 text-xs font-semibold transition-colors",
+                  i === scaleIndex ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="Writing text size (doesn't affect saved formatting)"
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="min-h-[280px] rounded-lg border border-border bg-secondary/20 px-5 py-4 sm:px-8 sm:py-6">
-          <div className="mx-auto flex max-w-xl flex-col gap-4 font-serif text-[16px] leading-[1.85]">
+        {/* Paper canvas */}
+        <div
+          ref={editorAreaRef}
+          className="relative min-h-[280px] rounded-2xl border border-border bg-card px-5 py-4 shadow-sm sm:px-8 sm:py-6"
+        >
+          <div
+            className="mx-auto flex flex-col gap-4 font-serif text-foreground"
+            style={{ maxWidth: scale.maxWidth, fontSize: scale.fontSize, lineHeight: scale.lineHeight }}
+          >
             {activeChapter.blocks.map((block) => (
               <ParagraphBlockEditor
                 key={block.id}
@@ -430,14 +644,48 @@ export const ChapterEditor = forwardRef<ChapterEditorHandle, ChapterEditorProps>
                 onEnter={handleEnter}
                 onBackspaceAtStart={handleBackspaceAtStart}
                 onPaste={handlePaste}
+                onLiveInput={scheduleTick}
               />
             ))}
           </div>
+
+          {/* Floating selection toolbar — Notion/Medium-style bubble menu */}
+          {bubble && (
+            <div
+              className="fixed z-20 flex -translate-x-1/2 -translate-y-[calc(100%+10px)] items-center gap-0.5 rounded-lg border border-border bg-foreground/95 p-1 text-background shadow-lg"
+              style={{ top: bubble.top, left: bubble.left }}
+            >
+              {formatButtons
+                .filter((b) => b.key !== "strike")
+                .map(({ key, command, icon: Icon, label }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onMouseDown={applyFormat(command)}
+                    className={cn(
+                      "rounded p-1.5 transition-colors hover:bg-background/20",
+                      format[key] && "bg-background/25"
+                    )}
+                    aria-label={label}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                  </button>
+                ))}
+            </div>
+          )}
         </div>
 
-        <Button type="button" variant="outline" size="sm" onClick={addParagraphAtEnd} className="w-fit gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add paragraph
-        </Button>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={addParagraphAtEnd} className="w-fit gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add paragraph
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            This chapter: <span className="font-medium text-foreground">{activeWordCount.toLocaleString()}</span> words
+            <span className="mx-1.5">·</span>
+            Whole book: <span className="font-medium text-foreground">{bookWordCount.toLocaleString()}</span> words
+            <span className="mx-1.5">·</span>~{readingMinutes} min read
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -449,12 +697,14 @@ function ParagraphBlockEditor({
   onEnter,
   onBackspaceAtStart,
   onPaste,
+  onLiveInput,
 }: {
   block: ParagraphBlock;
   registerRef: (id: string, el: HTMLDivElement | null) => void;
   onEnter: (id: string, el: HTMLDivElement) => void;
   onBackspaceAtStart: (id: string, el: HTMLDivElement) => void;
   onPaste: (id: string, e: ClipboardEvent<HTMLDivElement>) => void;
+  onLiveInput: () => void;
 }) {
   const elRef = useRef<HTMLDivElement | null>(null);
 
@@ -481,10 +731,11 @@ function ParagraphBlockEditor({
       contentEditable
       suppressContentEditableWarning
       data-placeholder="Write or paste this paragraph…"
-      className="rich-paragraph min-h-[1.6em] whitespace-pre-wrap break-words text-foreground outline-none"
+      className="rich-paragraph min-h-[1.6em] whitespace-pre-wrap break-words outline-none"
       // eslint-disable-next-line react/no-danger -- initial mount only; see file header invariant.
       dangerouslySetInnerHTML={{ __html: block.html }}
       onKeyDown={handleKeyDown}
+      onInput={onLiveInput}
       onPaste={(e) => onPaste(block.id, e)}
     />
   );

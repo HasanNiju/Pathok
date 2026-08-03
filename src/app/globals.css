@@ -115,3 +115,11 @@
   color: hsl(var(--muted-foreground) / 0.6);
   pointer-events: none;
 }
+
+/* Warm, on-brand text selection inside the chapter editor, instead of
+   the browser's default blue — keeps the writing surface feeling like
+   part of Pathok rather than a generic textarea. */
+.rich-paragraph::selection,
+.rich-paragraph *::selection {
+  background: hsl(var(--primary) / 0.22);
+}
