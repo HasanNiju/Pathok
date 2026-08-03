@@ -75,7 +75,7 @@ create table if not exists site_settings (
   updated_at timestamptz not null default now()
 );
 insert into site_settings (key, value) values
-  ('branding', '{"siteName":"Pathok","tagline":"Read beautifully.","logoUrl":"","darkLogoUrl":"","faviconUrl":"","accentColor":"#2563eb"}'),
+  ('branding', '{"siteName":"Pathok","tagline":"Read beautifully."}'),
   ('general', '{"defaultTheme":"system","defaultLanguage":"en"}'),
   ('reader_defaults', '{"fontFamily":"serif","fontSize":18,"readingWidth":"comfortable"}'),
   ('upload', '{"allowedTypes":["pdf","docx"],"maxUploadSizeMb":25}')

@@ -21,7 +21,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "@/constants";
-import { BrandLogo } from "@/components/layout/brand-logo";
+import { BrandMark } from "@/components/layout/brand-logo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -86,9 +86,10 @@ export function Topbar({ className, onMenuClick }: TopbarProps) {
       <div className="flex items-center gap-1">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-md px-1 text-lg font-bold tracking-tight text-foreground transition-opacity duration-200 hover:opacity-80"
+          className="flex items-center gap-2 rounded-md px-1 text-lg font-bold tracking-tight text-foreground transition-transform duration-200 hover:opacity-80 active:scale-95"
         >
-          <BrandLogo imageHeight={34} />
+          <BrandMark size={36} />
+          <span className="sr-only">Pathok</span>
         </Link>
       </div>
 

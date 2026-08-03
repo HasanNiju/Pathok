@@ -11,10 +11,3 @@ export async function saveSetting<T>(supabase: SupabaseClient, key: string, valu
   if (error) throw error;
 }
 
-export async function uploadBrandingAsset(supabase: SupabaseClient, file: File, slot: "logo" | "dark-logo" | "favicon"): Promise<string> {
-  const ext = file.name.split(".").pop() ?? "png";
-  const path = `${slot}-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from("branding").upload(path, file, { upsert: true });
-  if (error) throw error;
-  return supabase.storage.from("branding").getPublicUrl(path).data.publicUrl;
-}

@@ -44,14 +44,15 @@ export interface ManagedUser {
   createdAt: string;
 }
 
-/** Branding settings (Module 05), stored in site_settings under key "branding". */
+/**
+ * Branding settings (Module 05), stored in site_settings under key "branding".
+ * Only identity copy is editable here — the logo, favicon, and brand color
+ * are fixed Pathok brand assets and are not admin-configurable (see
+ * BrandMark / BrandWordmark in components/layout/brand-logo.tsx).
+ */
 export interface BrandingSettings {
   siteName: string;
   tagline: string;
-  logoUrl: string;
-  darkLogoUrl: string;
-  faviconUrl: string;
-  accentColor: string;
 }
 
 /** Global Settings (Module 06). */

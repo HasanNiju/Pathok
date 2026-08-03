@@ -1,50 +1,65 @@
 "use client";
 
 import Image from "next/image";
-import { BookOpen } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useBranding } from "@/providers/branding-provider";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
-interface BrandLogoProps {
+/**
+ * Pathok's brand mark. Fixed brand assets — always the red colorway in both
+ * light and dark mode, and not swappable from the admin panel (branding is
+ * a locked identity, not a per-deployment setting).
+ *
+ * - BrandMark: the icon alone. Used in compact chrome (Topbar, Admin
+ *   sidebar) where a full wordmark would be cramped.
+ * - BrandWordmark: the full logo mark. Used wherever the brand stands
+ *   alone (Footer, auth screens). Automatically swaps between the English
+ *   and Bengali wordmark to match the active language.
+ */
+
+interface BrandMarkProps {
   className?: string;
-  /** Pixel height of the logo image; width scales automatically. */
-  imageHeight?: number;
+  /** Pixel height of the icon; width scales to match its aspect ratio. */
+  size?: number;
 }
 
-/**
- * Used anywhere the app shows its brand mark (Topbar, Footer, Admin
- * Sidebar, Auth screens) so an uploaded logo (Branding module) appears
- * everywhere at once. Falls back to the BookOpen icon + site name when no
- * logo has been uploaded yet, and swaps to the dark-mode logo variant
- * when one exists and the app is in dark mode.
- */
-export function BrandLogo({ className, imageHeight = 32 }: BrandLogoProps) {
-  const { branding } = useBranding();
-  const { resolvedTheme } = useTheme();
-
-  const logoUrl = resolvedTheme === "dark" && branding.darkLogoUrl ? branding.darkLogoUrl : branding.logoUrl;
-
-  if (logoUrl) {
-    return (
-      <span className={cn("relative inline-flex items-center", className)} style={{ height: imageHeight }}>
-        <Image
-          src={logoUrl}
-          alt={branding.siteName}
-          height={imageHeight}
-          width={imageHeight * 4}
-          className="h-full w-auto object-contain"
-          style={{ height: imageHeight, width: "auto" }}
-          unoptimized
-        />
-      </span>
-    );
-  }
-
+export function BrandMark({ className, size = 32 }: BrandMarkProps) {
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
-      <BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />
-      {branding.siteName}
+    <span className={cn("relative inline-flex shrink-0 items-center", className)} style={{ height: size, width: size }}>
+      <Image
+        src="/brand/icon-red.png"
+        alt="Pathok"
+        fill
+        className="object-contain"
+        sizes={`${size}px`}
+        priority
+      />
     </span>
   );
 }
+
+interface BrandWordmarkProps {
+  className?: string;
+  /** Pixel height of the wordmark; width scales automatically. */
+  imageHeight?: number;
+}
+
+export function BrandWordmark({ className, imageHeight = 32 }: BrandWordmarkProps) {
+  const { language } = useTranslation();
+  const src = language === "bn" ? "/brand/wordmark-bn-red.png" : "/brand/wordmark-en-red.png";
+
+  return (
+    <span className={cn("relative inline-flex items-center", className)} style={{ height: imageHeight }}>
+      <Image
+        key={src}
+        src={src}
+        alt="Pathok"
+        height={imageHeight}
+        width={imageHeight * 4}
+        className="h-full w-auto object-contain"
+        style={{ height: imageHeight, width: "auto" }}
+        priority
+      />
+    </span>
+  );
+}
+

@@ -1,0 +1,13 @@
+{
+  "name": "Pathok",
+  "short_name": "Pathok",
+  "description": "A beautiful, minimal place to read books online.",
+  "icons": [
+    { "src": "/brand/icon-square.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/icon-square.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "theme_color": "#FE0227",
+  "background_color": "#FEFBF6",
+  "display": "standalone",
+  "start_url": "/"
+}

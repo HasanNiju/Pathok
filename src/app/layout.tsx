@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Lora, Merriweather } from "next/font/google";
 import { AppProviders } from "@/providers/app-providers";
 import { AppShell } from "@/components/layout/app-shell";
@@ -33,6 +33,14 @@ const fontLiterary = Merriweather({
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "A beautiful, minimal place to read books online.",
+  // Favicon / apple-touch-icon are auto-detected by Next.js from
+  // src/app/icon.png, apple-icon.png, and favicon.ico (file convention) —
+  // no need to declare them here too.
+  manifest: "/site.webmanifest",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#FE0227",
 };
 
 export default function RootLayout({

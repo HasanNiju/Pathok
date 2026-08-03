@@ -6,7 +6,8 @@
   Design tokens for Pathok.
   Light theme = "Warm Off White" background per PRD.
   Dark theme  = "Near Black" background per PRD.
-  Primary     = Blue in both themes.
+  Primary     = Pathok Red (brand mark color) in both themes — fixed,
+                not user-configurable (see admin-branding-view.tsx).
   Radius      = Large, single source of truth for every rounded corner.
   All values are HSL triplets (no hex) so Tailwind's hsl(var(--x)) works.
 */
@@ -18,7 +19,7 @@
     --card: 40 33% 100%;
     --card-foreground: 222 30% 12%;
 
-    --primary: 217 91% 60%;          /* blue */
+    --primary: 351 90% 50%;          /* Pathok red, from brand mark #FE0227 */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 20% 94%;
@@ -27,15 +28,15 @@
     --muted: 210 16% 93%;
     --muted-foreground: 220 10% 40%;
 
-    --accent: 217 91% 95%;
-    --accent-foreground: 217 91% 30%;
+    --accent: 351 90% 96%;
+    --accent-foreground: 351 80% 32%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 14 88% 50%;       /* distinct orange-red, kept apart from brand red */
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 14% 88%;
     --input: 220 14% 88%;
-    --ring: 217 91% 60%;
+    --ring: 351 90% 50%;
 
     /* Large radius per design system */
     --radius: 1rem;
@@ -48,8 +49,8 @@
     --card: 222 22% 9%;
     --card-foreground: 210 20% 96%;
 
-    --primary: 217 91% 65%;
-    --primary-foreground: 222 30% 8%;
+    --primary: 351 90% 58%;          /* same Pathok red, lifted for dark contrast */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 222 16% 14%;
     --secondary-foreground: 210 20% 92%;
@@ -57,15 +58,15 @@
     --muted: 222 16% 14%;
     --muted-foreground: 220 10% 65%;
 
-    --accent: 217 40% 18%;
-    --accent-foreground: 217 91% 80%;
+    --accent: 351 45% 18%;
+    --accent-foreground: 351 90% 82%;
 
-    --destructive: 0 63% 45%;
+    --destructive: 14 80% 52%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 222 16% 18%;
     --input: 222 16% 18%;
-    --ring: 217 91% 65%;
+    --ring: 351 90% 58%;
   }
 }
 

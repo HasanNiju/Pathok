@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { BrandLogo } from "@/components/layout/brand-logo";
+import { BrandWordmark } from "@/components/layout/brand-logo";
 import { cn } from "@/lib/utils";
 
 export interface AuthShellProps {
@@ -28,9 +28,13 @@ export function AuthShell({ title, description, children, footer, className }: A
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="mb-8 flex flex-col items-center gap-3 text-center"
+        className="relative mb-8 flex flex-col items-center gap-3 text-center"
       >
-        <BrandLogo imageHeight={44} className="text-xl" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-6 h-28 w-48 rounded-full bg-primary/20 blur-3xl"
+        />
+        <BrandWordmark imageHeight={44} className="relative" />
       </motion.div>
 
       <motion.div

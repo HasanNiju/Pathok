@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
 import { useToast } from "@/hooks/use-toast";
-import { BrandLogo } from "@/components/layout/brand-logo";
+import { BrandWordmark } from "@/components/layout/brand-logo";
 import { cn } from "@/lib/utils";
 import { ResponsiveContainer } from "@/components/layout/responsive-container";
 
@@ -38,7 +38,7 @@ export function Footer({ className }: FooterProps) {
       <ResponsiveContainer className="grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:py-16">
         <div className="flex flex-col gap-3">
           <Link href="/" className="flex w-fit items-center gap-2 text-lg font-bold tracking-tight text-foreground">
-            <BrandLogo imageHeight={30} />
+            <BrandWordmark imageHeight={30} />
           </Link>
           <p className="max-w-xs text-sm text-muted-foreground">{t("footer.tagline")}</p>
         </div>

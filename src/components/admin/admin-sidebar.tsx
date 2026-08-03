@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { AdminNav } from "@/components/admin/admin-nav";
-import { BrandLogo } from "@/components/layout/brand-logo";
+import { BrandMark } from "@/components/layout/brand-logo";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,8 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       )}
     >
       <Link href="/admin" className="mb-6 flex items-center gap-2 px-1 text-lg font-bold tracking-tight text-foreground">
-        <BrandLogo />
+        <BrandMark size={28} />
+        <span>Pathok</span>
         <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
           {t("admin.badge")}
         </span>
