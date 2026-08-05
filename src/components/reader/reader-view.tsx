@@ -59,7 +59,7 @@ function FloatingIconButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-opacity duration-150 hover:opacity-70"
+      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-opacity duration-150 hover:opacity-70 sm:h-8 sm:w-8"
       style={{ color: active ? color.accent : color.fg }}
     >
       {children}
@@ -307,7 +307,8 @@ export function ReaderView({ book, content }: ReaderViewProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 py-6 sm:px-10"
+              className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 px-4 py-5 sm:px-10 sm:py-6"
+              style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}
             >
               <button
                 type="button"
@@ -322,7 +323,7 @@ export function ReaderView({ book, content }: ReaderViewProps) {
                 <span className="truncate">{book.title}</span>
               </button>
 
-              <div className="flex shrink-0 items-center gap-3" onClick={(e) => e.stopPropagation()}>
+              <div className="flex shrink-0 items-center gap-1 sm:gap-3" onClick={(e) => e.stopPropagation()}>
                 <FloatingIconButton
                   label={bookmarked ? t("reader.actions.removeBookmark") : t("reader.actions.addBookmark")}
                   onClick={handleToggleBookmark}

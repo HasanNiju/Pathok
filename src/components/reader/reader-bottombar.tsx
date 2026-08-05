@@ -43,12 +43,13 @@ export function ReaderBottomBar({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 16, opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="relative z-20 flex flex-col items-center gap-1 px-3 pb-4 pt-1 text-center"
+          className="relative z-20 flex flex-col items-center gap-1.5 px-4 pb-4 pt-1 text-center sm:gap-1 sm:px-3"
+          style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
         >
           <p className="text-sm" style={{ color: chromeColors.muted }}>
             {pageIndex + 1} / {totalPagesInChapter}
           </p>
-          <p className="text-[10.5px]" style={{ color: chromeColors.muted, opacity: 0.7 }}>
+          <p className="text-[11px] sm:text-[10.5px]" style={{ color: chromeColors.muted, opacity: 0.7 }}>
             {t("reader.progress.chapterOf")
               .replace("{current}", String(chapterOrder))
               .replace("{total}", String(totalChapters))}

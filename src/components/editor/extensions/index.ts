@@ -36,7 +36,7 @@ export function buildExtensions(placeholder = "Start writing…"): Extensions {
     Color,
     Image.configure({ inline: false, allowBase64: false, HTMLAttributes: { class: "editor-image" } }),
     Link.configure({ openOnClick: false, autolink: true, HTMLAttributes: { class: "editor-link" } }),
-    TextAlign.configure({ types: ["heading", "paragraph"] }),
+    TextAlign.configure({ types: ["heading", "paragraph"], alignments: ["left", "center", "right", "justify"] }),
     Table.configure({ resizable: true }),
     TableRow,
     TableHeader,

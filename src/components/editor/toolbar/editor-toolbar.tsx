@@ -19,6 +19,7 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  AlignJustify,
   Highlighter,
   Eraser,
   Eye,
@@ -183,6 +184,9 @@ export function EditorToolbar({
       </ToolbarButton>
       <ToolbarButton title="Align right" active={editor?.isActive({ textAlign: "right" })} onClick={() => chain()?.setTextAlign("right").run()}>
         <AlignRight className="h-4 w-4" />
+      </ToolbarButton>
+      <ToolbarButton title="Justify" active={editor?.isActive({ textAlign: "justify" })} onClick={() => chain()?.setTextAlign("justify").run()}>
+        <AlignJustify className="h-4 w-4" />
       </ToolbarButton>
 
       <Divider />

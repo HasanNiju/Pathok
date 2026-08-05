@@ -259,16 +259,23 @@ export const ReaderContent = forwardRef<ReaderContentHandle, ReaderContentProps>
                 const html = chapter.paragraphsHtml?.[index];
                 const hasHighlight = annotations.some((a) => a.paragraphIndex === index);
                 return (
-                  <p key={index} data-p={index} className="mb-5 break-words [-webkit-hyphens:auto] [hyphens:auto]">
+                  <div
+                    key={index}
+                    data-p={index}
+                    className="reader-typography mb-5 break-words [-webkit-hyphens:auto] [hyphens:auto]"
+                  >
                     {html && !hasHighlight ? (
-                      // Bold/italic exactly as written in the chapter editor —
-                      // sanitized to <b>/<i> only on save (see
-                      // sanitizeParagraphHtml), so this is safe to inject.
-                      <span dangerouslySetInnerHTML={{ __html: html }} />
+                      // Rendered straight from the same Tiptap extension set
+                      // the editor/preview use (see reader-pages-service.ts),
+                      // so headings/lists/tables/images match what the
+                      // author saw while writing. A plain <p> wrapper can't
+                      // safely contain block content like tables or lists,
+                      // so this sits in a <div>, not a <p>.
+                      <div dangerouslySetInnerHTML={{ __html: html }} />
                     ) : (
-                      renderParagraph(paragraph, index)
+                      <p>{renderParagraph(paragraph, index)}</p>
                     )}
-                  </p>
+                  </div>
                 );
               })}
             </div>

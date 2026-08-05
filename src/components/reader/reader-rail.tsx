@@ -36,7 +36,7 @@ function RailButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full transition-opacity duration-150 hover:opacity-70"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full transition-opacity duration-150 hover:opacity-70 sm:h-9 sm:w-9"
       style={{ color: active ? accent : fg }}
     >
       {children}
@@ -73,7 +73,8 @@ export function ReaderRail({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -8 }}
           transition={{ duration: 0.2 }}
-          className="relative z-20 flex w-12 shrink-0 flex-col items-center gap-1 py-6 sm:w-14 md:w-16"
+          className="relative z-20 flex w-14 shrink-0 flex-col items-center justify-center gap-3 py-6 sm:w-14 sm:justify-start sm:gap-1 md:w-16"
+          style={{ paddingTop: "max(1.5rem, env(safe-area-inset-top))", paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
         >
           <RailButton label={t("reader.actions.toc")} onClick={onToggleToc} accent={chromeColors.accent} fg={chromeColors.muted}>
             <List className="h-[19px] w-[19px]" aria-hidden="true" />
