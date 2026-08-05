@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { UploadCloud, CheckCircle2 } from "lucide-react";
+import { UploadCloud, CheckCircle2, PenSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,22 +12,12 @@ import { CategorySelect } from "@/components/ui/category-select";
 import { BackButton } from "@/components/ui/back-button";
 import { SectionHeader } from "@/components/home/section-header";
 import { Loading } from "@/components/ui/loading";
-import { ChapterEditor, type ChapterEditorHandle } from "@/components/admin/chapter-editor";
 import { useTranslation } from "@/hooks/use-translation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { createClient } from "@/lib/supabase/client";
-import {
-  createBookRow,
-  updateBookRow,
-  uploadBookCover,
-  saveBookChapters,
-  fetchBookById,
-  fetchBookMetadata,
-  fetchBookChapters,
-} from "@/lib/supabase/books-service";
+import { createBookRow, updateBookRow, uploadBookCover, fetchBookById, fetchBookMetadata } from "@/lib/supabase/books-service";
 import type { Book } from "@/types/book";
-import type { Chapter } from "@/types/reader";
 
 interface BookFormProps {
   mode: "create" | "edit";
@@ -77,12 +67,8 @@ export function BookForm({ mode, bookId }: BookFormProps) {
   const [savedBook, setSavedBook] = useState<Book | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [chapters, setChapters] = useState<Chapter[] | null>(null);
-  const chapterEditorRef = useRef<ChapterEditorHandle>(null);
-
   const [isLoading, setIsLoading] = useState(mode === "edit");
   const [isSavingMeta, setIsSavingMeta] = useState(false);
-  const [isSavingContent, setIsSavingContent] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
 
   const update = (patch: Partial<FormState>) => setForm((current) => ({ ...current, ...patch }));
@@ -91,8 +77,8 @@ export function BookForm({ mode, bookId }: BookFormProps) {
   useEffect(() => {
     if (mode !== "edit" || !bookId) return;
     const supabase = createClient();
-    Promise.all([fetchBookById(supabase, bookId), fetchBookMetadata(supabase, bookId), fetchBookChapters(supabase, bookId)]).then(
-      ([book, metadata, existingChapters]) => {
+    Promise.all([fetchBookById(supabase, bookId), fetchBookMetadata(supabase, bookId)]).then(
+      ([book, metadata]) => {
         if (!book) {
           addToast({ title: t("common.error"), variant: "error" });
           router.push("/admin/books");
@@ -112,7 +98,6 @@ export function BookForm({ mode, bookId }: BookFormProps) {
           isbn: metadata?.isbn ?? "",
         });
         setCoverPreview(book.coverUrl || null);
-        if (existingChapters.length > 0) setChapters(existingChapters);
         setIsLoading(false);
       }
     );
@@ -180,34 +165,6 @@ export function BookForm({ mode, bookId }: BookFormProps) {
       addToast({ title: t("common.error"), variant: "error" });
     } finally {
       setIsSavingMeta(false);
-    }
-  };
-
-  /** Reads the editor's live content and persists it as this book's
-   *  chapters — the editor replaces the old upload → extract pipeline, so
-   *  every book is written directly in the same reflowable typography the
-   *  Reader displays (two columns on desktop, one on mobile), no file or
-   *  extraction step involved. Requires the draft to already exist. */
-  const handleSaveContent = async () => {
-    if (!savedBook || !chapterEditorRef.current) return;
-
-    const nextChapters = chapterEditorRef.current.getChapters();
-    if (nextChapters.every((c) => c.paragraphs.length === 0)) {
-      addToast({ title: t("create.form.errors.empty"), variant: "error" });
-      return;
-    }
-
-    setIsSavingContent(true);
-    try {
-      const supabase = createClient();
-      await saveBookChapters(supabase, savedBook.id, nextChapters);
-      setSavedBook((current) => (current ? { ...current, contentReady: true } : current));
-      setChapters(nextChapters);
-      addToast({ title: t("create.form.toast.contentSaved"), variant: "success" });
-    } catch {
-      addToast({ title: t("common.error"), variant: "error" });
-    } finally {
-      setIsSavingContent(false);
     }
   };
 
@@ -321,21 +278,21 @@ export function BookForm({ mode, bookId }: BookFormProps) {
               {savedBook ? t("create.form.contentHint") : t("create.form.contentLocked")}
             </p>
           </div>
-          {chapters && chapters.length > 0 && (
+          {savedBook?.contentReady && (
             <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
               <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-              {t("create.form.previewTitle").replace("{count}", String(chapters.length))}
+              Content ready
             </div>
           )}
         </div>
 
-        {savedBook && (
-          <ChapterEditor ref={chapterEditorRef} bookId={savedBook.id} initialChapters={chapters ?? []} />
-        )}
-
         <div className="flex justify-end">
-          <Button onClick={handleSaveContent} isLoading={isSavingContent} disabled={!savedBook}>
-            {t("create.form.saveContent")}
+          <Button
+            onClick={() => savedBook && router.push(`/admin/books/${savedBook.id}/editor`)}
+            disabled={!savedBook}
+          >
+            <PenSquare className="h-4 w-4" aria-hidden="true" />
+            Open content editor
           </Button>
         </div>
       </Card>

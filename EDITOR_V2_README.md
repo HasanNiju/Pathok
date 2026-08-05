@@ -15,6 +15,24 @@ src/lib/supabase/migration_v4_editor.sql
 src/app/admin/books/[id]/editor/page.tsx   (new full-screen route)
 ```
 
+Files **replaced** (overwrite, don't merge):
+```
+src/components/admin/book-form.tsx   -- ChapterEditor swapped for an
+                                         "Open content editor" button that
+                                         routes to /admin/books/[id]/editor
+```
+
+The old chapter editor is still at `/admin/books/[id]/edit` for the metadata
+form itself — that page is unchanged. What changed is the **content section
+inside it**: it no longer embeds an inline editor, it links out to the new
+full-screen route. So after copying these files, go to
+`/admin/books/<id>/edit`, scroll to "Book content", and click **"Open content
+editor"** — that's where the new Tiptap editor lives, not the `/edit` page
+itself.
+
+Once you've confirmed the new editor works, delete
+`src/components/admin/chapter-editor.tsx` — nothing references it anymore.
+
 ## 2. Install deps
 ```
 npm install
