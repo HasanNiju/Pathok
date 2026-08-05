@@ -92,7 +92,10 @@ function headingNode(text: string, level: 1 | 2): PMContent {
 function median(nums: number[]): number {
   const sorted = [...nums].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  const midVal = sorted[mid] ?? 0;
+  if (sorted.length % 2) return midVal;
+  const prevVal = sorted[mid - 1] ?? midVal;
+  return (prevVal + midVal) / 2;
 }
 
 function firstHeadingOrFallback(doc: PMContent, pageNum: number): string {

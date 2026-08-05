@@ -64,7 +64,9 @@ export function replaceAllInEditor(editor: Editor, query: string, replacement: s
   }
   void html;
   for (let i = matches.length - 1; i >= 0; i -= 1) {
-    const { from, to } = matches[i];
+    const match = matches[i];
+    if (!match) continue;
+    const { from, to } = match;
     // Tiptap text positions are 1-indexed and offset by node boundaries; using
     // textBetween-based plain offsets works for single-paragraph-run matches,
     // which covers the common case. Complex cross-node matches are skipped.

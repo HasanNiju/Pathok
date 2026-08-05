@@ -33,6 +33,7 @@ export function useBookStats(pages: EditorPage[]): EditorStats {
 
 /** Live stats for just the active Tiptap instance — cheaper, updates on every keystroke. */
 export function useActivePageStats(editor: Editor | null) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => {
     if (!editor) return { words: 0, characters: 0 };
     const text = editor.getText();

@@ -82,12 +82,13 @@ function reducer(state: State, action: Action): State {
     case "DUPLICATE_PAGE": {
       if (!state.book) return state;
       const idx = state.book.pages.findIndex((p) => p.id === action.pageId);
-      if (idx === -1) return state;
+      const original = state.book.pages[idx];
+      if (idx === -1 || !original) return state;
       const now = new Date().toISOString();
       const copy: EditorPage = {
-        ...state.book.pages[idx],
+        ...original,
         id: nextPageId(),
-        title: `${state.book.pages[idx].title} (copy)`,
+        title: `${original.title} (copy)`,
         publishedContent: null,
         status: "draft",
         createdAt: now,
