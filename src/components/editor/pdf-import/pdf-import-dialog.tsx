@@ -11,7 +11,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   bookId: string;
-  onImported: (pages: EditorPage[]) => void;
+  onImported: (pages: EditorPage[]) => void | Promise<void>;
 }
 
 export function PdfImportDialog({ open, onClose, bookId, onImported }: Props) {
@@ -25,12 +25,26 @@ export function PdfImportDialog({ open, onClose, bookId, onImported }: Props) {
     }
     setError(null);
     setProgress({ page: 0, total: 1 });
+
+    let pages;
     try {
-      const pages = await extractPdfToPages(file, bookId, (p) => setProgress({ page: p.page, total: p.totalPages }));
-      onImported(pages);
-      onClose();
-    } catch {
+      pages = await extractPdfToPages(file, bookId, (p) => setProgress({ page: p.page, total: p.totalPages }));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[PdfImportDialog] PDF extraction failed:", err);
       setError("Couldn't read that PDF. It may be scanned/image-only or corrupted.");
+      setProgress(null);
+      return;
+    }
+
+    try {
+      await onImported(pages);
+      onClose();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[PdfImportDialog] Saving extracted pages failed:", err);
+      const detail = (err as { message?: string })?.message;
+      setError(detail ? `Extracted the PDF, but couldn't save it: ${detail}` : "Extracted the PDF, but couldn't save it.");
     } finally {
       setProgress(null);
     }
@@ -40,7 +54,15 @@ export function PdfImportDialog({ open, onClose, bookId, onImported }: Props) {
     <DialogShell title="Import from PDF" open={open} onClose={onClose}>
       <div className="space-y-4">
         {!progress ? (
-          <label className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-border p-8 text-center hover:bg-secondary/40">
+          <label
+            className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-border p-8 text-center hover:bg-secondary/40"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files?.[0];
+              if (file) handleFile(file);
+            }}
+          >
             <UploadCloud className="h-8 w-8 text-muted-foreground" />
             <span className="text-sm font-medium">Click to choose a PDF, or drag it here</span>
             <span className="text-xs text-muted-foreground">Text is extracted automatically; each PDF page becomes one editable page.</span>

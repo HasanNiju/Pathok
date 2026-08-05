@@ -3,7 +3,7 @@
 
 create table if not exists book_pages (
   id text primary key,
-  book_id uuid not null references books(id) on delete cascade,
+  book_id text not null references books(id) on delete cascade,
   "order" int not null,
   title text not null default '',
   draft_content jsonb not null default '{"type":"doc","content":[{"type":"paragraph"}]}'::jsonb,
@@ -18,7 +18,7 @@ create index if not exists book_pages_book_id_order_idx on book_pages (book_id, 
 -- One row per book, tracks v2 editor status independent of the legacy
 -- chapter-based `books.status` field until the Reader is cut over.
 create table if not exists book_editor_meta (
-  book_id uuid primary key references books(id) on delete cascade,
+  book_id text primary key references books(id) on delete cascade,
   status text not null default 'draft' check (status in ('draft','published','archived')),
   subtitle text,
   edition text,
@@ -30,7 +30,7 @@ create table if not exists book_editor_meta (
 -- book so a bad edit can be rolled back. Pruning is the app's job, not a trigger.
 create table if not exists book_versions (
   id uuid primary key default gen_random_uuid(),
-  book_id uuid not null references books(id) on delete cascade,
+  book_id text not null references books(id) on delete cascade,
   snapshot jsonb not null,
   created_at timestamptz not null default now()
 );
@@ -42,17 +42,23 @@ alter table book_editor_meta enable row level security;
 alter table book_versions enable row level security;
 
 -- Matches the existing "Admins manage books" / "Admins manage chapters"
--- pattern in schema.sql — role lives on `profiles`, not a helper function.
+-- pattern in schema.sql — role lives on `profiles`. Checks both 'admin' and
+-- 'super_admin' to match how every other admin-write policy in this project
+-- was widened in migration_v1_mvp.sql.
+drop policy if exists "Admins manage book_pages" on book_pages;
 create policy "Admins manage book_pages" on book_pages for all using (
-  exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  exists (select 1 from profiles where id = auth.uid() and role in ('admin', 'super_admin'))
 );
+drop policy if exists "Admins manage book_editor_meta" on book_editor_meta;
 create policy "Admins manage book_editor_meta" on book_editor_meta for all using (
-  exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  exists (select 1 from profiles where id = auth.uid() and role in ('admin', 'super_admin'))
 );
+drop policy if exists "Admins manage book_versions" on book_versions;
 create policy "Admins manage book_versions" on book_versions for all using (
-  exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  exists (select 1 from profiles where id = auth.uid() and role in ('admin', 'super_admin'))
 );
 
+drop policy if exists "Anyone reads published pages" on book_pages;
 create policy "Anyone reads published pages" on book_pages for select using (
-  status = 'ready' or exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  status = 'ready' or exists (select 1 from profiles where id = auth.uid() and role in ('admin', 'super_admin'))
 );

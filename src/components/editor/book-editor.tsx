@@ -35,14 +35,33 @@ export function BookEditor(props: BookEditorProps) {
     let cancelled = false;
     loadEditorBook(props.bookId)
       .then((book) => !cancelled && setInitialBook(book))
-      .catch(() => !cancelled && setLoadError("Couldn't load this book's editor content."));
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error("[BookEditor] loadEditorBook failed:", err);
+        if (cancelled) return;
+        const detail = err?.message || err?.error_description || err?.hint || err?.details;
+        setLoadError(
+          detail
+            ? `Couldn't load this book's editor content: ${detail}`
+            : "Couldn't load this book's editor content."
+        );
+      });
     return () => {
       cancelled = true;
     };
   }, [props.bookId]);
 
   if (loadError) {
-    return <div className="flex h-screen items-center justify-center text-sm text-destructive">{loadError}</div>;
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-2 px-6 text-center text-sm text-destructive">
+        <p>{loadError}</p>
+        <p className="max-w-md text-xs text-muted-foreground">
+          If this mentions a missing table or relation, run{" "}
+          <code className="rounded bg-secondary px-1 py-0.5">migration_v4_editor.sql</code> in your Supabase SQL
+          editor (see SETUP.md), then reload.
+        </p>
+      </div>
+    );
   }
   if (!initialBook) {
     return <div className="flex h-screen items-center justify-center text-sm text-muted-foreground">Loading editor…</div>;
@@ -184,9 +203,9 @@ function BookEditorInner({ bookId, bookTitle, coverUrl }: BookEditorProps) {
         open={pdfDialogOpen}
         onClose={() => setPdfDialogOpen(false)}
         bookId={bookId}
-        onImported={(pages) => {
+        onImported={async (pages) => {
+          await replaceAllPages(bookId, pages);
           store.setBook({ ...book, pages });
-          void replaceAllPages(bookId, pages);
         }}
       />
     </div>

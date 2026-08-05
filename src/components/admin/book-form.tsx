@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { UploadCloud, CheckCircle2, PenSquare } from "lucide-react";
@@ -17,6 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { createClient } from "@/lib/supabase/client";
 import { createBookRow, updateBookRow, uploadBookCover, fetchBookById, fetchBookMetadata } from "@/lib/supabase/books-service";
+import { extractPdfToPages } from "@/lib/pdf/extract-pdf";
+import { replaceAllPages } from "@/lib/supabase/editor-service";
 import type { Book } from "@/types/book";
 
 interface BookFormProps {
@@ -70,6 +72,11 @@ export function BookForm({ mode, bookId }: BookFormProps) {
   const [isLoading, setIsLoading] = useState(mode === "edit");
   const [isSavingMeta, setIsSavingMeta] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+
+  // Book upload -> extract -> editor (Module 01 "upload a book" workflow).
+  const [isImportingPdf, setIsImportingPdf] = useState(false);
+  const [pdfImportProgress, setPdfImportProgress] = useState<{ page: number; total: number } | null>(null);
+  const [pdfImportError, setPdfImportError] = useState<string | null>(null);
 
   const update = (patch: Partial<FormState>) => setForm((current) => ({ ...current, ...patch }));
 
@@ -166,6 +173,59 @@ export function BookForm({ mode, bookId }: BookFormProps) {
     } finally {
       setIsSavingMeta(false);
     }
+  };
+
+  /**
+   * Upload a book file straight from the create/edit form: extract its
+   * pages via pdfjs, push them to Supabase, then jump into the full-screen
+   * content editor with the extracted content already loaded.
+   */
+  const handleUploadBook = async (file: File) => {
+    if (!savedBook) return;
+    if (file.type !== "application/pdf") {
+      setPdfImportError(t("create.form.pdfImport.invalidType"));
+      return;
+    }
+    setPdfImportError(null);
+    setIsImportingPdf(true);
+    setPdfImportProgress({ page: 0, total: 1 });
+
+    let pages;
+    try {
+      pages = await extractPdfToPages(file, savedBook.id, (p) =>
+        setPdfImportProgress({ page: p.page, total: p.totalPages })
+      );
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[BookForm] PDF extraction failed:", err);
+      setPdfImportError(t("create.form.pdfImport.error"));
+      setIsImportingPdf(false);
+      setPdfImportProgress(null);
+      return;
+    }
+
+    try {
+      await replaceAllPages(savedBook.id, pages);
+      addToast({ title: t("create.form.pdfImport.success"), variant: "success" });
+      router.push(`/admin/books/${savedBook.id}/editor`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[BookForm] Saving extracted pages failed:", err);
+      const detail = (err as { message?: string })?.message;
+      setPdfImportError(
+        detail ? `Extracted the PDF, but couldn't save it: ${detail}` : "Extracted the PDF, but couldn't save it."
+      );
+    } finally {
+      setIsImportingPdf(false);
+      setPdfImportProgress(null);
+    }
+  };
+
+  const handleBookDrop = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    if (!savedBook || isImportingPdf) return;
+    const file = e.dataTransfer.files?.[0];
+    if (file) void handleUploadBook(file);
   };
 
   const handlePublish = async () => {
@@ -286,13 +346,60 @@ export function BookForm({ mode, bookId }: BookFormProps) {
           )}
         </div>
 
+        <label
+          className={`flex flex-col items-center gap-2 rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors ${
+            !savedBook || isImportingPdf ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-secondary/40"
+          }`}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleBookDrop}
+        >
+          <UploadCloud className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+          <span className="text-sm font-medium">
+            {isImportingPdf
+              ? pdfImportProgress
+                ? t("create.form.uploadExtracting")
+                    .replace("{page}", String(pdfImportProgress.page))
+                    .replace("{total}", String(pdfImportProgress.total))
+                : t("common.loading")
+              : t("create.form.uploadBook")}
+          </span>
+          <span className="text-xs text-muted-foreground">{t("create.form.uploadBookHint")}</span>
+          <input
+            type="file"
+            accept="application/pdf"
+            className="hidden"
+            disabled={!savedBook || isImportingPdf}
+            onChange={(e) => e.target.files?.[0] && void handleUploadBook(e.target.files[0])}
+          />
+        </label>
+
+        {isImportingPdf && pdfImportProgress && (
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+            <div
+              className="h-full bg-primary transition-all"
+              style={{
+                width: `${pdfImportProgress.total ? (pdfImportProgress.page / pdfImportProgress.total) * 100 : 0}%`,
+              }}
+            />
+          </div>
+        )}
+
+        {pdfImportError && <p className="text-xs text-destructive">{pdfImportError}</p>}
+
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">{t("create.form.orDivider")}</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
         <div className="flex justify-end">
           <Button
+            variant="outline"
             onClick={() => savedBook && router.push(`/admin/books/${savedBook.id}/editor`)}
             disabled={!savedBook}
           >
             <PenSquare className="h-4 w-4" aria-hidden="true" />
-            Open content editor
+            {t("create.form.openEditor")}
           </Button>
         </div>
       </Card>
